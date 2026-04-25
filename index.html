@@ -318,7 +318,7 @@ async function flushActivityLog(){
     if(sha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_PATH}`,{headers:{"Authorization":`token ${token}`}});
       const d=await r.json();existing=atob(d.content.replace(/\n/g,""));}
     const updated=existing+rows.join("\n")+"\n";
-    const b64=btoa(unescape(encodeURIComponent(updated)));
+    const b64=btoa(String.fromCharCode(...new TextEncoder().encode(updated)));
     await githubPutFile(token,CSV_PATH,b64,`Activity log: ${rows.length} event${rows.length>1?"s":""}`,sha);
   }catch(e){}
 }
@@ -630,7 +630,7 @@ async function pushToGitHub(pdfBlob,filename,invoiceData){
     if(csvSha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`,{headers:{"Authorization":`token ${token}`}});const d=await r.json();csvContent=atob(d.content.replace(/\n/g,""));}
     const newRow=`${invoiceData.num},"${invoiceData.client}","${invoiceData.period}","${invoiceData.issued}",${invoiceData.hours},${invoiceData.rate},"${invoiceData.total}","${filename}"`;
     if(!csvContent.includes(`"${filename}"`))csvContent+=newRow+"\n";
-    const csvB64=btoa(unescape(encodeURIComponent(csvContent)));
+    const csvB64=btoa(String.fromCharCode(...new TextEncoder().encode(csvContent)));
     const csvOk=await githubPutFile(token,csvPath,csvB64,`Update invoices log: ${filename}`,csvSha);
     if(pdfOk&&csvOk)setGithubStatus("Sauvegardé GitHub","#1a7a4a");else setGithubStatus("Erreur partielle","#e8a800");
   }catch(e){setGithubStatus("Erreur: "+e.message,"#E24B4A");}
@@ -887,9 +887,8 @@ function showToast(msg,duration=3500){
 })();
 
 (function seedRivard1(){
-  const SEED_KEY="rivard::2026-04-P2",SEEDED_FLAG="kc_seeded_rivard1";
-  // Always re-seed with full data — delete flag to force refresh
-  localStorage.removeItem(SEEDED_FLAG);
+  const SEED_KEY="rivard::2026-04-P2",SEEDED_FLAG="kc_seeded_rivard1b";
+  if(localStorage.getItem(SEEDED_FLAG)) return;
   const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
   const tasks=[
     ["2026-04-15",2.75,"Rencontre d'introduction + Visite Manufacture"],
