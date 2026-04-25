@@ -167,7 +167,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 /* KPI STRIP */
 .kpi-strip {
   background: white; border-bottom: 1px solid var(--border);
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   box-shadow: var(--shadow);
 }
 .kpi { padding: 14px 18px; border-right: 1px solid var(--border); position: relative; }
@@ -381,6 +381,12 @@ tbody tr:hover td { background: var(--bg); }
         <div class="kpi-lbl">Net dans tes poches</div>
         <div class="kpi-val" id="kpiNet">0,00 $</div>
         <div class="kpi-sub">après réserve-dépenses</div>
+        <div class="kpi-bar"></div>
+      </div>
+      <div class="kpi k-red">
+        <div class="kpi-lbl">Réserve ajustée</div>
+        <div class="kpi-val" id="kpiResAdj">0,00 $</div>
+        <div class="kpi-sub" id="kpiResAdjSub">après dépenses déductibles</div>
         <div class="kpi-bar"></div>
       </div>
     </div>
@@ -1061,6 +1067,10 @@ function updateKPIs() {
   const totalDed     = exp.reduce((s,r) => s+(r.montantDeductible||0), 0);
   const net          = totalNet - totalReserve - totalDed;
 
+  const revenuImposable  = Math.max(0, totalNet - totalDed);
+  const reserveAjustee   = revenuImposable * (0.42 + 0.064 + 0.0426 + 0.0118);
+  const economie         = totalReserve - reserveAjustee;
+
   document.getElementById('kpiRev').textContent    = fmt(totalNet);
   document.getElementById('kpiRevSub').textContent = `${inc.length} facture${inc.length!==1?'s':''}`;
   document.getElementById('kpiTax').textContent    = fmt(totalTaxes);
@@ -1069,6 +1079,8 @@ function updateKPIs() {
   document.getElementById('kpiDepSub').textContent = `${exp.length} reçu${exp.length!==1?'s':''}`;
   document.getElementById('kpiNet').textContent    = fmt(net);
   document.getElementById('kpiNet').style.color    = net >= 0 ? 'var(--green)' : 'var(--ch-red)';
+  document.getElementById('kpiResAdj').textContent = fmt(reserveAjustee);
+  document.getElementById('kpiResAdjSub').textContent = `économie: ${fmt(economie)}`;
 }
 
 // ═══════════════════════════════════════════════════
