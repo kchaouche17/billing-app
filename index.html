@@ -687,7 +687,11 @@ function showToast(msg,duration=3500){
 (function init(){
   currentPeriodKey=detectCurrentPeriod();lines=loadLinesForCurrent();
   const p=getPeriodForKey(currentPeriodKey);if(p)document.getElementById("inv-num").value=calcInvoiceNum(p);
-  const savedToken=localStorage.getItem(GITHUB_TOKEN_KEY);if(savedToken)document.getElementById("github-token").value=savedToken;
+  const savedToken=localStorage.getItem(GITHUB_TOKEN_KEY);
+  if(savedToken){
+    document.getElementById("github-token").value=savedToken;
+    setGithubStatus("Token chargé","#1a7a4a");
+  }
   renderPeriodGrid();renderLines();if(!lines.length)addLine();
 })();
 </script>
