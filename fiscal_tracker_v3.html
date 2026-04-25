@@ -627,6 +627,25 @@ async function syncFromCSV() {
   const repo  = getGHRepo();
   let newEntries = 0;
 
+  // CSV parser handling quoted fields
+  function parseCSVLine(line) {
+    const result = []; let field = ''; let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQuotes = !inQuotes; }
+      else if (ch === ',' && !inQuotes) { result.push(field.trim()); field = ''; }
+      else { field += ch; }
+    }
+    result.push(field.trim());
+    return result;
+  }
+
+  // Parse money: "1 150,00 $" → 1150.00
+  function parseMoney(str) {
+    if (!str) return 0;
+    return parseFloat(str.replace(/[^0-9,.-]/g,'').replace(',','.')) || 0;
+  }
+
   for (const clientId of ['bisson-expert', 'soudures-rivard']) {
     const clientLabel = clientId === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard';
 
@@ -638,21 +657,26 @@ async function syncFromCSV() {
         const csv  = atob(data.content.replace(/\n/g, ''));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('Date') && !l.startsWith('date'));
         for (const line of lines) {
-          const [no,client,periode,dateEmission,heures,taux,sousTotal,tps,tvq,total,fichier] = line.split(',');
+          const [no,client,periode,dateEmission,heures,taux,sousTotal,tps,tvq,total,fichier] = parseCSVLine(line);
           const key = `${clientId}_inv_${(no||'').trim()}`;
           if (ledger.find(r => r._key === key)) continue;
-          const net = parseFloat((sousTotal||'0').replace(/[^0-9.-]/g,'')) || 0;
-          const res2 = net * (0.42+0.064+0.0426+0.0118);
-          addToLedger({ _key:key, _docType:'income', _client:clientId, _source:'github-csv',
-            _fileName:(fichier||'').trim(), date:(dateEmission||'').trim().substring(0,10),
+          const net = parseMoney(sousTotal);
+          const reserve = net * (0.42+0.064+0.0426+0.0118);
+          // Extract date from filename (more reliable)
+          const dateFromFile = (fichier||'').match(/(\d{2}-\d{2}-\d{4})/);
+          let dateStr = dateFromFile
+            ? `${dateFromFile[1].substring(6)}-${dateFromFile[1].substring(3,5)}-${dateFromFile[1].substring(0,2)}`
+            : (dateEmission||'').trim();
+          addToLedger({
+            _key:key, _docType:'income', _client:clientId, _source:'github-csv',
+            _fileName:(fichier||'').trim(), date:dateStr,
             client:(client||'').trim(), description:`Honoraires — ${(periode||'').trim()}`,
             noFacture:(no||'').trim(), montantNet:net,
-            tps:parseFloat((tps||'0').replace(/[^0-9.-]/g,''))||0,
-            tvq:parseFloat((tvq||'0').replace(/[^0-9.-]/g,''))||0,
-            totalFacture:parseFloat((total||'0').replace(/[^0-9.-]/g,''))||0,
+            tps:parseMoney(tps), tvq:parseMoney(tvq), totalFacture:parseMoney(total),
             reserveImpot:net*0.42, reserveRRQ:net*0.064,
             reserveFSS:net*0.0426, reserveRQAP:net*0.0118,
-            totalReserve:res2, netPoches:net-res2, notes:'' });
+            totalReserve:reserve, netPoches:net-reserve, notes:''
+          });
           newEntries++;
         }
         addActivity('📊', `Revenus: ${lines.length} facture(s)`, clientLabel);
@@ -667,18 +691,21 @@ async function syncFromCSV() {
         const csv  = atob(data.content.replace(/\n/g, ''));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('date'));
         for (const line of lines) {
-          const [date,fournisseur,description,categorie,ligneTP80,ligneT2125,avant,tps,tvq,total,tauxDed,deductible] = line.split(',');
+          const [date,fournisseur,description,categorie,ligneTP80,ligneT2125,avant,tps,tvq,total,tauxDed,deductible] = parseCSVLine(line);
           const key = `${clientId}_exp_${(date||'').trim()}_${(fournisseur||'').trim().substring(0,20)}`;
           if (ledger.find(r => r._key === key)) continue;
-          addToLedger({ _key:key, _docType:'expense', _client:clientId, _source:'github-csv', _fileName:'',
+          addToLedger({
+            _key:key, _docType:'expense', _client:clientId, _source:'github-csv', _fileName:'',
             date:(date||'').trim(), fournisseur:(fournisseur||'').trim(),
             description:(description||'').trim(), categorie:(categorie||'').trim(),
             ligneTP80:(ligneTP80||'').trim(), ligneT2125:(ligneT2125||'').trim(),
-            montantAvantTaxes:parseFloat((avant||'0'))||0,
-            tpsPaye:parseFloat((tps||'0'))||0, tvqPaye:parseFloat((tvq||'0'))||0,
-            totalPaye:parseFloat((total||'0'))||0,
-            tauxDeductibilite:parseFloat((tauxDed||'100'))||100,
-            montantDeductible:parseFloat((deductible||'0').replace(/[^0-9.-]/g,''))||0, notes:'' });
+            montantAvantTaxes:parseFloat(avant)||0,
+            tpsPaye:parseFloat(tps)||0, tvqPaye:parseFloat(tvq)||0,
+            totalPaye:parseFloat(total)||0,
+            tauxDeductibilite:parseFloat(tauxDed)||100,
+            montantDeductible:parseFloat((deductible||'0').replace(/[^0-9.-]/g,''))||0,
+            notes:''
+          });
           newEntries++;
         }
         addActivity('🧾', `Dépenses: ${lines.length} entrée(s)`, clientLabel);
@@ -691,525 +718,4 @@ async function syncFromCSV() {
   return newEntries;
 }
 
-// GitHub invoices are now read from CSV logs — no PDF analysis needed
-// Manual PDF uploads still go through analyzeItem() as before
 
-async function uploadToGitHub(base64, filename, clientId, folder) {
-  const path = `${clientId}/${folder}/${filename}`;
-  try {
-    // Check if exists first
-    const checkRes = await ghFetch(path);
-    let sha = null;
-    if (checkRes.ok) {
-      const existing = await checkRes.json();
-      sha = existing.sha;
-    }
-
-    const body = { message: `Add ${folder}: ${filename}`, content: base64 };
-    if (sha) body.sha = sha;
-
-    const res = await ghFetch(path, { method: 'PUT', body: JSON.stringify(body) });
-    if (res.ok) {
-      addActivity('☁️', `Uploadé vers GitHub: ${filename}`, `${clientId}/${folder}/`);
-      return true;
-    }
-  } catch(e) {
-    addActivity('❌', `Erreur upload GitHub: ${filename}`, e.message);
-  }
-  return false;
-}
-
-async function appendToCSVLog(clientId, logFile, row) {
-  const path = `${clientId}/logs/${logFile}`;
-  try {
-    const res = await ghFetch(path);
-    let content = '';
-    let sha = null;
-    if (res.ok) {
-      const data = await res.json();
-      sha = data.sha;
-      content = atob(data.content.replace(/\n/g, ''));
-    }
-    content += row + '\n';
-    const body = { message: `Log: ${logFile}`, content: btoa(unescape(encodeURIComponent(content))) };
-    if (sha) body.sha = sha;
-    await ghFetch(path, { method: 'PUT', body: JSON.stringify(body) });
-  } catch(e) {}
-}
-
-function setSyncBar(msg, timeout = 0) {
-  const bar = document.getElementById('syncBar');
-  bar.textContent = msg;
-  bar.classList.add('visible');
-  if (timeout) setTimeout(() => bar.classList.remove('visible'), timeout);
-}
-
-// ═══════════════════════════════════════════════════
-// API KEY
-// ═══════════════════════════════════════════════════
-function saveApiKey(v) {
-  localStorage.setItem('fiscal_api_key', v);
-  checkAnalyzeBtn();
-}
-function getApiKey() { return document.getElementById('apiKey').value.trim(); }
-
-// ═══════════════════════════════════════════════════
-// DOC TYPE & CLIENT
-// ═══════════════════════════════════════════════════
-function setDocType(type) {
-  docType = type;
-  document.getElementById('btnIncome').className  = 'type-btn' + (type === 'income'  ? ' active-income'  : '');
-  document.getElementById('btnExpense').className = 'type-btn' + (type === 'expense' ? ' active-expense' : '');
-  document.getElementById('docTypeLabel').textContent = type === 'income' ? 'Facture émise' : 'Dépense / Reçu';
-}
-
-// ═══════════════════════════════════════════════════
-// FILE HANDLING
-// ═══════════════════════════════════════════════════
-const dz = document.getElementById('dropZone');
-dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); handleFiles(e.dataTransfer.files); });
-
-function handleFiles(files) {
-  const clientId = document.getElementById('clientSelect').value;
-  Array.from(files).forEach(file => {
-    const id = Date.now() + Math.random();
-    const item = { id, file, name: file.name, type: docType, client: clientId, status: 'pending', result: null, base64: null, mediaType: null, source: 'manual' };
-    queue.push(item);
-    toBase64(file).then(({ base64, mediaType }) => { item.base64 = base64; item.mediaType = mediaType; renderQueue(); });
-  });
-  renderQueue();
-  if (!selectedId && queue.length) selectItem(queue[0].id);
-}
-
-function toBase64(file) {
-  return new Promise(res => {
-    const r = new FileReader();
-    r.onload = e => res({ base64: e.target.result.split(',')[1], mediaType: file.type || 'image/jpeg' });
-    r.readAsDataURL(file);
-  });
-}
-
-async function blobToBase64(blob) {
-  return new Promise(res => {
-    const r = new FileReader();
-    r.onload = e => res(e.target.result.split(',')[1]);
-    r.readAsDataURL(blob);
-  });
-}
-
-function checkAnalyzeBtn() {
-  const pending = queue.filter(i => i.status === 'pending').length;
-  document.getElementById('analyzeBtn').disabled = pending === 0 || !getApiKey();
-}
-
-// ═══════════════════════════════════════════════════
-// QUEUE
-// ═══════════════════════════════════════════════════
-function renderQueue() {
-  checkAnalyzeBtn();
-  document.getElementById('qCount').textContent = `(${queue.length})`;
-  const el = document.getElementById('queueList');
-  if (!queue.length) { el.innerHTML = '<div class="q-empty">Aucun document</div>'; return; }
-
-  const sm = { pending:'En attente', analyzing:'Analyse…', done:'Analysé ✓', error:'Erreur' };
-  const bc = { pending:'b-pending', analyzing:'b-analyzing', done:'b-done', error:'b-error' };
-
-  el.innerHTML = queue.map(item => {
-    const isImg = item.mediaType && item.mediaType.startsWith('image');
-    const thumb = isImg && item.base64
-      ? `<img src="data:${item.mediaType};base64,${item.base64}" />`
-      : `<span>${item.type === 'income' ? '📄' : '🧾'}</span>`;
-    const amt = item.result ? `<div class="q-amt">${fmt(item.result.montantNet || item.result.montantAvantTaxes || 0)}</div>` : '';
-    const srcBadge = item.source === 'github' ? `<span class="badge b-github">GitHub</span>` : '';
-    const clientLabel = item.client === 'bisson-expert' ? 'Bisson' : 'S. Rivard';
-    return `<div class="q-item ${item.id === selectedId ? 'active' : ''}" onclick="selectItem(${item.id})">
-      <div class="q-thumb">${thumb}</div>
-      <div class="q-info">
-        <div class="q-name">${item.name}</div>
-        <div class="q-meta">
-          <span class="badge ${bc[item.status]}">${sm[item.status]}</span>
-          ${srcBadge}
-          <span style="color:var(--ch-blue);font-size:10px">${clientLabel}</span>
-        </div>
-      </div>
-      ${amt}
-    </div>`;
-  }).join('');
-}
-
-function selectItem(id) {
-  selectedId = id;
-  renderQueue();
-  const item = queue.find(i => i.id === id);
-  if (!item) return;
-  if (item.result) showResult(item);
-  else showPreview(item);
-}
-
-function showPreview(item) {
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('resultArea').style.display = 'block';
-  const isImg = item.mediaType && item.mediaType.startsWith('image');
-  document.getElementById('docPreview').innerHTML = isImg && item.base64
-    ? `<div class="doc-preview"><img src="data:${item.mediaType};base64,${item.base64}" /><div class="doc-preview-foot"><span>${item.name}</span></div></div>`
-    : `<div class="doc-preview"><div class="doc-preview-pdf">📄</div><div class="doc-preview-foot"><span>${item.name}</span><span>PDF</span></div></div>`;
-  document.getElementById('resultCards').innerHTML = `<div class="empty" style="min-height:140px"><div class="empty-icon" style="font-size:18px">⏳</div><div class="empty-title" style="font-size:13px">Prêt à analyser</div></div>`;
-}
-
-// ═══════════════════════════════════════════════════
-// ANALYZE
-// ═══════════════════════════════════════════════════
-async function analyzeAll() {
-  if (!getApiKey()) { toast('Entre ta clé API Anthropic', '⚠️', 'amber'); return; }
-  const pending = queue.filter(i => i.status === 'pending');
-  for (const item of pending) await analyzeItem(item);
-}
-
-async function analyzeItem(item) {
-  item.status = 'analyzing';
-  renderQueue();
-
-  const isImg = item.mediaType && item.mediaType.startsWith('image');
-  const isPdf = item.mediaType === 'application/pdf';
-  const prompt = item.type === 'income' ? promptIncome() : promptExpense();
-
-  let msgContent;
-  if (isImg) {
-    msgContent = [
-      { type:'image', source:{ type:'base64', media_type: item.mediaType, data: item.base64 } },
-      { type:'text', text: prompt }
-    ];
-  } else if (isPdf) {
-    msgContent = [
-      { type:'document', source:{ type:'base64', media_type:'application/pdf', data: item.base64 } },
-      { type:'text', text: prompt }
-    ];
-  } else {
-    msgContent = [{ type:'text', text: prompt }];
-  }
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key': getApiKey(), 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
-      body: JSON.stringify({ model:'claude-opus-4-5', max_tokens:1500, messages:[{ role:'user', content: msgContent }] })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    const json = JSON.parse(text.replace(/```json|```/g, '').trim());
-    item.result = { ...json, _docType: item.type, _client: item.client, _source: item.source, _fileName: item.name };
-    item.status = 'done';
-
-    // Guess client from date if not set
-    if (!item.client && json.date) {
-      const day = new Date(json.date).getDay();
-      item.client = CLIENT_DAYS[day] || 'bisson-expert';
-      item.result._client = item.client;
-    }
-
-    // Upload to GitHub if manual and has base64
-    if (item.source === 'manual' && item.base64 && getGHToken()) {
-      const folder = item.type === 'income' ? 'invoices' : 'expenses';
-      const filename = `${json.date || new Date().toISOString().split('T')[0]}_${item.name.replace(/[^a-zA-Z0-9.-]/g,'_')}`;
-      await uploadToGitHub(item.base64, filename, item.client, folder);
-      knownFiles[item.client]?.add(`${folder}/${filename}`);
-
-      // Append to CSV log
-      const logFile = item.type === 'income' ? 'invoices-log.csv' : 'expenses-log.csv';
-      const csvRow = item.type === 'income'
-        ? `${json.date},${json.client || ''},${json.noFacture || ''},${json.montantNet || 0},${json.totalReserve || 0},${json.netPoches || 0}`
-        : `${json.date},${json.fournisseur || ''},${json.categorie || ''},${json.montantAvantTaxes || 0},${json.montantDeductible || 0}`;
-      await appendToCSVLog(item.client, logFile, csvRow);
-      await appendToCSVLog(item.client, 'activity-log.csv', `${new Date().toISOString()},ADDED,${item.name},${item.client}`);
-    }
-
-    addToLedger(item.result);
-    selectItem(item.id);
-    updateKPIs();
-    saveLedger();
-    addActivity('✅', `Analysé: ${item.name}`, item.client === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard');
-    toast(`${item.name} analysé`, '✅', 'green');
-
-  } catch(e) {
-    item.status = 'error';
-    addActivity('❌', `Erreur: ${item.name}`, e.message);
-    toast(`Erreur: ${e.message}`, '❌', 'red');
-  }
-  renderQueue();
-}
-
-// ═══════════════════════════════════════════════════
-// PROMPTS
-// ═══════════════════════════════════════════════════
-function promptIncome() {
-  return `Analyse cette facture émise par Karim Chaouche, consultant autonome au Québec.
-Taux 2026: TPS 5%, TVQ 9.975%, impôt ~42%, RRQ 6.4%, FSS 4.26%, RQAP 1.18%.
-Réponds UNIQUEMENT en JSON valide sans texte avant ou après:
-{"date":"YYYY-MM-DD","client":"","description":"","noFacture":"","montantNet":0.00,"tps":0.00,"tvq":0.00,"totalFacture":0.00,"reserveImpot":0.00,"reserveRRQ":0.00,"reserveFSS":0.00,"reserveRQAP":0.00,"totalReserve":0.00,"netPoches":0.00,"notes":""}`;
-}
-
-function promptExpense() {
-  return `Analyse ce reçu de dépense de Karim Chaouche, consultant autonome au Québec.
-MARQUAGE: Si des items sont marqués (surligneur ou stylo, peu importe la couleur), inclus SEULEMENT ces items. Si rien n'est marqué, inclus tout.
-RÈGLE TIM HORTONS: Deux traits = uniquement les timbits (réunion équipe, 50% déductible).
-Catégories: Essence/carburant, Stationnement, Transport, Repas d'affaires (50%), Téléphone-portion pro, Internet-portion pro, AI/API, Logiciels/abonnements, Matériel informatique, Bureau à domicile, Formation/livres, Marketing/publicité, Honoraires professionnels, Assurances, Frais bancaires, Autre.
-Réponds UNIQUEMENT en JSON valide sans texte avant ou après:
-{"date":"YYYY-MM-DD","fournisseur":"","description":"","categorie":"","ligneTP80":"","ligneT2125":"","itemsInclus":[{"nom":"","montant":0.00}],"itemsExclus":[{"nom":"","montant":0.00}],"montantAvantTaxes":0.00,"tpsPaye":0.00,"tvqPaye":0.00,"totalPaye":0.00,"tauxDeductibilite":100,"montantDeductible":0.00,"notes":""}`;
-}
-
-// ═══════════════════════════════════════════════════
-// SHOW RESULT
-// ═══════════════════════════════════════════════════
-function showResult(item) {
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('resultArea').style.display = 'block';
-  const r = item.result;
-  const isIncome = item.type === 'income';
-  const isImg = item.mediaType && item.mediaType.startsWith('image');
-
-  document.getElementById('docPreview').innerHTML = isImg && item.base64
-    ? `<div class="doc-preview"><img src="data:${item.mediaType};base64,${item.base64}" /><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome ? 'pill-income' : 'pill-expense'}">${isIncome ? '💰 Revenu' : '🧾 Dépense'}</span></div></div>`
-    : `<div class="doc-preview"><div class="doc-preview-pdf">📄</div><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome ? 'pill-income' : 'pill-expense'}">${isIncome ? '💰 Revenu' : '🧾 Dépense'}</span></div></div>`;
-
-  const cards = document.getElementById('resultCards');
-  if (isIncome) {
-    cards.innerHTML = `
-      <div class="result-card">
-        <div class="card-hdr">
-          <div><div class="card-vendor">${r.client||'—'}</div><div class="card-date">${r.date||'—'}${r.noFacture ? ' · '+r.noFacture : ''}</div></div>
-          <span class="pill pill-income">💰 Revenu</span>
-        </div>
-        <div class="card-body">
-          <div class="dr"><span class="dr-lbl">Description</span><span class="dr-val" style="font-family:var(--font);text-align:right;max-width:200px;font-size:11px">${r.description||'—'}</span></div>
-          <div class="dr"><span class="dr-lbl">Montant net</span><span class="dr-val v-green">${fmt(r.montantNet)}</span></div>
-          <div class="dr"><span class="dr-lbl">TPS (5%)</span><span class="dr-val v-amber">${fmt(r.tps)}</span></div>
-          <div class="dr"><span class="dr-lbl">TVQ (9.975%)</span><span class="dr-val v-amber">${fmt(r.tvq)}</span></div>
-          <div class="dr"><span class="dr-lbl">Total facturé</span><span class="dr-val" style="font-weight:700">${fmt(r.totalFacture)}</span></div>
-        </div>
-        <div class="card-total ct-amber">
-          <div><div class="ct-lbl">Réserve fiscale</div><div style="font-size:10px;color:#92611a;font-family:var(--mono);margin-top:2px">Impôt ${fmt(r.reserveImpot)} · RRQ ${fmt(r.reserveRRQ)} · FSS ${fmt(r.reserveFSS)} · RQAP ${fmt(r.reserveRQAP)}</div></div>
-          <div class="ct-val">${fmt(r.totalReserve)}</div>
-        </div>
-        <div class="card-total ct-green">
-          <div class="ct-lbl">Net dans tes poches</div>
-          <div class="ct-val">${fmt(r.netPoches)}</div>
-        </div>
-        ${r.notes ? `<div class="card-note">⚠️ ${r.notes}</div>` : ''}
-      </div>`;
-  } else {
-    const excl = (r.itemsExclus && r.itemsExclus.length)
-      ? `<div class="excl-box"><div class="excl-title">🚫 Items exclus</div>${r.itemsExclus.map(i=>`<div class="excl-item"><span>${i.nom}</span><span>${fmt(i.montant)}</span></div>`).join('')}</div>` : '';
-    const incl = (r.itemsInclus && r.itemsInclus.length)
-      ? r.itemsInclus.map(i=>`<div class="dr"><span class="dr-lbl">✅ ${i.nom}</span><span class="dr-val v-blue">${fmt(i.montant)}</span></div>`).join('') : '';
-    cards.innerHTML = `
-      <div class="result-card">
-        <div class="card-hdr">
-          <div><div class="card-vendor">${r.fournisseur||'—'}</div><div class="card-date">${r.date||'—'} · ${r.categorie||'—'}</div></div>
-          <div style="text-align:right"><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">TP-80 ${r.ligneTP80||'—'}</div><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">T2125 ${r.ligneT2125||'—'}</div></div>
-        </div>
-        <div class="card-body">${excl}${incl}
-          <div class="dr"><span class="dr-lbl">Avant taxes</span><span class="dr-val">${fmt(r.montantAvantTaxes)}</span></div>
-          <div class="dr"><span class="dr-lbl">TPS payée</span><span class="dr-val">${fmt(r.tpsPaye)}</span></div>
-          <div class="dr"><span class="dr-lbl">TVQ payée</span><span class="dr-val">${fmt(r.tvqPaye)}</span></div>
-          <div class="dr"><span class="dr-lbl">Déductibilité</span><span class="dr-val v-blue" style="font-weight:700">${r.tauxDeductibilite||100}%</span></div>
-        </div>
-        <div class="card-total ct-blue">
-          <div class="ct-lbl">Montant déductible</div>
-          <div class="ct-val">${fmt(r.montantDeductible)}</div>
-        </div>
-        ${r.notes ? `<div class="card-note">⚠️ ${r.notes}</div>` : ''}
-      </div>`;
-  }
-}
-
-// ═══════════════════════════════════════════════════
-// LEDGER
-// ═══════════════════════════════════════════════════
-function addToLedger(r) { ledger.push(r); renderLedger(); renderClientTabs(); }
-
-function renderLedger() {
-  const tbody = document.getElementById('ledgerBody');
-  if (!ledger.length) { tbody.innerHTML = '<tr><td colspan="9" class="no-data">Aucune entrée</td></tr>'; return; }
-  tbody.innerHTML = ledger.map(r => {
-    const isI = r._docType === 'income';
-    const client = r._client === 'bisson-expert' ? 'Bisson' : r._client === 'soudures-rivard' ? 'S. Rivard' : '—';
-    const src = r._source === 'github' ? '<span class="badge b-github">GitHub</span>' : '<span class="badge b-pending">Manuel</span>';
-    return `<tr>
-      <td class="td-mono td-muted">${r.date||'—'}</td>
-      <td><span class="pill ${isI ? 'pill-income' : 'pill-expense'}">${isI ? '💰' : '🧾'}</span></td>
-      <td style="font-size:11px;font-weight:600;color:var(--ch-blue)">${client}</td>
-      <td style="font-weight:500;font-size:12px">${isI ? (r.client||'—') : (r.fournisseur||'—')}</td>
-      <td class="td-muted" style="font-size:10px">${isI ? '—' : (r.categorie||'—')}</td>
-      <td class="${isI ? 'td-green' : 'td-mono'}">${fmt(isI ? r.montantNet : r.montantAvantTaxes)}</td>
-      <td class="td-amber">${fmt(isI ? (r.tps+r.tvq) : (r.tpsPaye+r.tvqPaye))}</td>
-      <td class="${isI ? 'td-amber' : 'td-blue'}">${fmt(isI ? r.totalReserve : r.montantDeductible)}</td>
-      <td>${src}</td>
-    </tr>`;
-  }).join('');
-}
-
-function renderClientTabs() {
-  ['bisson', 'rivard'].forEach(tab => {
-    const clientId = tab === 'bisson' ? 'bisson-expert' : 'soudures-rivard';
-    const tbody = document.getElementById(`${tab}Body`);
-    const entries = ledger.filter(r => r._client === clientId && r._docType === 'expense');
-    if (!entries.length) { tbody.innerHTML = `<tr><td colspan="5" class="no-data">Aucune entrée</td></tr>`; return; }
-    tbody.innerHTML = entries.map(r => `<tr>
-      <td class="td-mono td-muted">${r.date||'—'}</td>
-      <td style="font-weight:500">${r.fournisseur||'—'}</td>
-      <td class="td-muted" style="font-size:11px">${r.categorie||'—'}</td>
-      <td class="td-blue">${fmt(r.montantDeductible)}</td>
-      <td class="td-muted" style="font-size:10px;font-family:var(--mono)">${r._fileName||'—'}</td>
-    </tr>`).join('');
-  });
-}
-
-// ═══════════════════════════════════════════════════
-// KPIs
-// ═══════════════════════════════════════════════════
-function updateKPIs() {
-  const inc = ledger.filter(r => r._docType === 'income');
-  const exp = ledger.filter(r => r._docType === 'expense');
-  const totalNet     = inc.reduce((s,r) => s+(r.montantNet||0), 0);
-  const totalTaxes   = inc.reduce((s,r) => s+(r.tps||0)+(r.tvq||0), 0);
-  const totalReserve = inc.reduce((s,r) => s+(r.totalReserve||0), 0);
-  const totalDed     = exp.reduce((s,r) => s+(r.montantDeductible||0), 0);
-  const net          = totalNet - totalReserve - totalDed;
-
-  const revenuImposable  = Math.max(0, totalNet - totalDed);
-  const reserveAjustee   = revenuImposable * (0.42 + 0.064 + 0.0426 + 0.0118);
-  const economie         = totalReserve - reserveAjustee;
-
-  document.getElementById('kpiRev').textContent    = fmt(totalNet);
-  document.getElementById('kpiRevSub').textContent = `${inc.length} facture${inc.length!==1?'s':''}`;
-  document.getElementById('kpiTax').textContent    = fmt(totalTaxes);
-  document.getElementById('kpiRes').textContent    = fmt(totalReserve);
-  document.getElementById('kpiDep').textContent    = fmt(totalDed);
-  document.getElementById('kpiDepSub').textContent = `${exp.length} reçu${exp.length!==1?'s':''}`;
-  document.getElementById('kpiNet').textContent    = fmt(net);
-  document.getElementById('kpiNet').style.color    = net >= 0 ? 'var(--green)' : 'var(--ch-red)';
-  document.getElementById('kpiResAdj').textContent = fmt(reserveAjustee);
-  document.getElementById('kpiResAdjSub').textContent = `économie: ${fmt(economie)}`;
-}
-
-// ═══════════════════════════════════════════════════
-// ACTIVITY LOG
-// ═══════════════════════════════════════════════════
-function addActivity(icon, msg, client = '') {
-  const entry = { icon, msg, client, time: new Date().toLocaleTimeString('fr-CA', { hour:'2-digit', minute:'2-digit' }) };
-  actLog.unshift(entry);
-  if (actLog.length > 100) actLog.pop();
-  renderActivity();
-  saveActivityLog();
-}
-
-function renderActivity() {
-  const el = document.getElementById('activityLog');
-  if (!actLog.length) { el.innerHTML = '<div class="no-data">Aucune activité</div>'; return; }
-  el.innerHTML = actLog.map(a => `
-    <div class="act-item">
-      <div class="act-time">${a.time}</div>
-      <div class="act-icon">${a.icon}</div>
-      <div><div class="act-msg">${a.msg}</div>${a.client ? `<div class="act-client">${a.client}</div>` : ''}</div>
-    </div>`).join('');
-}
-
-// ═══════════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════════
-function showTab(tab) {
-  ['ledger','activity','bisson','rivard'].forEach(t => {
-    const el = document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
-    if (el) el.style.display = t === tab ? 'block' : 'none';
-  });
-  document.querySelectorAll('.log-tab').forEach((btn, i) => {
-    btn.classList.toggle('active', ['ledger','activity','bisson','rivard'][i] === tab);
-  });
-}
-
-// ═══════════════════════════════════════════════════
-// PERSISTENCE
-// ═══════════════════════════════════════════════════
-function saveLedger() { try { localStorage.setItem('fiscal_ledger_2026', JSON.stringify(ledger)); } catch(e) {} }
-function loadLedger() {
-  try {
-    const s = localStorage.getItem('fiscal_ledger_2026');
-    if (s) { ledger = JSON.parse(s); renderLedger(); renderClientTabs(); updateKPIs(); }
-  } catch(e) {}
-}
-function saveActivityLog() { try { localStorage.setItem('fiscal_activity_2026', JSON.stringify(actLog)); } catch(e) {} }
-function loadActivityLog() {
-  try {
-    const s = localStorage.getItem('fiscal_activity_2026');
-    if (s) { actLog = JSON.parse(s); renderActivity(); }
-  } catch(e) {}
-}
-
-// ═══════════════════════════════════════════════════
-// EXPORT
-// ═══════════════════════════════════════════════════
-function exportCSV() {
-  if (!ledger.length) { toast('Aucune donnée', '⚠️', 'amber'); return; }
-  const inc = ledger.filter(r => r._docType === 'income');
-  const exp = ledger.filter(r => r._docType === 'expense');
-  let csv = 'FACTURES ÉMISES\nDate,Client GH,Client,Description,N°Facture,Montant net,TPS,TVQ,Total,Réserve,Net poches\n';
-  csv += inc.map(r => [r.date,r._client,r.client,r.description,r.noFacture,r.montantNet,r.tps,r.tvq,r.totalFacture,r.totalReserve,r.netPoches].join(',')).join('\n');
-  csv += '\n\nDÉPENSES\nDate,Client GH,Fournisseur,Description,Catégorie,TP-80,T2125,Avant taxes,TPS,TVQ,Déductibilité%,Déductible\n';
-  csv += exp.map(r => [r.date,r._client,r.fournisseur,r.description,r.categorie,r.ligneTP80,r.ligneT2125,r.montantAvantTaxes,r.tpsPaye,r.tvqPaye,r.tauxDeductibilite,r.montantDeductible].join(',')).join('\n');
-  const blob = new Blob(['\ufeff'+csv], { type:'text/csv;charset=utf-8;' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `fiscal_2026_${new Date().toISOString().split('T')[0]}.csv`; a.click();
-  toast('CSV exporté', '📥', 'green');
-}
-
-function exportXLSX() {
-  if (!ledger.length) { toast('Aucune donnée', '⚠️', 'amber'); return; }
-  const wb = XLSX.utils.book_new();
-  const inc = ledger.filter(r => r._docType === 'income');
-  const exp = ledger.filter(r => r._docType === 'expense');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-    ['Date','Client GitHub','Client','Description','N° Facture','Montant net','TPS','TVQ','Total facturé','Réserve totale','Net poches'],
-    ...inc.map(r => [r.date,r._client,r.client,r.description,r.noFacture,r.montantNet,r.tps,r.tvq,r.totalFacture,r.totalReserve,r.netPoches])
-  ]), 'Revenus');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-    ['Date','Client GitHub','Fournisseur','Description','Catégorie','TP-80','T2125','Avant taxes','TPS','TVQ','Déductibilité%','Déductible'],
-    ...exp.map(r => [r.date,r._client,r.fournisseur,r.description,r.categorie,r.ligneTP80,r.ligneT2125,r.montantAvantTaxes,r.tpsPaye,r.tvqPaye,r.tauxDeductibilite,r.montantDeductible])
-  ]), 'Dépenses');
-  const totalNet     = inc.reduce((s,r) => s+(r.montantNet||0), 0);
-  const totalReserve = inc.reduce((s,r) => s+(r.totalReserve||0), 0);
-  const totalDed     = exp.reduce((s,r) => s+(r.montantDeductible||0), 0);
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
-    ['RÉSUMÉ FISCAL 2026 — KARIM CHAOUCHE'],[''],
-    ['Revenus nets', totalNet], ['Réserve fiscale', totalReserve],
-    ['Dépenses déductibles', totalDed], ['Revenu net imposable', totalNet-totalDed],
-    ['NET ESTIMÉ POCHES', totalNet-totalReserve-totalDed],
-    [''],['* Estimations — valider avec comptable']
-  ]), 'Résumé');
-  XLSX.writeFile(wb, `fiscal_2026_${new Date().toISOString().split('T')[0]}.xlsx`);
-  toast('Excel exporté', '📥', 'green');
-}
-
-// ═══════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════
-function fmt(n) {
-  if (n === null || n === undefined || n === '') return '—';
-  return Number(n).toLocaleString('fr-CA', { style:'currency', currency:'CAD', minimumFractionDigits:2 });
-}
-
-function toast(msg, icon = '✅', type = 'green') {
-  const colors = { green:'var(--green)', amber:'var(--amber)', red:'var(--ch-red)' };
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.style.borderLeft = `4px solid ${colors[type]}`;
-  t.innerHTML = `<span style="font-size:16px">${icon}</span><span>${msg}</span>`;
-  document.getElementById('toastWrap').appendChild(t);
-  setTimeout(() => t.remove(), 3500);
-}
-</script>
-</body>
-</html>
