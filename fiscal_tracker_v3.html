@@ -628,51 +628,64 @@ async function syncFromCSV() {
   let newEntries = 0;
 
   for (const clientId of ['bisson-expert', 'soudures-rivard']) {
+    const clientLabel = clientId === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard';
+
+    // ── REVENUS (invoices-log.csv) ──
     try {
       const res = await ghFetch(`${clientId}/logs/invoices-log.csv`);
-      if (!res.ok) { addActivity('⚠️', `CSV introuvable: ${clientId}`, ''); continue; }
-      const data = await res.json();
-      const csv  = atob(data.content.replace(/\n/g, ''));
-      const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('date') && !l.startsWith('Date'));
-
-      for (const line of lines) {
-        const cols = line.split(',');
-        if (cols.length < 6) continue;
-        const [no, client, periode, dateEmission, heures, taux, sousTotal, tps, tvq, total, fichier] = cols;
-        const key = `${clientId}_${(no||'').trim()}_${(dateEmission||'').trim()}`;
-        if (ledger.find(r => r._key === key)) continue;
-
-        const montantNet = parseFloat((sousTotal||'0').replace(/[^0-9.-]/g,'')) || 0;
-        const tpsVal     = parseFloat((tps||'0').replace(/[^0-9.-]/g,''))       || 0;
-        const tvqVal     = parseFloat((tvq||'0').replace(/[^0-9.-]/g,''))       || 0;
-        const totalVal   = parseFloat((total||'0').replace(/[^0-9.-]/g,''))     || 0;
-        const reserve    = montantNet * (0.42 + 0.064 + 0.0426 + 0.0118);
-
-        const entry = {
-          _key: key, _docType: 'income', _client: clientId,
-          _source: 'github-csv', _fileName: (fichier||'').trim(),
-          date: (dateEmission||'').trim().substring(0,10),
-          client: (client||'').trim(),
-          description: `Honoraires — ${(periode||'').trim()}`,
-          noFacture: (no||'').trim(),
-          montantNet, tps: tpsVal, tvq: tvqVal, totalFacture: totalVal,
-          reserveImpot: montantNet * 0.42,
-          reserveRRQ:   montantNet * 0.064,
-          reserveFSS:   montantNet * 0.0426,
-          reserveRQAP:  montantNet * 0.0118,
-          totalReserve: reserve,
-          netPoches:    montantNet - reserve,
-          notes: ''
-        };
-        addToLedger(entry);
-        newEntries++;
+      if (res.ok) {
+        const data = await res.json();
+        const csv  = atob(data.content.replace(/\n/g, ''));
+        const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('Date') && !l.startsWith('date'));
+        for (const line of lines) {
+          const [no,client,periode,dateEmission,heures,taux,sousTotal,tps,tvq,total,fichier] = line.split(',');
+          const key = `${clientId}_inv_${(no||'').trim()}`;
+          if (ledger.find(r => r._key === key)) continue;
+          const net = parseFloat((sousTotal||'0').replace(/[^0-9.-]/g,'')) || 0;
+          const res2 = net * (0.42+0.064+0.0426+0.0118);
+          addToLedger({ _key:key, _docType:'income', _client:clientId, _source:'github-csv',
+            _fileName:(fichier||'').trim(), date:(dateEmission||'').trim().substring(0,10),
+            client:(client||'').trim(), description:`Honoraires — ${(periode||'').trim()}`,
+            noFacture:(no||'').trim(), montantNet:net,
+            tps:parseFloat((tps||'0').replace(/[^0-9.-]/g,''))||0,
+            tvq:parseFloat((tvq||'0').replace(/[^0-9.-]/g,''))||0,
+            totalFacture:parseFloat((total||'0').replace(/[^0-9.-]/g,''))||0,
+            reserveImpot:net*0.42, reserveRRQ:net*0.064,
+            reserveFSS:net*0.0426, reserveRQAP:net*0.0118,
+            totalReserve:res2, netPoches:net-res2, notes:'' });
+          newEntries++;
+        }
+        addActivity('📊', `Revenus: ${lines.length} facture(s)`, clientLabel);
       }
-      const clientLabel = clientId === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard';
-      addActivity('📊', `CSV lu: ${lines.length} facture(s)`, clientLabel);
-    } catch(e) {
-      addActivity('❌', `Erreur CSV ${clientId}: ${e.message}`, '');
-    }
+    } catch(e) { addActivity('❌', `Revenus erreur: ${e.message}`, ''); }
+
+    // ── DÉPENSES (expenses-log.csv) ──
+    try {
+      const res = await ghFetch(`${clientId}/logs/expenses-log.csv`);
+      if (res.ok) {
+        const data = await res.json();
+        const csv  = atob(data.content.replace(/\n/g, ''));
+        const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('date'));
+        for (const line of lines) {
+          const [date,fournisseur,description,categorie,ligneTP80,ligneT2125,avant,tps,tvq,total,tauxDed,deductible] = line.split(',');
+          const key = `${clientId}_exp_${(date||'').trim()}_${(fournisseur||'').trim().substring(0,20)}`;
+          if (ledger.find(r => r._key === key)) continue;
+          addToLedger({ _key:key, _docType:'expense', _client:clientId, _source:'github-csv', _fileName:'',
+            date:(date||'').trim(), fournisseur:(fournisseur||'').trim(),
+            description:(description||'').trim(), categorie:(categorie||'').trim(),
+            ligneTP80:(ligneTP80||'').trim(), ligneT2125:(ligneT2125||'').trim(),
+            montantAvantTaxes:parseFloat((avant||'0'))||0,
+            tpsPaye:parseFloat((tps||'0'))||0, tvqPaye:parseFloat((tvq||'0'))||0,
+            totalPaye:parseFloat((total||'0'))||0,
+            tauxDeductibilite:parseFloat((tauxDed||'100'))||100,
+            montantDeductible:parseFloat((deductible||'0').replace(/[^0-9.-]/g,''))||0, notes:'' });
+          newEntries++;
+        }
+        addActivity('🧾', `Dépenses: ${lines.length} entrée(s)`, clientLabel);
+      }
+    } catch(e) { addActivity('❌', `Dépenses erreur: ${e.message}`, ''); }
   }
+
   updateKPIs();
   saveLedger();
   return newEntries;
