@@ -1196,7 +1196,26 @@ function showToast(msg, duration=3500) {
   localStorage.setItem("kc_invoices_v1", JSON.stringify(all));
   localStorage.setItem(SEEDED_FLAG, "1");
 })();
+const invoiceData = {
+    num, client: client.name, period,
+    issued: today,
+    hours: totalHrs % 1 === 0 ? totalHrs.toFixed(0) : totalHrs,
+    rate, total: totalAmt
+  };
 
+  const blob = generatePDFBlob();
+
+  // Download locally
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download=fname; a.click();
+  URL.revokeObjectURL(url);
+
+  // Log invoice generation
+  logActivity("FACTURE GÉNÉRÉE", { desc: fname, hrs: invoiceData.hours, date: invoiceData.issued }, invoiceData.total);
+
+  // Push to GitHub asynchronously
+  pushToGitHub(blob, fname, invoiceData);
+}
 
 (function init() {
   currentPeriodKey = detectCurrentPeriod();
