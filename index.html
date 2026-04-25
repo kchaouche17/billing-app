@@ -448,6 +448,11 @@ function appendLineDOM(id,idx,desc,hrs,date,startOpen){
 function renderLines(){
   const c=document.getElementById("lines");c.innerHTML="";
   if(!lines.length){c.innerHTML=`<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche. Cliquez "+ Ajouter une tâche".</p>`;updateTotal();return;}
+  // Sort by date ascending (oldest first)
+  lines.sort((a,b)=>{
+    const da=a.date||"",db=b.date||"";
+    if(da<db)return -1;if(da>db)return 1;return 0;
+  });
   lines.forEach((l,i)=>appendLineDOM(l.id,i,l.desc,l.hrs,l.date,false));updateTotal();
 }
 
@@ -882,9 +887,25 @@ function showToast(msg,duration=3500){
 })();
 
 (function seedRivard1(){
-  const SEED_KEY="rivard::2026-04-P2",SEEDED_FLAG="kc_seeded_rivard1";if(localStorage.getItem(SEEDED_FLAG))return;
+  const SEED_KEY="rivard::2026-04-P2",SEEDED_FLAG="kc_seeded_rivard1";
+  // Always re-seed with full data — delete flag to force refresh
+  localStorage.removeItem(SEEDED_FLAG);
   const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[["2026-04-24",1.25,"Réunion – Révision du processus de création des commandes et de la facturation"],["2026-04-24",0.50,"Déplacement"],["2026-04-24",0.25,"Réunion – Processus de préparation des rencontres quotidiennes de production"],["2026-04-24",1.00,"Ajustements du processus de création des commandes et de la facturation pour inclure les bons de commande"],["2026-04-24",2.25,"Intégration du processus de gestion des commandes en attente dans l'automatisation"]];
+  const tasks=[
+    ["2026-04-15",2.75,"Rencontre d'introduction + Visite Manufacture"],
+    ["2026-04-15",0.50,"Déplacement"],
+    ["2026-04-15",2.50,"Configuration Github – Documentation pour Rivard + Github pour tester applications développées"],
+    ["2026-04-17",1.00,"Configuration Claude pour Soudures Rivard"],
+    ["2026-04-17",0.50,"Communications avec différents intervenants internes et externes à Soudures Rivard"],
+    ["2026-04-22",0.50,"Déplacement"],
+    ["2026-04-22",0.50,"Rencontre avec David et Sébastien – Ingénierie"],
+    ["2026-04-22",6.50,"Configuration workflow commandes avec Claude"],
+    ["2026-04-24",1.25,"Réunion – Révision du processus de création des commandes et de la facturation"],
+    ["2026-04-24",0.50,"Déplacement"],
+    ["2026-04-24",0.25,"Réunion – Processus de préparation des rencontres quotidiennes de production"],
+    ["2026-04-24",1.00,"Ajustements du processus de création des commandes et de la facturation pour inclure les bons de commande"],
+    ["2026-04-24",2.25,"Intégration du processus de gestion des commandes en attente dans l'automatisation"]
+  ];
   all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1900000000000+i,date,hrs,desc}));
   localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
 })();
