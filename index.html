@@ -389,7 +389,14 @@ function updateLine(id,field,val){
   const l=lines.find(x=>x.id===id);
   if(l){const oldVal=l[field];l[field]=val;updateTotal();refreshSummary(document.querySelector(`[data-lineid="${id}"]`));saveCurrentLines();
     clearTimeout(_updateLogTimers[id]);
-    _updateLogTimers[id]=setTimeout(()=>{if(String(oldVal)!==String(val))logActivity("MODIFICATION",l,`${field}: "${oldVal}" -> "${val}"`);},2000);}
+    _updateLogTimers[id]=setTimeout(()=>{
+      if(String(oldVal)!==String(val)){
+        // If old value was empty, it's a new entry — log as AJOUT, not MODIFICATION
+        const action=(!oldVal||oldVal===""||oldVal==="0")?"AJOUT":"MODIFICATION";
+        const detail=action==="MODIFICATION"?`${field}: "${oldVal}" -> "${val}"`:"";
+        logActivity(action,l,detail);
+      }
+    },2000);}
 }
 
 function updateTotal(){
