@@ -605,62 +605,75 @@ async function loadKnownFiles() {
 function startAutoSync() {
   if (syncInterval) clearInterval(syncInterval);
   syncInterval = setInterval(manualSync, 60000); // every 60s
-  manualSync(); // immediate first sync
+  setTimeout(manualSync, 1000); // slight delay on first sync
 }
 
 async function manualSync() {
   if (!getGHToken()) return;
   document.getElementById('ghDot').className = 'gh-dot syncing';
+  const n = await syncFromCSV();
+  document.getElementById('ghDot').className = 'gh-dot ok';
+  if (n > 0) toast(`${n} facture(s) importée(s) depuis GitHub`, '📊', 'green');
+}
 
-  let newFound = 0;
-  for (const c of ['bisson-expert', 'soudures-rivard']) {
-    for (const folder of ['invoices', 'expenses']) {
-      try {
-        const res = await ghFetch(`${c}/${folder}`);
-        if (!res.ok) continue;
-        const files = await res.json();
-        const pdfs = files.filter(f => f.name.toLowerCase().endsWith('.pdf') && f.name !== '.gitkeep');
-        for (const file of pdfs) {
-          const key = `${c}/${folder}/${file.name}`;
-          if (!knownFiles[c]) knownFiles[c] = new Set();
-          if (!knownFiles[c].has(key)) {
-            knownFiles[c].add(key);
-            newFound++;
-            addActivity('📥', `Nouveau fichier détecté: ${file.name}`, c === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard');
-            await analyzeGitHubFile(file, c, folder === 'invoices' ? 'income' : 'expense');
-          }
-        }
-      } catch(e) {}
+async function syncFromCSV() {
+  const token = getGHToken();
+  const repo  = getGHRepo();
+  let newEntries = 0;
+
+  for (const clientId of ['bisson-expert', 'soudures-rivard']) {
+    try {
+      const res = await ghFetch(`${clientId}/logs/invoices-log.csv`);
+      if (!res.ok) { addActivity('⚠️', `CSV introuvable: ${clientId}`, ''); continue; }
+      const data = await res.json();
+      const csv  = atob(data.content.replace(/\n/g, ''));
+      const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('date') && !l.startsWith('Date'));
+
+      for (const line of lines) {
+        const cols = line.split(',');
+        if (cols.length < 6) continue;
+        const [no, client, periode, dateEmission, heures, taux, sousTotal, tps, tvq, total, fichier] = cols;
+        const key = `${clientId}_${(no||'').trim()}_${(dateEmission||'').trim()}`;
+        if (ledger.find(r => r._key === key)) continue;
+
+        const montantNet = parseFloat((sousTotal||'0').replace(/[^0-9.-]/g,'')) || 0;
+        const tpsVal     = parseFloat((tps||'0').replace(/[^0-9.-]/g,''))       || 0;
+        const tvqVal     = parseFloat((tvq||'0').replace(/[^0-9.-]/g,''))       || 0;
+        const totalVal   = parseFloat((total||'0').replace(/[^0-9.-]/g,''))     || 0;
+        const reserve    = montantNet * (0.42 + 0.064 + 0.0426 + 0.0118);
+
+        const entry = {
+          _key: key, _docType: 'income', _client: clientId,
+          _source: 'github-csv', _fileName: (fichier||'').trim(),
+          date: (dateEmission||'').trim().substring(0,10),
+          client: (client||'').trim(),
+          description: `Honoraires — ${(periode||'').trim()}`,
+          noFacture: (no||'').trim(),
+          montantNet, tps: tpsVal, tvq: tvqVal, totalFacture: totalVal,
+          reserveImpot: montantNet * 0.42,
+          reserveRRQ:   montantNet * 0.064,
+          reserveFSS:   montantNet * 0.0426,
+          reserveRQAP:  montantNet * 0.0118,
+          totalReserve: reserve,
+          netPoches:    montantNet - reserve,
+          notes: ''
+        };
+        addToLedger(entry);
+        newEntries++;
+      }
+      const clientLabel = clientId === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard';
+      addActivity('📊', `CSV lu: ${lines.length} facture(s)`, clientLabel);
+    } catch(e) {
+      addActivity('❌', `Erreur CSV ${clientId}: ${e.message}`, '');
     }
   }
-
-  document.getElementById('ghDot').className = 'gh-dot ok';
-  if (newFound > 0) toast(`${newFound} nouveau(x) fichier(s) GitHub analysé(s)`, '📥', 'green');
+  updateKPIs();
+  saveLedger();
+  return newEntries;
 }
 
-async function analyzeGitHubFile(file, clientId, type) {
-  try {
-    const res = await fetch(file.download_url);
-    const blob = await res.blob();
-    const base64 = await blobToBase64(blob);
-    const item = {
-      id: Date.now() + Math.random(),
-      name: file.name,
-      type,
-      client: clientId,
-      status: 'analyzing',
-      base64,
-      mediaType: 'application/pdf',
-      source: 'github',
-      result: null
-    };
-    queue.push(item);
-    renderQueue();
-    await analyzeItem(item);
-  } catch(e) {
-    addActivity('❌', `Erreur analyse: ${file.name}`, e.message);
-  }
-}
+// GitHub invoices are now read from CSV logs — no PDF analysis needed
+// Manual PDF uploads still go through analyzeItem() as before
 
 async function uploadToGitHub(base64, filename, clientId, folder) {
   const path = `${clientId}/${folder}/${filename}`;
@@ -861,7 +874,7 @@ async function analyzeItem(item) {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key': getApiKey(), 'anthropic-version':'2023-06-01' },
+      headers: { 'Content-Type':'application/json', 'x-api-key': getApiKey(), 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
       body: JSON.stringify({ model:'claude-opus-4-5', max_tokens:1500, messages:[{ role:'user', content: msgContent }] })
     });
     const data = await res.json();
