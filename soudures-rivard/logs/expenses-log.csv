@@ -1,1 +1,17 @@
-Date,Client,Description,Catégorie,Montant,Fichier
+date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxes,tps,tvq,total_paye,taux_deductibilite,montant_deductible
+2026-04-15,Pétrolès Bélisle Saint-Janvier,Essence sans-plomb 13.67L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
+2026-04-19,Petro-Canada Notre-Dame O,Essence ordinaire 13.304L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
+2026-04-22,Petro-Canada Notre-Dame O,Essence ordinaire 13.743L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
+2026-04-24,Couche-Tard #1268 Newman,Essence ordinaire 11.056L,Essence/carburant,5010,9281,20.0,0.87,1.74,20.0,80,16.0
+2026-04-22,Tim Hortons #103086 Mirabel,Chocolat chaud — réunion président (cmd 158),Repas d'affaires (50%),5900,8523,5.3,0.27,0.53,6.1,50,3.05
+2026-04-22,Tim Hortons #103086 Mirabel,Café — réunion président (cmd 106),Repas d'affaires (50%),5900,8523,6.9,0.35,0.69,7.94,50,3.97
+2026-03-27,Anthropic (ZDU65LI5-0002),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
+2026-03-27,Anthropic (ZDU65LI5-0003),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
+2026-03-27,Anthropic (ZDU65LI5-0004),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
+2026-03-27,Anthropic (ZDU65LI5-0005),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
+2026-03-27,Anthropic (ZDU65LI5-0006),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
+2026-04-22,Anthropic (B6M8BUF4-0001),One-time credit purchase (USD),AI/API,5490,8810,27.8,0.0,0.0,27.8,100,27.8
+2026-04-24,Anthropic (ZDU65LI5-0009),Prepaid extra usage,AI/API,5490,8810,20.0,1.0,2.0,23.0,100,20.0
+2026-04-24,Anthropic (ZDU65LI5-0010),Prepaid extra usage,AI/API,5490,8810,20.0,1.0,2.0,23.0,100,20.0
+2026-02-04,OpenAI (GCY3IDMR-0002),ChatGPT Plus Fév-Mar 2026 (USD),AI/API,5490,8810,27.42,1.37,2.73,31.52,100,27.42
+2026-04-03,OpenAI (GCY3IDMR-0004),ChatGPT Plus Avr-Mai 2026 (USD),AI/API,5490,8810,27.7,1.39,2.78,31.87,100,27.7
