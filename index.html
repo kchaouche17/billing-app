@@ -830,7 +830,10 @@ function generatePDFBlob() {
   doc.text("HEURES",cx[2]+CW[2]/2,y+13,{align:"center"});
   y+=20;
 
-  // TABLE ROWS
+// TABLE ROWS
+  const PAGE_H = 792;
+  const MARGIN_BOTTOM = 80; // space needed for total + footer
+
   lines.forEach((l,i) => {
     const hrs=parseFloat(l.hrs)||0;
     const hrsStr=hrs%1===0?String(hrs):String(hrs);
@@ -838,6 +841,20 @@ function generatePDFBlob() {
     doc.setFont("helvetica","normal"); doc.setFontSize(8);
     const descLines=doc.splitTextToSize(l.desc||"(sans description)",maxW);
     const rowH=Math.max(18, descLines.length*11+8);
+
+    // ── PAGE BREAK ──────────────────────────────────────────────────────────
+    if (y + rowH + MARGIN_BOTTOM > PAGE_H) {
+      doc.addPage();
+      y = PAD;
+      // Reprint table header on new page
+      doc.setFillColor(...GRAYBG); doc.rect(PAD,y,TW,20,"F");
+      doc.setFont("helvetica","bold"); doc.setTextColor(...MUTED); doc.setFontSize(7);
+      doc.text("DESCRIPTION",cx[0]+5,y+13);
+      doc.text("DATE",cx[1]+CW[1]/2,y+13,{align:"center"});
+      doc.text("HEURES",cx[2]+CW[2]/2,y+13,{align:"center"});
+      y+=20;
+    }
+
     if(i%2===1){doc.setFillColor(...ALTROW);}else{doc.setFillColor(255,255,255);}
     doc.rect(PAD,y,TW,rowH,"F");
     doc.setDrawColor(...ROWLINE); doc.setLineWidth(0.3);
