@@ -316,7 +316,9 @@ async function flushActivityLog(){
     const sha=await githubGetFileSha(token,CSV_PATH);
     let existing=CSV_HEADER;
     if(sha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_PATH}`,{headers:{"Authorization":`token ${token}`}});
-      const d=await r.json();existing=atob(d.content.replace(/\n/g,""));}
+      const d=await r.json();
+      const bytes=Uint8Array.from(atob(d.content.replace(/\n/g,"")),c=>c.charCodeAt(0));
+      existing=new TextDecoder("utf-8").decode(bytes);}
     const updated=existing+rows.join("\n")+"\n";
     const b64=btoa(String.fromCharCode(...new TextEncoder().encode(updated)));
     await githubPutFile(token,CSV_PATH,b64,`Activity log: ${rows.length} event${rows.length>1?"s":""}`,sha);
@@ -627,7 +629,9 @@ async function pushToGitHub(pdfBlob,filename,invoiceData){
     const pdfOk=await githubPutFile(token,pdfPath,pdfB64,`Add invoice: ${filename}`,pdfSha);
     const csvSha=await githubGetFileSha(token,csvPath);
     let csvContent=csvHeader;
-    if(csvSha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`,{headers:{"Authorization":`token ${token}`}});const d=await r.json();csvContent=atob(d.content.replace(/\n/g,""));}
+    if(csvSha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`,{headers:{"Authorization":`token ${token}`}});const d=await r.json();
+      const csvBytes=Uint8Array.from(atob(d.content.replace(/\n/g,"")),c=>c.charCodeAt(0));
+      csvContent=new TextDecoder("utf-8").decode(csvBytes);}
     const newRow=`${invoiceData.num},"${invoiceData.client}","${invoiceData.period}","${invoiceData.issued}",${invoiceData.hours},${invoiceData.rate},"${invoiceData.total}","${filename}"`;
     if(!csvContent.includes(`"${filename}"`))csvContent+=newRow+"\n";
     const csvB64=btoa(String.fromCharCode(...new TextEncoder().encode(csvContent)));
