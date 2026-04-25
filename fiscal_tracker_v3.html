@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiscal Tracker — Karim Chaouche</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Lexend+Mega:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ch-red: #AF1E2D; --ch-red-lt: #C8233A; --ch-red-bg: #FDF2F3;
+  --ch-blue: #192168; --ch-blue-lt: #1E2A80; --ch-blue-bg: #F0F2FF;
+  --bg: #F5F8FA; --surface: #FFFFFF; --border: #E5E8EB; --border-dk: #CBD0D8;
+  --text: #1A1F36; --text-md: #516F90; --text-lt: #8DA2B8;
+  --green: #00BDA5; --green-bg: #E5F8F6; --amber: #F5A623; --amber-bg: #FEF6E7;
+  --radius: 8px; --radius-sm: 5px;
+  --shadow: 0 1px 4px rgba(25,33,104,0.08), 0 0 0 1px rgba(25,33,104,0.04);
+  --shadow-md: 0 4px 16px rgba(25,33,104,0.12);
+  --font: 'Lexend', sans-serif; --mono: 'JetBrains Mono', monospace; --disp: 'Lexend Mega', sans-serif;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; }
+
+/* TOPBAR */
+.topbar {
+  background: var(--ch-blue); height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 8px rgba(25,33,104,0.3);
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 34px; height: 34px; background: var(--ch-red); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--disp); font-size: 14px; color: white;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.logo-text { font-weight: 600; font-size: 15px; color: white; }
+.logo-sub { font-size: 10px; color: rgba(255,255,255,0.55); font-family: var(--mono); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.github-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: rgba(255,255,255,0.6); font-family: var(--mono);
+  background: rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.gh-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s; }
+.gh-dot.ok { background: var(--green); box-shadow: 0 0 0 3px rgba(0,189,165,0.25); }
+.gh-dot.syncing { background: var(--amber); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.api-input {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; font-family: var(--mono); font-size: 11px;
+  padding: 6px 12px; border-radius: var(--radius-sm); width: 210px; outline: none;
+}
+.api-input::placeholder { color: rgba(255,255,255,0.35); }
+.btn {
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  padding: 7px 14px; border-radius: var(--radius-sm); border: none; cursor: pointer;
+  transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px;
+}
+.btn-white { background: white; color: var(--ch-blue); }
+.btn-white:hover { background: #f0f2ff; }
+.btn-outline { background: transparent; color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.25); }
+.btn-outline:hover { background: rgba(255,255,255,0.1); color: white; }
+.btn-red { background: var(--ch-red); color: white; }
+.btn-red:hover { background: var(--ch-red-lt); }
+.btn-green { background: var(--green); color: white; }
+.btn-green:hover { background: #00a892; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* LAYOUT */
+.app { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 56px); }
+
+/* SIDEBAR */
+.sidebar { background: white; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.sb-section { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.sb-label { font-size: 10px; font-weight: 700; color: var(--text-lt); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+
+/* GITHUB CONFIG */
+.config-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.config-input {
+  flex: 1; background: var(--bg); border: 1px solid var(--border-dk);
+  color: var(--text); font-family: var(--mono); font-size: 11px;
+  padding: 7px 10px; border-radius: var(--radius-sm); outline: none;
+}
+.config-input:focus { border-color: var(--ch-blue); }
+.sync-bar {
+  background: var(--ch-blue-bg); border: 1px solid rgba(25,33,104,0.15);
+  border-radius: var(--radius-sm); padding: 8px 12px; margin-top: 8px;
+  font-size: 11px; color: var(--ch-blue); font-family: var(--mono);
+  display: none;
+}
+.sync-bar.visible { display: block; }
+
+/* DOC TYPE */
+.type-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.type-btn {
+  padding: 8px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+  background: white; color: var(--text-md); font-family: var(--font); font-size: 12px;
+  font-weight: 500; cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.type-btn.active-income { background: var(--green-bg); color: var(--green); border-color: var(--green); font-weight: 600; }
+.type-btn.active-expense { background: var(--ch-blue-bg); color: var(--ch-blue); border-color: var(--ch-blue); font-weight: 600; }
+
+/* CLIENT SELECT */
+.client-select {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border-dk);
+  color: var(--text); font-family: var(--font); font-size: 13px;
+  padding: 8px 12px; border-radius: var(--radius-sm); outline: none; margin-top: 8px;
+}
+.client-select:focus { border-color: var(--ch-blue); }
+
+/* DROP ZONE */
+.drop-zone {
+  border: 2px dashed var(--border-dk); border-radius: var(--radius);
+  padding: 20px 16px; text-align: center; cursor: pointer;
+  transition: all 0.2s; background: var(--bg); position: relative;
+}
+.drop-zone:hover, .drop-zone.over { border-color: var(--ch-red); background: var(--ch-red-bg); }
+.drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.drop-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+.drop-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.drop-sub { font-size: 11px; color: var(--text-lt); font-family: var(--mono); }
+.analyze-btn {
+  width: 100%; padding: 10px; background: var(--ch-red); color: white;
+  border: none; border-radius: var(--radius-sm); font-family: var(--font);
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;
+}
+.analyze-btn:hover { background: var(--ch-red-lt); box-shadow: 0 4px 12px rgba(175,30,45,0.3); }
+.analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+/* QUEUE */
+.queue { flex: 1; overflow-y: auto; }
+.q-empty { padding: 24px; text-align: center; color: var(--text-lt); font-size: 12px; }
+.q-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+  border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s;
+}
+.q-item:hover { background: var(--bg); }
+.q-item.active { background: var(--ch-red-bg); border-left: 3px solid var(--ch-red); }
+.q-thumb {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; overflow: hidden; flex-shrink: 0;
+}
+.q-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.q-info { flex: 1; min-width: 0; }
+.q-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-meta { font-size: 10px; color: var(--text-lt); margin-top: 2px; display: flex; gap: 6px; align-items: center; }
+.q-amt { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--green); flex-shrink: 0; }
+.badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px;
+}
+.b-pending { background: var(--bg); color: var(--text-lt); border: 1px solid var(--border); }
+.b-analyzing { background: var(--amber-bg); color: var(--amber); }
+.b-done { background: var(--green-bg); color: var(--green); }
+.b-error { background: var(--ch-red-bg); color: var(--ch-red); }
+.b-github { background: #e8f5e9; color: #2e7d32; }
+
+/* MAIN */
+.main { display: flex; flex-direction: column; overflow: hidden; }
+
+/* KPI STRIP */
+.kpi-strip {
+  background: white; border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  box-shadow: var(--shadow);
+}
+.kpi { padding: 14px 18px; border-right: 1px solid var(--border); position: relative; }
+.kpi:last-child { border-right: none; }
+.kpi-lbl { font-size: 10px; font-weight: 700; color: var(--text-lt); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; }
+.kpi-val { font-family: var(--disp); font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.kpi-sub { font-size: 10px; color: var(--text-lt); margin-top: 3px; }
+.kpi-bar { height: 3px; position: absolute; bottom: 0; left: 0; right: 0; }
+.kpi.k-green .kpi-val { color: var(--green); } .kpi.k-green .kpi-bar { background: var(--green); }
+.kpi.k-red .kpi-val { color: var(--ch-red); } .kpi.k-red .kpi-bar { background: var(--ch-red); }
+.kpi.k-amber .kpi-val { color: var(--amber); } .kpi.k-amber .kpi-bar { background: var(--amber); }
+.kpi.k-blue .kpi-val { color: var(--ch-blue); } .kpi.k-blue .kpi-bar { background: var(--ch-blue); }
+.kpi.k-teal .kpi-val { color: #0891b2; } .kpi.k-teal .kpi-bar { background: #0891b2; }
+
+/* CONTENT */
+.content { flex: 1; display: grid; grid-template-columns: 400px 1fr; overflow: hidden; }
+.panel { overflow-y: auto; padding: 20px; background: var(--bg); border-right: 1px solid var(--border); }
+.panel-r { overflow-y: auto; background: white; display: flex; flex-direction: column; }
+.panel-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.panel-sub { font-size: 12px; font-weight: 400; color: var(--text-lt); }
+
+/* RESULT CARD */
+.result-card {
+  background: white; border-radius: var(--radius); border: 1px solid var(--border);
+  box-shadow: var(--shadow); overflow: hidden; margin-bottom: 14px;
+  animation: fadeUp 0.25s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.card-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.card-vendor { font-size: 14px; font-weight: 600; }
+.card-date { font-size: 11px; color: var(--text-lt); font-family: var(--mono); margin-top: 2px; }
+.card-body { padding: 12px 16px; }
+.dr { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.dr:last-child { border: none; }
+.dr-lbl { color: var(--text-md); }
+.dr-val { font-family: var(--mono); font-size: 12px; font-weight: 500; }
+.v-green{color:var(--green)} .v-red{color:var(--ch-red)} .v-amber{color:var(--amber)} .v-blue{color:var(--ch-blue)}
+.card-total { padding: 12px 16px; border-top: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.ct-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.ct-val { font-family: var(--disp); font-size: 20px; font-weight: 700; }
+.ct-green { background: var(--green-bg); } .ct-green .ct-lbl,.ct-green .ct-val { color: var(--green); }
+.ct-amber { background: var(--amber-bg); } .ct-amber .ct-lbl,.ct-amber .ct-val { color: var(--amber); }
+.ct-blue { background: var(--ch-blue-bg); } .ct-blue .ct-lbl,.ct-blue .ct-val { color: var(--ch-blue); }
+.card-note { padding: 9px 16px; border-top: 1px solid var(--border); background: var(--amber-bg); font-size: 11px; color: #92611a; }
+.excl-box { background: #fff5f5; border: 1px solid #fecdd3; border-radius: 4px; padding: 8px 10px; margin-bottom: 8px; }
+.excl-title { font-size: 10px; font-weight: 700; color: #c53030; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.excl-item { display: flex; justify-content: space-between; font-size: 11px; color: #744210; font-family: var(--mono); padding: 1px 0; }
+.pill { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+.pill-income { background: var(--green-bg); color: var(--green); }
+.pill-expense { background: var(--ch-blue-bg); color: var(--ch-blue); }
+.pill-github { background: #e8f5e9; color: #2e7d32; }
+
+/* EMPTY STATE */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; text-align: center; padding: 32px; }
+.empty-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--bg); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 14px; }
+.empty-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.empty-sub { font-size: 12px; color: var(--text-lt); line-height: 1.6; max-width: 220px; }
+
+/* LOG PANEL */
+.log-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: white; position: sticky; top: 0; z-index: 5; }
+.log-title { font-size: 14px; font-weight: 600; }
+.log-tabs { display: flex; gap: 4px; }
+.log-tab { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--text-md); transition: all 0.15s; }
+.log-tab.active { background: var(--ch-blue); color: white; border-color: var(--ch-blue); }
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+thead th { padding: 9px 14px; background: var(--bg); border-bottom: 2px solid var(--border); font-size: 10px; font-weight: 700; color: var(--text-lt); text-transform: uppercase; letter-spacing: 0.07em; text-align: left; white-space: nowrap; }
+tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+tbody tr:hover td { background: var(--bg); }
+.td-mono { font-family: var(--mono); font-size: 10px; }
+.td-green { color: var(--green); font-family: var(--mono); font-weight: 600; }
+.td-amber { color: var(--amber); font-family: var(--mono); }
+.td-blue { color: var(--ch-blue); font-family: var(--mono); font-weight: 600; }
+.td-red { color: var(--ch-red); font-family: var(--mono); }
+.td-muted { color: var(--text-lt); }
+.no-data { text-align: center; padding: 40px; color: var(--text-lt); font-size: 12px; }
+
+/* ACTIVITY LOG */
+.act-log { padding: 0; }
+.act-item { display: flex; gap: 12px; padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.act-time { font-family: var(--mono); font-size: 10px; color: var(--text-lt); white-space: nowrap; margin-top: 1px; flex-shrink: 0; }
+.act-icon { font-size: 14px; flex-shrink: 0; }
+.act-msg { color: var(--text); line-height: 1.4; }
+.act-client { font-size: 10px; color: var(--text-lt); margin-top: 2px; font-family: var(--mono); }
+
+/* GITHUB SYNC BADGE */
+.gh-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; background: #e8f5e9; color: #2e7d32; margin-left: 6px; }
+
+/* SPINNER */
+.spinner { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* TOAST */
+.toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: white; border-radius: var(--radius); box-shadow: var(--shadow-md); padding: 11px 16px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; min-width: 240px; border: 1px solid var(--border); animation: toastIn 0.2s ease; }
+@keyframes toastIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:translateX(0)} }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-dk); border-radius: 3px; }
+
+/* PREVIEW */
+.doc-preview { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 12px; background: white; box-shadow: var(--shadow); }
+.doc-preview img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+.doc-preview-pdf { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 30px; background: var(--bg); }
+.doc-preview-foot { padding: 7px 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-lt); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-icon">KC</div>
+    <div>
+      <div class="logo-text">Fiscal Tracker</div>
+      <div class="logo-sub">KARIM CHAOUCHE · 2026</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="github-status" id="ghStatus">
+      <div class="gh-dot" id="ghDot"></div>
+      <span id="ghLabel">GitHub non configuré</span>
+    </div>
+    <input class="api-input" type="password" id="apiKey" placeholder="Clé API Anthropic..." oninput="saveApiKey(this.value)" />
+    <button class="btn btn-outline" onclick="exportCSV()">↓ CSV</button>
+    <button class="btn btn-white" onclick="exportXLSX()">↓ Excel</button>
+    <button class="btn btn-outline" onclick="manualSync()" id="syncBtn" style="display:none">↺ Sync GitHub</button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- GitHub Config -->
+    <div class="sb-section">
+      <div class="sb-label">Configuration GitHub</div>
+      <div class="config-row">
+        <input class="config-input" id="ghToken" type="password" placeholder="ghp_token..." oninput="saveGitHubConfig()" />
+      </div>
+      <div class="config-row">
+        <input class="config-input" id="ghRepo" placeholder="user/repo" oninput="saveGitHubConfig()" />
+      </div>
+      <div id="syncBar" class="sync-bar"></div>
+    </div>
+
+    <!-- Type + Client -->
+    <div class="sb-section">
+      <div class="sb-label">Type de document</div>
+      <div class="type-toggle">
+        <button class="type-btn active-income" id="btnIncome" onclick="setDocType('income')">💰 Facture</button>
+        <button class="type-btn" id="btnExpense" onclick="setDocType('expense')">🧾 Dépense</button>
+      </div>
+      <select class="client-select" id="clientSelect">
+        <option value="bisson-expert">Bisson Expert</option>
+        <option value="soudures-rivard">Soudures Rivard</option>
+      </select>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="sb-section">
+      <div class="sb-label">Upload manuel</div>
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept="image/*,.pdf" multiple onchange="handleFiles(this.files)" />
+        <span class="drop-icon">📎</span>
+        <div class="drop-label">Photos ou PDFs</div>
+        <div class="drop-sub">jpg · png · pdf</div>
+      </div>
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyzeAll()" disabled>Analyser</button>
+    </div>
+
+    <!-- Queue -->
+    <div style="padding:10px 20px 8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <div class="sb-label" style="margin:0">Documents <span id="qCount" style="color:var(--text-lt);font-weight:400"></span></div>
+    </div>
+    <div class="queue" id="queueList"><div class="q-empty">Aucun document</div></div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip">
+      <div class="kpi k-green">
+        <div class="kpi-lbl">Revenus nets</div>
+        <div class="kpi-val" id="kpiRev">0,00 $</div>
+        <div class="kpi-sub" id="kpiRevSub">0 factures</div>
+        <div class="kpi-bar"></div>
+      </div>
+      <div class="kpi k-red">
+        <div class="kpi-lbl">TPS+TVQ à remettre</div>
+        <div class="kpi-val" id="kpiTax">0,00 $</div>
+        <div class="kpi-sub">sur factures émises</div>
+        <div class="kpi-bar"></div>
+      </div>
+      <div class="kpi k-amber">
+        <div class="kpi-lbl">Réserve fiscale</div>
+        <div class="kpi-val" id="kpiRes">0,00 $</div>
+        <div class="kpi-sub">impôt·RRQ·FSS·RQAP</div>
+        <div class="kpi-bar"></div>
+      </div>
+      <div class="kpi k-blue">
+        <div class="kpi-lbl">Dépenses déductibles</div>
+        <div class="kpi-val" id="kpiDep">0,00 $</div>
+        <div class="kpi-sub" id="kpiDepSub">0 reçus</div>
+        <div class="kpi-bar"></div>
+      </div>
+      <div class="kpi k-teal">
+        <div class="kpi-lbl">Net dans tes poches</div>
+        <div class="kpi-val" id="kpiNet">0,00 $</div>
+        <div class="kpi-sub">après réserve-dépenses</div>
+        <div class="kpi-bar"></div>
+      </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content">
+
+      <!-- LEFT: analysis -->
+      <div class="panel">
+        <div class="panel-title">
+          Analyse <span class="panel-sub" id="docTypeLabel">Facture émise</span>
+        </div>
+        <div id="emptyState" class="empty">
+          <div class="empty-icon">📄</div>
+          <div class="empty-title">Aucun document</div>
+          <div class="empty-sub">Upload une photo ou PDF, ou attends la sync GitHub automatique</div>
+        </div>
+        <div id="resultArea" style="display:none">
+          <div id="docPreview"></div>
+          <div id="resultCards"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: logs -->
+      <div class="panel-r">
+        <div class="log-header">
+          <div class="log-title">Registre & Logs</div>
+          <div class="log-tabs">
+            <button class="log-tab active" onclick="showTab('ledger')">Registre</button>
+            <button class="log-tab" onclick="showTab('activity')">Activité</button>
+            <button class="log-tab" onclick="showTab('bisson')">Bisson</button>
+            <button class="log-tab" onclick="showTab('rivard')">S. Rivard</button>
+          </div>
+        </div>
+        <!-- Ledger -->
+        <div id="tabLedger" style="flex:1;overflow:auto">
+          <table>
+            <thead><tr>
+              <th>Date</th><th>Type</th><th>Client</th><th>Fournisseur/Client</th>
+              <th>Catégorie</th><th>Montant</th><th>Taxes</th><th>Déd./Réserve</th><th>Source</th>
+            </tr></thead>
+            <tbody id="ledgerBody"><tr><td colspan="9" class="no-data">Aucune entrée</td></tr></tbody>
+          </table>
+        </div>
+        <!-- Activity log -->
+        <div id="tabActivity" style="display:none;flex:1;overflow:auto">
+          <div class="act-log" id="activityLog"><div class="no-data">Aucune activité</div></div>
+        </div>
+        <!-- Bisson logs -->
+        <div id="tabBisson" style="display:none;flex:1;overflow:auto">
+          <div style="padding:16px 20px;font-size:12px;font-weight:600;color:var(--text-md)">Bisson Expert — Dépenses</div>
+          <table>
+            <thead><tr><th>Date</th><th>Fournisseur</th><th>Catégorie</th><th>Déductible</th><th>Fichier GitHub</th></tr></thead>
+            <tbody id="bissonBody"><tr><td colspan="5" class="no-data">Aucune entrée</td></tr></tbody>
+          </table>
+        </div>
+        <!-- Soudures Rivard logs -->
+        <div id="tabRivard" style="display:none;flex:1;overflow:auto">
+          <div style="padding:16px 20px;font-size:12px;font-weight:600;color:var(--text-md)">Soudures Rivard — Dépenses</div>
+          <table>
+            <thead><tr><th>Date</th><th>Fournisseur</th><th>Catégorie</th><th>Déductible</th><th>Fichier GitHub</th></tr></thead>
+            <tbody id="rivardBody"><tr><td colspan="5" class="no-data">Aucune entrée</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const REPO   = 'kchaouche17/billing-app';
+let docType  = 'income';
+let client   = 'bisson-expert';
+let queue    = [];
+let ledger   = [];
+let actLog   = [];
+let selectedId = null;
+let syncInterval = null;
+let knownFiles = { 'bisson-expert': new Set(), 'soudures-rivard': new Set() };
+
+// Day → client mapping
+const CLIENT_DAYS = {
+  1: 'bisson-expert',   // Monday
+  2: 'bisson-expert',   // Tuesday
+  3: 'soudures-rivard', // Wednesday
+  4: 'bisson-expert',   // Thursday
+  5: 'soudures-rivard', // Friday
+  6: null, 0: null
+};
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  const ak = localStorage.getItem('fiscal_api_key') || '';
+  if (ak) { document.getElementById('apiKey').value = ak; }
+
+  const token = localStorage.getItem('gh_token') || '';
+  const repo  = localStorage.getItem('gh_repo') || REPO;
+  if (token) document.getElementById('ghToken').value = token;
+  document.getElementById('ghRepo').value = repo;
+
+  loadLedger();
+  loadActivityLog();
+  if (token) initGitHub();
+});
+
+// ═══════════════════════════════════════════════════
+// GITHUB CONFIG
+// ═══════════════════════════════════════════════════
+function saveGitHubConfig() {
+  const token = document.getElementById('ghToken').value.trim();
+  const repo  = document.getElementById('ghRepo').value.trim();
+  if (token) localStorage.setItem('gh_token', token);
+  if (repo)  localStorage.setItem('gh_repo', repo);
+  if (token && repo) initGitHub();
+}
+
+function getGHToken() { return localStorage.getItem('gh_token') || ''; }
+function getGHRepo()  { return localStorage.getItem('gh_repo') || REPO; }
+
+async function ghFetch(path, opts = {}) {
+  const token = getGHToken();
+  const repo  = getGHRepo();
+  const url   = `https://api.github.com/repos/${repo}/contents/${path}`;
+  const res = await fetch(url, {
+    ...opts,
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...(opts.headers || {})
+    }
+  });
+  return res;
+}
+
+async function initGitHub() {
+  const dot   = document.getElementById('ghDot');
+  const label = document.getElementById('ghLabel');
+  dot.className = 'gh-dot syncing';
+  label.textContent = 'Connexion...';
+
+  try {
+    const res = await ghFetch('');
+    if (res.ok) {
+      dot.className = 'gh-dot ok';
+      label.textContent = `${getGHRepo()} ✓`;
+      document.getElementById('syncBtn').style.display = 'inline-flex';
+      addActivity('🔗', 'Connecté à GitHub', getGHRepo());
+      await ensureFolderStructure();
+      await loadKnownFiles();
+      startAutoSync();
+    } else {
+      dot.className = 'gh-dot';
+      label.textContent = 'Token invalide';
+    }
+  } catch(e) {
+    dot.className = 'gh-dot';
+    label.textContent = 'Erreur connexion';
+  }
+}
+
+async function ensureFolderStructure() {
+  const paths = [
+    'bisson-expert/invoices/.gitkeep',
+    'bisson-expert/expenses/.gitkeep',
+    'bisson-expert/logs/invoices-log.csv',
+    'bisson-expert/logs/expenses-log.csv',
+    'bisson-expert/logs/activity-log.csv',
+    'soudures-rivard/invoices/.gitkeep',
+    'soudures-rivard/expenses/.gitkeep',
+    'soudures-rivard/logs/invoices-log.csv',
+    'soudures-rivard/logs/expenses-log.csv',
+    'soudures-rivard/logs/activity-log.csv',
+    'personal/income/.gitkeep',
+    'personal/expenses/.gitkeep',
+    'personal/tax-documents/.gitkeep',
+    'personal/logs/income-log.csv',
+    'personal/logs/expenses-log.csv',
+    'personal/logs/adjustments-log.csv',
+    'accounting-documents/.gitkeep',
+  ];
+
+  for (const path of paths) {
+    const res = await ghFetch(path);
+    if (res.status === 404) {
+      const content = path.endsWith('.csv')
+        ? btoa('date,type,fournisseur,description,montant,taxes,deductible,source\n')
+        : btoa('');
+      await ghFetch(path, {
+        method: 'PUT',
+        body: JSON.stringify({ message: `Init: create ${path}`, content })
+      });
+    }
+  }
+  setSyncBar('✅ Structure GitHub initialisée', 3000);
+}
+
+async function loadKnownFiles() {
+  for (const c of ['bisson-expert', 'soudures-rivard']) {
+    for (const folder of ['invoices', 'expenses']) {
+      try {
+        const res = await ghFetch(`${c}/${folder}`);
+        if (res.ok) {
+          const files = await res.json();
+          files.filter(f => f.name !== '.gitkeep').forEach(f => knownFiles[c]?.add ? knownFiles[c].add(f.name) : null);
+          if (!knownFiles[c]) knownFiles[c] = new Set();
+          files.filter(f => f.name !== '.gitkeep').forEach(f => knownFiles[c].add(`${folder}/${f.name}`));
+        }
+      } catch(e) {}
+    }
+  }
+}
+
+function startAutoSync() {
+  if (syncInterval) clearInterval(syncInterval);
+  syncInterval = setInterval(manualSync, 60000); // every 60s
+  manualSync(); // immediate first sync
+}
+
+async function manualSync() {
+  if (!getGHToken()) return;
+  document.getElementById('ghDot').className = 'gh-dot syncing';
+
+  let newFound = 0;
+  for (const c of ['bisson-expert', 'soudures-rivard']) {
+    for (const folder of ['invoices', 'expenses']) {
+      try {
+        const res = await ghFetch(`${c}/${folder}`);
+        if (!res.ok) continue;
+        const files = await res.json();
+        const pdfs = files.filter(f => f.name.toLowerCase().endsWith('.pdf') && f.name !== '.gitkeep');
+        for (const file of pdfs) {
+          const key = `${c}/${folder}/${file.name}`;
+          if (!knownFiles[c]) knownFiles[c] = new Set();
+          if (!knownFiles[c].has(key)) {
+            knownFiles[c].add(key);
+            newFound++;
+            addActivity('📥', `Nouveau fichier détecté: ${file.name}`, c === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard');
+            await analyzeGitHubFile(file, c, folder === 'invoices' ? 'income' : 'expense');
+          }
+        }
+      } catch(e) {}
+    }
+  }
+
+  document.getElementById('ghDot').className = 'gh-dot ok';
+  if (newFound > 0) toast(`${newFound} nouveau(x) fichier(s) GitHub analysé(s)`, '📥', 'green');
+}
+
+async function analyzeGitHubFile(file, clientId, type) {
+  try {
+    const res = await fetch(file.download_url);
+    const blob = await res.blob();
+    const base64 = await blobToBase64(blob);
+    const item = {
+      id: Date.now() + Math.random(),
+      name: file.name,
+      type,
+      client: clientId,
+      status: 'analyzing',
+      base64,
+      mediaType: 'application/pdf',
+      source: 'github',
+      result: null
+    };
+    queue.push(item);
+    renderQueue();
+    await analyzeItem(item);
+  } catch(e) {
+    addActivity('❌', `Erreur analyse: ${file.name}`, e.message);
+  }
+}
+
+async function uploadToGitHub(base64, filename, clientId, folder) {
+  const path = `${clientId}/${folder}/${filename}`;
+  try {
+    // Check if exists first
+    const checkRes = await ghFetch(path);
+    let sha = null;
+    if (checkRes.ok) {
+      const existing = await checkRes.json();
+      sha = existing.sha;
+    }
+
+    const body = { message: `Add ${folder}: ${filename}`, content: base64 };
+    if (sha) body.sha = sha;
+
+    const res = await ghFetch(path, { method: 'PUT', body: JSON.stringify(body) });
+    if (res.ok) {
+      addActivity('☁️', `Uploadé vers GitHub: ${filename}`, `${clientId}/${folder}/`);
+      return true;
+    }
+  } catch(e) {
+    addActivity('❌', `Erreur upload GitHub: ${filename}`, e.message);
+  }
+  return false;
+}
+
+async function appendToCSVLog(clientId, logFile, row) {
+  const path = `${clientId}/logs/${logFile}`;
+  try {
+    const res = await ghFetch(path);
+    let content = '';
+    let sha = null;
+    if (res.ok) {
+      const data = await res.json();
+      sha = data.sha;
+      content = atob(data.content.replace(/\n/g, ''));
+    }
+    content += row + '\n';
+    const body = { message: `Log: ${logFile}`, content: btoa(unescape(encodeURIComponent(content))) };
+    if (sha) body.sha = sha;
+    await ghFetch(path, { method: 'PUT', body: JSON.stringify(body) });
+  } catch(e) {}
+}
+
+function setSyncBar(msg, timeout = 0) {
+  const bar = document.getElementById('syncBar');
+  bar.textContent = msg;
+  bar.classList.add('visible');
+  if (timeout) setTimeout(() => bar.classList.remove('visible'), timeout);
+}
+
+// ═══════════════════════════════════════════════════
+// API KEY
+// ═══════════════════════════════════════════════════
+function saveApiKey(v) {
+  localStorage.setItem('fiscal_api_key', v);
+  checkAnalyzeBtn();
+}
+function getApiKey() { return document.getElementById('apiKey').value.trim(); }
+
+// ═══════════════════════════════════════════════════
+// DOC TYPE & CLIENT
+// ═══════════════════════════════════════════════════
+function setDocType(type) {
+  docType = type;
+  document.getElementById('btnIncome').className  = 'type-btn' + (type === 'income'  ? ' active-income'  : '');
+  document.getElementById('btnExpense').className = 'type-btn' + (type === 'expense' ? ' active-expense' : '');
+  document.getElementById('docTypeLabel').textContent = type === 'income' ? 'Facture émise' : 'Dépense / Reçu';
+}
+
+// ═══════════════════════════════════════════════════
+// FILE HANDLING
+// ═══════════════════════════════════════════════════
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); handleFiles(e.dataTransfer.files); });
+
+function handleFiles(files) {
+  const clientId = document.getElementById('clientSelect').value;
+  Array.from(files).forEach(file => {
+    const id = Date.now() + Math.random();
+    const item = { id, file, name: file.name, type: docType, client: clientId, status: 'pending', result: null, base64: null, mediaType: null, source: 'manual' };
+    queue.push(item);
+    toBase64(file).then(({ base64, mediaType }) => { item.base64 = base64; item.mediaType = mediaType; renderQueue(); });
+  });
+  renderQueue();
+  if (!selectedId && queue.length) selectItem(queue[0].id);
+}
+
+function toBase64(file) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res({ base64: e.target.result.split(',')[1], mediaType: file.type || 'image/jpeg' });
+    r.readAsDataURL(file);
+  });
+}
+
+async function blobToBase64(blob) {
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result.split(',')[1]);
+    r.readAsDataURL(blob);
+  });
+}
+
+function checkAnalyzeBtn() {
+  const pending = queue.filter(i => i.status === 'pending').length;
+  document.getElementById('analyzeBtn').disabled = pending === 0 || !getApiKey();
+}
+
+// ═══════════════════════════════════════════════════
+// QUEUE
+// ═══════════════════════════════════════════════════
+function renderQueue() {
+  checkAnalyzeBtn();
+  document.getElementById('qCount').textContent = `(${queue.length})`;
+  const el = document.getElementById('queueList');
+  if (!queue.length) { el.innerHTML = '<div class="q-empty">Aucun document</div>'; return; }
+
+  const sm = { pending:'En attente', analyzing:'Analyse…', done:'Analysé ✓', error:'Erreur' };
+  const bc = { pending:'b-pending', analyzing:'b-analyzing', done:'b-done', error:'b-error' };
+
+  el.innerHTML = queue.map(item => {
+    const isImg = item.mediaType && item.mediaType.startsWith('image');
+    const thumb = isImg && item.base64
+      ? `<img src="data:${item.mediaType};base64,${item.base64}" />`
+      : `<span>${item.type === 'income' ? '📄' : '🧾'}</span>`;
+    const amt = item.result ? `<div class="q-amt">${fmt(item.result.montantNet || item.result.montantAvantTaxes || 0)}</div>` : '';
+    const srcBadge = item.source === 'github' ? `<span class="badge b-github">GitHub</span>` : '';
+    const clientLabel = item.client === 'bisson-expert' ? 'Bisson' : 'S. Rivard';
+    return `<div class="q-item ${item.id === selectedId ? 'active' : ''}" onclick="selectItem(${item.id})">
+      <div class="q-thumb">${thumb}</div>
+      <div class="q-info">
+        <div class="q-name">${item.name}</div>
+        <div class="q-meta">
+          <span class="badge ${bc[item.status]}">${sm[item.status]}</span>
+          ${srcBadge}
+          <span style="color:var(--ch-blue);font-size:10px">${clientLabel}</span>
+        </div>
+      </div>
+      ${amt}
+    </div>`;
+  }).join('');
+}
+
+function selectItem(id) {
+  selectedId = id;
+  renderQueue();
+  const item = queue.find(i => i.id === id);
+  if (!item) return;
+  if (item.result) showResult(item);
+  else showPreview(item);
+}
+
+function showPreview(item) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('resultArea').style.display = 'block';
+  const isImg = item.mediaType && item.mediaType.startsWith('image');
+  document.getElementById('docPreview').innerHTML = isImg && item.base64
+    ? `<div class="doc-preview"><img src="data:${item.mediaType};base64,${item.base64}" /><div class="doc-preview-foot"><span>${item.name}</span></div></div>`
+    : `<div class="doc-preview"><div class="doc-preview-pdf">📄</div><div class="doc-preview-foot"><span>${item.name}</span><span>PDF</span></div></div>`;
+  document.getElementById('resultCards').innerHTML = `<div class="empty" style="min-height:140px"><div class="empty-icon" style="font-size:18px">⏳</div><div class="empty-title" style="font-size:13px">Prêt à analyser</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// ANALYZE
+// ═══════════════════════════════════════════════════
+async function analyzeAll() {
+  if (!getApiKey()) { toast('Entre ta clé API Anthropic', '⚠️', 'amber'); return; }
+  const pending = queue.filter(i => i.status === 'pending');
+  for (const item of pending) await analyzeItem(item);
+}
+
+async function analyzeItem(item) {
+  item.status = 'analyzing';
+  renderQueue();
+
+  const isImg = item.mediaType && item.mediaType.startsWith('image');
+  const isPdf = item.mediaType === 'application/pdf';
+  const prompt = item.type === 'income' ? promptIncome() : promptExpense();
+
+  let msgContent;
+  if (isImg) {
+    msgContent = [
+      { type:'image', source:{ type:'base64', media_type: item.mediaType, data: item.base64 } },
+      { type:'text', text: prompt }
+    ];
+  } else if (isPdf) {
+    msgContent = [
+      { type:'document', source:{ type:'base64', media_type:'application/pdf', data: item.base64 } },
+      { type:'text', text: prompt }
+    ];
+  } else {
+    msgContent = [{ type:'text', text: prompt }];
+  }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-api-key': getApiKey(), 'anthropic-version':'2023-06-01' },
+      body: JSON.stringify({ model:'claude-opus-4-5', max_tokens:1500, messages:[{ role:'user', content: msgContent }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    const json = JSON.parse(text.replace(/```json|```/g, '').trim());
+    item.result = { ...json, _docType: item.type, _client: item.client, _source: item.source, _fileName: item.name };
+    item.status = 'done';
+
+    // Guess client from date if not set
+    if (!item.client && json.date) {
+      const day = new Date(json.date).getDay();
+      item.client = CLIENT_DAYS[day] || 'bisson-expert';
+      item.result._client = item.client;
+    }
+
+    // Upload to GitHub if manual and has base64
+    if (item.source === 'manual' && item.base64 && getGHToken()) {
+      const folder = item.type === 'income' ? 'invoices' : 'expenses';
+      const filename = `${json.date || new Date().toISOString().split('T')[0]}_${item.name.replace(/[^a-zA-Z0-9.-]/g,'_')}`;
+      await uploadToGitHub(item.base64, filename, item.client, folder);
+      knownFiles[item.client]?.add(`${folder}/${filename}`);
+
+      // Append to CSV log
+      const logFile = item.type === 'income' ? 'invoices-log.csv' : 'expenses-log.csv';
+      const csvRow = item.type === 'income'
+        ? `${json.date},${json.client || ''},${json.noFacture || ''},${json.montantNet || 0},${json.totalReserve || 0},${json.netPoches || 0}`
+        : `${json.date},${json.fournisseur || ''},${json.categorie || ''},${json.montantAvantTaxes || 0},${json.montantDeductible || 0}`;
+      await appendToCSVLog(item.client, logFile, csvRow);
+      await appendToCSVLog(item.client, 'activity-log.csv', `${new Date().toISOString()},ADDED,${item.name},${item.client}`);
+    }
+
+    addToLedger(item.result);
+    selectItem(item.id);
+    updateKPIs();
+    saveLedger();
+    addActivity('✅', `Analysé: ${item.name}`, item.client === 'bisson-expert' ? 'Bisson Expert' : 'Soudures Rivard');
+    toast(`${item.name} analysé`, '✅', 'green');
+
+  } catch(e) {
+    item.status = 'error';
+    addActivity('❌', `Erreur: ${item.name}`, e.message);
+    toast(`Erreur: ${e.message}`, '❌', 'red');
+  }
+  renderQueue();
+}
+
+// ═══════════════════════════════════════════════════
+// PROMPTS
+// ═══════════════════════════════════════════════════
+function promptIncome() {
+  return `Analyse cette facture émise par Karim Chaouche, consultant autonome au Québec.
+Taux 2026: TPS 5%, TVQ 9.975%, impôt ~42%, RRQ 6.4%, FSS 4.26%, RQAP 1.18%.
+Réponds UNIQUEMENT en JSON valide sans texte avant ou après:
+{"date":"YYYY-MM-DD","client":"","description":"","noFacture":"","montantNet":0.00,"tps":0.00,"tvq":0.00,"totalFacture":0.00,"reserveImpot":0.00,"reserveRRQ":0.00,"reserveFSS":0.00,"reserveRQAP":0.00,"totalReserve":0.00,"netPoches":0.00,"notes":""}`;
+}
+
+function promptExpense() {
+  return `Analyse ce reçu de dépense de Karim Chaouche, consultant autonome au Québec.
+MARQUAGE: Si des items sont marqués (surligneur ou stylo, peu importe la couleur), inclus SEULEMENT ces items. Si rien n'est marqué, inclus tout.
+RÈGLE TIM HORTONS: Deux traits = uniquement les timbits (réunion équipe, 50% déductible).
+Catégories: Essence/carburant, Stationnement, Transport, Repas d'affaires (50%), Téléphone-portion pro, Internet-portion pro, AI/API, Logiciels/abonnements, Matériel informatique, Bureau à domicile, Formation/livres, Marketing/publicité, Honoraires professionnels, Assurances, Frais bancaires, Autre.
+Réponds UNIQUEMENT en JSON valide sans texte avant ou après:
+{"date":"YYYY-MM-DD","fournisseur":"","description":"","categorie":"","ligneTP80":"","ligneT2125":"","itemsInclus":[{"nom":"","montant":0.00}],"itemsExclus":[{"nom":"","montant":0.00}],"montantAvantTaxes":0.00,"tpsPaye":0.00,"tvqPaye":0.00,"totalPaye":0.00,"tauxDeductibilite":100,"montantDeductible":0.00,"notes":""}`;
+}
+
+// ═══════════════════════════════════════════════════
+// SHOW RESULT
+// ═══════════════════════════════════════════════════
+function showResult(item) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('resultArea').style.display = 'block';
+  const r = item.result;
+  const isIncome = item.type === 'income';
+  const isImg = item.mediaType && item.mediaType.startsWith('image');
+
+  document.getElementById('docPreview').innerHTML = isImg && item.base64
+    ? `<div class="doc-preview"><img src="data:${item.mediaType};base64,${item.base64}" /><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome ? 'pill-income' : 'pill-expense'}">${isIncome ? '💰 Revenu' : '🧾 Dépense'}</span></div></div>`
+    : `<div class="doc-preview"><div class="doc-preview-pdf">📄</div><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome ? 'pill-income' : 'pill-expense'}">${isIncome ? '💰 Revenu' : '🧾 Dépense'}</span></div></div>`;
+
+  const cards = document.getElementById('resultCards');
+  if (isIncome) {
+    cards.innerHTML = `
+      <div class="result-card">
+        <div class="card-hdr">
+          <div><div class="card-vendor">${r.client||'—'}</div><div class="card-date">${r.date||'—'}${r.noFacture ? ' · '+r.noFacture : ''}</div></div>
+          <span class="pill pill-income">💰 Revenu</span>
+        </div>
+        <div class="card-body">
+          <div class="dr"><span class="dr-lbl">Description</span><span class="dr-val" style="font-family:var(--font);text-align:right;max-width:200px;font-size:11px">${r.description||'—'}</span></div>
+          <div class="dr"><span class="dr-lbl">Montant net</span><span class="dr-val v-green">${fmt(r.montantNet)}</span></div>
+          <div class="dr"><span class="dr-lbl">TPS (5%)</span><span class="dr-val v-amber">${fmt(r.tps)}</span></div>
+          <div class="dr"><span class="dr-lbl">TVQ (9.975%)</span><span class="dr-val v-amber">${fmt(r.tvq)}</span></div>
+          <div class="dr"><span class="dr-lbl">Total facturé</span><span class="dr-val" style="font-weight:700">${fmt(r.totalFacture)}</span></div>
+        </div>
+        <div class="card-total ct-amber">
+          <div><div class="ct-lbl">Réserve fiscale</div><div style="font-size:10px;color:#92611a;font-family:var(--mono);margin-top:2px">Impôt ${fmt(r.reserveImpot)} · RRQ ${fmt(r.reserveRRQ)} · FSS ${fmt(r.reserveFSS)} · RQAP ${fmt(r.reserveRQAP)}</div></div>
+          <div class="ct-val">${fmt(r.totalReserve)}</div>
+        </div>
+        <div class="card-total ct-green">
+          <div class="ct-lbl">Net dans tes poches</div>
+          <div class="ct-val">${fmt(r.netPoches)}</div>
+        </div>
+        ${r.notes ? `<div class="card-note">⚠️ ${r.notes}</div>` : ''}
+      </div>`;
+  } else {
+    const excl = (r.itemsExclus && r.itemsExclus.length)
+      ? `<div class="excl-box"><div class="excl-title">🚫 Items exclus</div>${r.itemsExclus.map(i=>`<div class="excl-item"><span>${i.nom}</span><span>${fmt(i.montant)}</span></div>`).join('')}</div>` : '';
+    const incl = (r.itemsInclus && r.itemsInclus.length)
+      ? r.itemsInclus.map(i=>`<div class="dr"><span class="dr-lbl">✅ ${i.nom}</span><span class="dr-val v-blue">${fmt(i.montant)}</span></div>`).join('') : '';
+    cards.innerHTML = `
+      <div class="result-card">
+        <div class="card-hdr">
+          <div><div class="card-vendor">${r.fournisseur||'—'}</div><div class="card-date">${r.date||'—'} · ${r.categorie||'—'}</div></div>
+          <div style="text-align:right"><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">TP-80 ${r.ligneTP80||'—'}</div><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">T2125 ${r.ligneT2125||'—'}</div></div>
+        </div>
+        <div class="card-body">${excl}${incl}
+          <div class="dr"><span class="dr-lbl">Avant taxes</span><span class="dr-val">${fmt(r.montantAvantTaxes)}</span></div>
+          <div class="dr"><span class="dr-lbl">TPS payée</span><span class="dr-val">${fmt(r.tpsPaye)}</span></div>
+          <div class="dr"><span class="dr-lbl">TVQ payée</span><span class="dr-val">${fmt(r.tvqPaye)}</span></div>
+          <div class="dr"><span class="dr-lbl">Déductibilité</span><span class="dr-val v-blue" style="font-weight:700">${r.tauxDeductibilite||100}%</span></div>
+        </div>
+        <div class="card-total ct-blue">
+          <div class="ct-lbl">Montant déductible</div>
+          <div class="ct-val">${fmt(r.montantDeductible)}</div>
+        </div>
+        ${r.notes ? `<div class="card-note">⚠️ ${r.notes}</div>` : ''}
+      </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// LEDGER
+// ═══════════════════════════════════════════════════
+function addToLedger(r) { ledger.push(r); renderLedger(); renderClientTabs(); }
+
+function renderLedger() {
+  const tbody = document.getElementById('ledgerBody');
+  if (!ledger.length) { tbody.innerHTML = '<tr><td colspan="9" class="no-data">Aucune entrée</td></tr>'; return; }
+  tbody.innerHTML = ledger.map(r => {
+    const isI = r._docType === 'income';
+    const client = r._client === 'bisson-expert' ? 'Bisson' : r._client === 'soudures-rivard' ? 'S. Rivard' : '—';
+    const src = r._source === 'github' ? '<span class="badge b-github">GitHub</span>' : '<span class="badge b-pending">Manuel</span>';
+    return `<tr>
+      <td class="td-mono td-muted">${r.date||'—'}</td>
+      <td><span class="pill ${isI ? 'pill-income' : 'pill-expense'}">${isI ? '💰' : '🧾'}</span></td>
+      <td style="font-size:11px;font-weight:600;color:var(--ch-blue)">${client}</td>
+      <td style="font-weight:500;font-size:12px">${isI ? (r.client||'—') : (r.fournisseur||'—')}</td>
+      <td class="td-muted" style="font-size:10px">${isI ? '—' : (r.categorie||'—')}</td>
+      <td class="${isI ? 'td-green' : 'td-mono'}">${fmt(isI ? r.montantNet : r.montantAvantTaxes)}</td>
+      <td class="td-amber">${fmt(isI ? (r.tps+r.tvq) : (r.tpsPaye+r.tvqPaye))}</td>
+      <td class="${isI ? 'td-amber' : 'td-blue'}">${fmt(isI ? r.totalReserve : r.montantDeductible)}</td>
+      <td>${src}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderClientTabs() {
+  ['bisson', 'rivard'].forEach(tab => {
+    const clientId = tab === 'bisson' ? 'bisson-expert' : 'soudures-rivard';
+    const tbody = document.getElementById(`${tab}Body`);
+    const entries = ledger.filter(r => r._client === clientId && r._docType === 'expense');
+    if (!entries.length) { tbody.innerHTML = `<tr><td colspan="5" class="no-data">Aucune entrée</td></tr>`; return; }
+    tbody.innerHTML = entries.map(r => `<tr>
+      <td class="td-mono td-muted">${r.date||'—'}</td>
+      <td style="font-weight:500">${r.fournisseur||'—'}</td>
+      <td class="td-muted" style="font-size:11px">${r.categorie||'—'}</td>
+      <td class="td-blue">${fmt(r.montantDeductible)}</td>
+      <td class="td-muted" style="font-size:10px;font-family:var(--mono)">${r._fileName||'—'}</td>
+    </tr>`).join('');
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// KPIs
+// ═══════════════════════════════════════════════════
+function updateKPIs() {
+  const inc = ledger.filter(r => r._docType === 'income');
+  const exp = ledger.filter(r => r._docType === 'expense');
+  const totalNet     = inc.reduce((s,r) => s+(r.montantNet||0), 0);
+  const totalTaxes   = inc.reduce((s,r) => s+(r.tps||0)+(r.tvq||0), 0);
+  const totalReserve = inc.reduce((s,r) => s+(r.totalReserve||0), 0);
+  const totalDed     = exp.reduce((s,r) => s+(r.montantDeductible||0), 0);
+  const net          = totalNet - totalReserve - totalDed;
+
+  document.getElementById('kpiRev').textContent    = fmt(totalNet);
+  document.getElementById('kpiRevSub').textContent = `${inc.length} facture${inc.length!==1?'s':''}`;
+  document.getElementById('kpiTax').textContent    = fmt(totalTaxes);
+  document.getElementById('kpiRes').textContent    = fmt(totalReserve);
+  document.getElementById('kpiDep').textContent    = fmt(totalDed);
+  document.getElementById('kpiDepSub').textContent = `${exp.length} reçu${exp.length!==1?'s':''}`;
+  document.getElementById('kpiNet').textContent    = fmt(net);
+  document.getElementById('kpiNet').style.color    = net >= 0 ? 'var(--green)' : 'var(--ch-red)';
+}
+
+// ═══════════════════════════════════════════════════
+// ACTIVITY LOG
+// ═══════════════════════════════════════════════════
+function addActivity(icon, msg, client = '') {
+  const entry = { icon, msg, client, time: new Date().toLocaleTimeString('fr-CA', { hour:'2-digit', minute:'2-digit' }) };
+  actLog.unshift(entry);
+  if (actLog.length > 100) actLog.pop();
+  renderActivity();
+  saveActivityLog();
+}
+
+function renderActivity() {
+  const el = document.getElementById('activityLog');
+  if (!actLog.length) { el.innerHTML = '<div class="no-data">Aucune activité</div>'; return; }
+  el.innerHTML = actLog.map(a => `
+    <div class="act-item">
+      <div class="act-time">${a.time}</div>
+      <div class="act-icon">${a.icon}</div>
+      <div><div class="act-msg">${a.msg}</div>${a.client ? `<div class="act-client">${a.client}</div>` : ''}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+function showTab(tab) {
+  ['ledger','activity','bisson','rivard'].forEach(t => {
+    const el = document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.log-tab').forEach((btn, i) => {
+    btn.classList.toggle('active', ['ledger','activity','bisson','rivard'][i] === tab);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════════
+function saveLedger() { try { localStorage.setItem('fiscal_ledger_2026', JSON.stringify(ledger)); } catch(e) {} }
+function loadLedger() {
+  try {
+    const s = localStorage.getItem('fiscal_ledger_2026');
+    if (s) { ledger = JSON.parse(s); renderLedger(); renderClientTabs(); updateKPIs(); }
+  } catch(e) {}
+}
+function saveActivityLog() { try { localStorage.setItem('fiscal_activity_2026', JSON.stringify(actLog)); } catch(e) {} }
+function loadActivityLog() {
+  try {
+    const s = localStorage.getItem('fiscal_activity_2026');
+    if (s) { actLog = JSON.parse(s); renderActivity(); }
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════════
+function exportCSV() {
+  if (!ledger.length) { toast('Aucune donnée', '⚠️', 'amber'); return; }
+  const inc = ledger.filter(r => r._docType === 'income');
+  const exp = ledger.filter(r => r._docType === 'expense');
+  let csv = 'FACTURES ÉMISES\nDate,Client GH,Client,Description,N°Facture,Montant net,TPS,TVQ,Total,Réserve,Net poches\n';
+  csv += inc.map(r => [r.date,r._client,r.client,r.description,r.noFacture,r.montantNet,r.tps,r.tvq,r.totalFacture,r.totalReserve,r.netPoches].join(',')).join('\n');
+  csv += '\n\nDÉPENSES\nDate,Client GH,Fournisseur,Description,Catégorie,TP-80,T2125,Avant taxes,TPS,TVQ,Déductibilité%,Déductible\n';
+  csv += exp.map(r => [r.date,r._client,r.fournisseur,r.description,r.categorie,r.ligneTP80,r.ligneT2125,r.montantAvantTaxes,r.tpsPaye,r.tvqPaye,r.tauxDeductibilite,r.montantDeductible].join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `fiscal_2026_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  toast('CSV exporté', '📥', 'green');
+}
+
+function exportXLSX() {
+  if (!ledger.length) { toast('Aucune donnée', '⚠️', 'amber'); return; }
+  const wb = XLSX.utils.book_new();
+  const inc = ledger.filter(r => r._docType === 'income');
+  const exp = ledger.filter(r => r._docType === 'expense');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['Date','Client GitHub','Client','Description','N° Facture','Montant net','TPS','TVQ','Total facturé','Réserve totale','Net poches'],
+    ...inc.map(r => [r.date,r._client,r.client,r.description,r.noFacture,r.montantNet,r.tps,r.tvq,r.totalFacture,r.totalReserve,r.netPoches])
+  ]), 'Revenus');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['Date','Client GitHub','Fournisseur','Description','Catégorie','TP-80','T2125','Avant taxes','TPS','TVQ','Déductibilité%','Déductible'],
+    ...exp.map(r => [r.date,r._client,r.fournisseur,r.description,r.categorie,r.ligneTP80,r.ligneT2125,r.montantAvantTaxes,r.tpsPaye,r.tvqPaye,r.tauxDeductibilite,r.montantDeductible])
+  ]), 'Dépenses');
+  const totalNet     = inc.reduce((s,r) => s+(r.montantNet||0), 0);
+  const totalReserve = inc.reduce((s,r) => s+(r.totalReserve||0), 0);
+  const totalDed     = exp.reduce((s,r) => s+(r.montantDeductible||0), 0);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['RÉSUMÉ FISCAL 2026 — KARIM CHAOUCHE'],[''],
+    ['Revenus nets', totalNet], ['Réserve fiscale', totalReserve],
+    ['Dépenses déductibles', totalDed], ['Revenu net imposable', totalNet-totalDed],
+    ['NET ESTIMÉ POCHES', totalNet-totalReserve-totalDed],
+    [''],['* Estimations — valider avec comptable']
+  ]), 'Résumé');
+  XLSX.writeFile(wb, `fiscal_2026_${new Date().toISOString().split('T')[0]}.xlsx`);
+  toast('Excel exporté', '📥', 'green');
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function fmt(n) {
+  if (n === null || n === undefined || n === '') return '—';
+  return Number(n).toLocaleString('fr-CA', { style:'currency', currency:'CAD', minimumFractionDigits:2 });
+}
+
+function toast(msg, icon = '✅', type = 'green') {
+  const colors = { green:'var(--green)', amber:'var(--amber)', red:'var(--ch-red)' };
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.borderLeft = `4px solid ${colors[type]}`;
+  t.innerHTML = `<span style="font-size:16px">${icon}</span><span>${msg}</span>`;
+  document.getElementById('toastWrap').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>
