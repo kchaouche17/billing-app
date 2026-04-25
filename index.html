@@ -29,15 +29,12 @@ textarea{resize:vertical;min-height:52px}
 .btn.small{padding:5px 12px;font-size:12px}
 .btn.danger{background:transparent;color:#E24B4A;border-color:#E24B4A;padding:5px 10px;font-size:12px}
 .btn.danger:hover{background:#FCEBEB}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-/* period selector */
 .period-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
 .period-btn{padding:8px 6px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#555;font-size:11px;cursor:pointer;text-align:center;transition:all .15s;line-height:1.4}
 .period-btn:hover{border-color:#185FA5;color:#185FA5}
 .period-btn.active{background:#185FA5;color:#fff;border-color:#185FA5;font-weight:600}
 .period-btn.has-data::after{content:"●";display:block;font-size:8px;color:#1a7a4a;margin-top:2px}
 .period-btn.active.has-data::after{color:#b5d4f4}
-/* line items */
 .line-item{background:#f9f8f6;border:0.5px solid #e8e6e0;border-radius:8px;margin-bottom:6px;overflow:hidden}
 .line-summary{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;user-select:none;transition:background .12s}
 .line-summary:hover{background:#f0ede6}
@@ -78,17 +75,14 @@ table.inv-table tr:nth-child(even) td{background:#fafaf8}
 .inv-total-chip .chip-amt{font-size:20px;font-weight:700}
 .inv-footer-note{font-size:10px;color:#777;line-height:1.6}
 .hr{border:none;border-top:1px solid #eee;margin:0}
-/* translating spinner */
 .translating{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#185FA5}
 .spinner{width:12px;height:12px;border:2px solid #b5d4f4;border-top-color:#185FA5;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* email modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;display:none}
 .modal-overlay.open{display:flex}
 .modal{background:#fff;border-radius:12px;padding:28px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
 .modal h2{font-size:16px;font-weight:600;margin-bottom:16px}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
-/* toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 22px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200}
 .toast.show{opacity:1}
 @media(max-width:500px){.r2,.r3{grid-template-columns:1fr}.period-grid{grid-template-columns:repeat(2,1fr)}}
@@ -98,28 +92,18 @@ table.inv-table tr:nth-child(even) td{background:#fafaf8}
 <div class="container">
   <h1>Générateur de factures</h1>
   <p class="subtitle">Karim Chaouche – Consultant</p>
-
   <div id="form-wrap">
     <div class="tabs">
-      <div class="tab active" onclick="showTab('form')">✏️ Saisie</div>
-      <div class="tab" onclick="showTab('preview')">👁 Aperçu</div>
+      <div class="tab active" onclick="showTab('form')">&#x270F;&#xFE0F; Saisie</div>
+      <div class="tab" onclick="showTab('preview')">&#x1F441; Aperçu</div>
     </div>
-
-    <!-- PERIOD SELECTOR -->
     <div class="card">
       <div class="section-title">Période de facturation</div>
       <div id="period-grid" class="period-grid"></div>
       <div class="row r3" style="margin-bottom:0">
-        <div>
-          <label>Numéro de facture</label>
-          <input type="number" id="inv-num" min="1" value="1">
-        </div>
-        <div>
-          <label>Taux horaire ($)</label>
-          <input type="number" id="rate" value="100" min="1">
-        </div>
-        <div>
-          <label>Client</label>
+        <div><label>Numéro de facture</label><input type="number" id="inv-num" min="1" value="1"></div>
+        <div><label>Taux horaire ($)</label><input type="number" id="rate" value="100" min="1"></div>
+        <div><label>Client</label>
           <select id="client" onchange="fillClient()">
             <option value="bisson">Bisson Expert</option>
             <option value="rivard">Soudures Rivard</option>
@@ -138,8 +122,6 @@ table.inv-table tr:nth-child(even) td{background:#fafaf8}
         </div>
       </div>
     </div>
-
-    <!-- GITHUB SYNC -->
     <div class="card" id="github-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div class="section-title" style="margin:0">GitHub – Sauvegarde automatique</div>
@@ -150,472 +132,295 @@ table.inv-table tr:nth-child(even) td{background:#fafaf8}
           <label>Personal Access Token <span style="color:#aaa;font-size:11px">(sauvegardé localement, jamais transmis)</span></label>
           <div style="display:flex;gap:8px">
             <input type="password" id="github-token" placeholder="ghp_..." style="flex:1" oninput="saveGithubToken()">
-            <button class="btn small" onclick="toggleTokenVisibility()" style="flex-shrink:0;width:40px">👁</button>
+            <button class="btn small" onclick="toggleTokenVisibility()" style="flex-shrink:0;width:40px">&#x1F441;</button>
           </div>
         </div>
       </div>
     </div>
-
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div class="section-title" style="margin:0">Tâches</div>
-        <button class="btn small" onclick="addLine()">+ Ajouter une tâche</button>
-      </div>
-      <div id="lines"></div>
-      <div class="total-box">
-        <span style="font-size:13px;opacity:.85">Total des heures&nbsp;: <strong id="total-hrs">0</strong>h</span>
-        <span style="font-size:18px;font-weight:700" id="total-amt">0,00 $</span>
-      </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="section-title" style="margin:0">Tâches</div>
+      <button class="btn small" onclick="addLine()">+ Ajouter une tâche</button>
     </div>
-
-    <div style="display:flex;gap:10px;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;align-items:center">
+    <div id="lines"></div>
+    <div class="total-box">
+      <span style="font-size:13px;opacity:.85">Total des heures&nbsp;: <strong id="total-hrs">0</strong>h</span>
+      <span style="font-size:18px;font-weight:700" id="total-amt">0,00 $</span>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:space-between;margin-top:14px;margin-bottom:2rem;flex-wrap:wrap;align-items:center">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" style="font-size:12px;padding:6px 12px;color:#555" onclick="exportData()" title="Exporter toutes les données en JSON">📤 Exporter</button>
-        <label class="btn" style="font-size:12px;padding:6px 12px;color:#555;cursor:pointer;margin:0" title="Importer un fichier JSON de sauvegarde">📥 Importer<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+        <button class="btn" style="font-size:12px;padding:6px 12px;color:#555" onclick="exportData()">&#x1F4E4; Exporter</button>
+        <label class="btn" style="font-size:12px;padding:6px 12px;color:#555;cursor:pointer;margin:0">&#x1F4E5; Importer<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn" onclick="showTab('preview')">👁 Aperçu</button>
-        <button class="btn primary" onclick="downloadPDF()">⬇ Télécharger PDF</button>
+        <button class="btn" onclick="showTab('preview')">&#x1F441; Aperçu</button>
+        <button class="btn primary" onclick="downloadPDF()">&#x2B07; Télécharger PDF</button>
       </div>
     </div>
   </div>
-
-  <!-- PREVIEW TAB -->
   <div id="preview-wrap">
     <div class="tabs">
-      <div class="tab" onclick="showTab('form')">✏️ Saisie</div>
-      <div class="tab active" onclick="showTab('preview')">👁 Aperçu</div>
+      <div class="tab" onclick="showTab('form')">&#x270F;&#xFE0F; Saisie</div>
+      <div class="tab active" onclick="showTab('preview')">&#x1F441; Aperçu</div>
     </div>
     <div id="preview-content"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;margin-bottom:2rem;flex-wrap:wrap">
-      <button class="btn" onclick="showTab('form')">✏️ Modifier</button>
-      <button class="btn primary" onclick="downloadPDF()">⬇ Télécharger PDF</button>
-      <button class="btn green" onclick="openEmailModal()">✉ Envoyer par email</button>
+      <button class="btn" onclick="showTab('form')">&#x270F;&#xFE0F; Modifier</button>
+      <button class="btn primary" onclick="downloadPDF()">&#x2B07; Télécharger PDF</button>
+      <button class="btn green" onclick="openEmailModal()">&#x2709; Envoyer par email</button>
     </div>
   </div>
 </div>
-
-<!-- EMAIL MODAL -->
 <div class="modal-overlay" id="email-modal">
   <div class="modal">
     <h2>Envoyer la facture</h2>
-    <div class="row" style="margin-bottom:10px">
-      <div><label>Destinataire</label><input type="email" id="email-to" value="Payables@bissonexpert.com"></div>
-    </div>
-    <div class="row" style="margin-bottom:10px">
-      <div><label>Cc</label><input type="email" id="email-cc" value="kchaouche17@gmail.com"></div>
-    </div>
-    <div class="row" style="margin-bottom:10px">
-      <div><label>Objet</label><input type="text" id="email-subject"></div>
-    </div>
-    <div class="row" style="margin-bottom:0">
-      <div><label>Message</label><textarea id="email-body" style="min-height:90px"></textarea></div>
-    </div>
+    <div class="row" style="margin-bottom:10px"><div><label>Destinataire</label><input type="email" id="email-to"></div></div>
+    <div class="row" style="margin-bottom:10px"><div><label>Cc</label><input type="email" id="email-cc" value="kchaouche17@gmail.com"></div></div>
+    <div class="row" style="margin-bottom:10px"><div><label>Objet</label><input type="text" id="email-subject"></div></div>
+    <div class="row" style="margin-bottom:0"><div><label>Message</label><textarea id="email-body" style="min-height:90px"></textarea></div></div>
     <div class="modal-actions">
       <button class="btn" onclick="closeEmailModal()">Annuler</button>
-      <button class="btn green" onclick="sendEmail()">✉ Envoyer</button>
+      <button class="btn green" onclick="sendEmail()">&#x2709; Envoyer</button>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONSTANTS ────────────────────────────────────────────────────────────────
-const ME = {
-  name: "Karim Chaouche",
-  email: "kchaouche17@gmail.com",
-  title: "Consultant indépendant"
+const ME={name:"Karim Chaouche",email:"kchaouche17@gmail.com",title:"Consultant indépendant"};
+const CLIENTS={
+  bisson:{name:"Bisson Expert",addr:"5450 rue Ramsay",city:"Saint-Hubert, QC",postal:"J3Y 2S4",phone:"(514) 967-3698",email:"Payables@bissonexpert.com",contact:"France"},
+  rivard:{name:"Soudures Rivard",addr:"14580, Rue Joseph-Marc Vermette",city:"Mirabel, QC",postal:"J7J 1X2",phone:"450-437-8666",email:"comptabilite@souduresrivard.com",contact:"Kim"}
 };
-const CLIENTS = {
-  bisson: { name:"Bisson Expert", addr:"5450 rue Ramsay", city:"Saint-Hubert, QC", postal:"J3Y 2S4", phone:"(514) 967-3698", email:"Payables@bissonexpert.com", contact:"France" },
-  rivard: { name:"Soudures Rivard", addr:"14580, Rue Joseph-Marc Vermette", city:"Mirabel, QC", postal:"J7J 1X2", phone:"450-437-8666", email:"comptabilite@souduresrivard.com", contact:"Kim" }
-};
-const MONTHS_FR = ["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-const STORAGE_KEY = "kc_invoices_v1";
+const MONTHS_FR=["","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const STORAGE_KEY="kc_invoices_v1";
+let lines=[],currentPeriodKey="";
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let lines = [];
-let currentPeriodKey = "";
-
-// ── PERIOD LOGIC ─────────────────────────────────────────────────────────────
-function getPeriods(aroundDate) {
-  // Generate 6 periods: 3 past, current, 2 future
-  const periods = [];
-  const d = aroundDate || new Date();
-  // Start from 4 months ago to cover enough range
-  let base = new Date(d.getFullYear(), d.getMonth() - 2, 1);
-  for (let i = 0; i < 8; i++) {
-    const y = base.getFullYear();
-    const m = base.getMonth(); // 0-based
-    // Period 1: 1–15
-    periods.push({ key: `${y}-${String(m+1).padStart(2,'0')}-P1`, year:y, month:m+1, half:1,
-      label: `1–15 ${MONTHS_FR[m+1].substring(0,4)}. ${y}`,
-      endDay: 15, endDate: `${String(m+1).padStart(2,'0')}-15-${y}` });
-    // Period 2: 16–end
-    const lastDay = new Date(y, m+1, 0).getDate();
-    periods.push({ key: `${y}-${String(m+1).padStart(2,'0')}-P2`, year:y, month:m+1, half:2,
-      label: `16–${lastDay} ${MONTHS_FR[m+1].substring(0,4)}. ${y}`,
-      endDay: lastDay, endDate: `${String(m+1).padStart(2,'0')}-${lastDay}-${y}` });
-    base = new Date(y, m+1, 1);
+function getPeriods(aroundDate){
+  const periods=[],d=aroundDate||new Date();
+  let base=new Date(d.getFullYear(),d.getMonth()-2,1);
+  for(let i=0;i<8;i++){
+    const y=base.getFullYear(),m=base.getMonth();
+    periods.push({key:`${y}-${String(m+1).padStart(2,'0')}-P1`,year:y,month:m+1,half:1,
+      label:`1–15 ${MONTHS_FR[m+1].substring(0,4)}. ${y}`,endDay:15,endDate:`${String(m+1).padStart(2,'0')}-15-${y}`});
+    const lastDay=new Date(y,m+1,0).getDate();
+    periods.push({key:`${y}-${String(m+1).padStart(2,'0')}-P2`,year:y,month:m+1,half:2,
+      label:`16–${lastDay} ${MONTHS_FR[m+1].substring(0,4)}. ${y}`,endDay:lastDay,endDate:`${String(m+1).padStart(2,'0')}-${lastDay}-${y}`});
+    base=new Date(y,m+1,1);
   }
   return periods;
 }
 
-function detectCurrentPeriod() {
-  const now = new Date();
-  const d = now.getDate();
-  const m = now.getMonth() + 1;
-  const y = now.getFullYear();
-  const half = d <= 15 ? 1 : 2;
-  return `${y}-${String(m).padStart(2,'0')}-P${half}`;
+function detectCurrentPeriod(){
+  const now=new Date(),d=now.getDate(),m=now.getMonth()+1,y=now.getFullYear();
+  return `${y}-${String(m).padStart(2,'0')}-P${d<=15?1:2}`;
 }
 
-// Invoice number = (year - 2025) * 24 + (month-1)*2 + half
-// Starting from Invoice 1 = Jan 1–15 2026
-// Invoice number logic: each client has its own counter starting at 1
-// Bisson:  Invoice 1 = Feb 1–15 2026
-// Rivard:  Invoice 1 = Apr 16–30 2026
-const INVOICE_BASES = {
-  bisson: { year:2026, month:2, half:1 },
-  rivard: { year:2026, month:4, half:2 },
-  custom: { year:2026, month:4, half:2 }  // default for new clients
-};
+const INVOICE_BASES={bisson:{year:2026,month:2,half:1},rivard:{year:2026,month:4,half:2},custom:{year:2026,month:4,half:2}};
 
-function calcInvoiceNum(period) {
-  const clientKey = document.getElementById("client").value || "bisson";
-  const base = INVOICE_BASES[clientKey] || INVOICE_BASES.bisson;
-  const totalBase = (base.year - 2026)*24 + (base.month-1)*2 + (base.half-1);
-  const total = (period.year - 2026)*24 + (period.month-1)*2 + (period.half-1);
-  return Math.max(1, total - totalBase + 1);
+function calcInvoiceNum(period){
+  const ck=document.getElementById("client").value||"bisson";
+  const base=INVOICE_BASES[ck]||INVOICE_BASES.bisson;
+  const totalBase=(base.year-2026)*24+(base.month-1)*2+(base.half-1);
+  const total=(period.year-2026)*24+(period.month-1)*2+(period.half-1);
+  return Math.max(1,total-totalBase+1);
 }
 
-function renderPeriodGrid() {
-  const periods = getPeriods();
-  const grid = document.getElementById("period-grid");
-  grid.innerHTML = "";
-  periods.forEach(p => {
-    const btn = document.createElement("div");
-    const hasData = hasDataForPeriod(p.key);
-    btn.className = "period-btn" + (p.key === currentPeriodKey ? " active" : "") + (hasData ? " has-data" : "");
-    btn.innerHTML = `<span>${p.label}</span>${hasData ? '<span style="font-size:9px;color:'+(p.key===currentPeriodKey?'#b5d4f4':'#1a7a4a')+'">● données</span>' : ''}`;
-    btn.onclick = () => switchPeriod(p);
+function renderPeriodGrid(){
+  const periods=getPeriods(),grid=document.getElementById("period-grid");
+  grid.innerHTML="";
+  periods.forEach(p=>{
+    const btn=document.createElement("div"),hasData=hasDataForPeriod(p.key);
+    btn.className="period-btn"+(p.key===currentPeriodKey?" active":"")+(hasData?" has-data":"");
+    btn.innerHTML=`<span>${p.label}</span>${hasData?`<span style="font-size:9px;color:${p.key===currentPeriodKey?'#b5d4f4':'#1a7a4a'}">● données</span>`:''}`;
+    btn.onclick=()=>switchPeriod(p);
     grid.appendChild(btn);
   });
 }
 
-function switchPeriod(p) {
-  saveCurrentLines();
-  currentPeriodKey = p.key;
-  lines = loadLinesForCurrent();
-  document.getElementById("inv-num").value = calcInvoiceNum(p);
-  renderPeriodGrid();
-  renderLines();
-  updateTotal();
+function switchPeriod(p){
+  saveCurrentLines();currentPeriodKey=p.key;lines=loadLinesForCurrent();
+  document.getElementById("inv-num").value=calcInvoiceNum(p);
+  renderPeriodGrid();renderLines();updateTotal();
 }
 
-// ── STORAGE ──────────────────────────────────────────────────────────────────
-function clientKey() {
-  return document.getElementById("client").value || "bisson";
+function clientKey(){return document.getElementById("client").value||"bisson";}
+function storageKey(periodKey){return `${clientKey()}::${periodKey}`;}
+function loadAll(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");}catch{return{};}}
+function saveCurrentLines(){
+  if(!currentPeriodKey)return;
+  const all=loadAll();all[storageKey(currentPeriodKey)]=JSON.parse(JSON.stringify(lines));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(all));
 }
-function storageKey(periodKey) {
-  return `${clientKey()}::${periodKey}`;
+function loadLinesForCurrent(){
+  const all=loadAll();
+  return all[storageKey(currentPeriodKey)]?JSON.parse(JSON.stringify(all[storageKey(currentPeriodKey)])):[];
 }
-function loadAll() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; }
-}
-function saveCurrentLines() {
-  if (!currentPeriodKey) return;
-  const all = loadAll();
-  all[storageKey(currentPeriodKey)] = JSON.parse(JSON.stringify(lines));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-}
-function loadLinesForCurrent() {
-  const all = loadAll();
-  return all[storageKey(currentPeriodKey)] ? JSON.parse(JSON.stringify(all[storageKey(currentPeriodKey)])) : [];
-}
-function hasDataForPeriod(periodKey) {
-  const all = loadAll();
-  return !!(all[storageKey(periodKey)] && all[storageKey(periodKey)].length > 0);
+function hasDataForPeriod(periodKey){
+  const all=loadAll();return !!(all[storageKey(periodKey)]&&all[storageKey(periodKey)].length>0);
 }
 
-// ── CLIENT ───────────────────────────────────────────────────────────────────
-function fillClient() {
-  document.getElementById("custom-client").style.display =
-    document.getElementById("client").value === "custom" ? "block" : "none";
-  // Reload lines and invoice number for this client's current period
-  lines = loadLinesForCurrent();
-  const p = getPeriodForKey(currentPeriodKey);
-  if (p) document.getElementById("inv-num").value = calcInvoiceNum(p);
-  renderPeriodGrid();
-  renderLines();
-  updateTotal();
-}
-function getClient() {
-  const v = document.getElementById("client").value;
-  if (v === "bisson" || v === "rivard") return CLIENTS[v];
-  return {
-    name:    document.getElementById("c-name").value  || "Client",
-    addr:    document.getElementById("c-addr").value  || "",
-    city:    document.getElementById("c-city").value  || "",
-    postal:  "",
-    phone:   document.getElementById("c-phone").value || "",
-    email:   "",
-    contact: ""
-  };
+function fillClient(){
+  document.getElementById("custom-client").style.display=document.getElementById("client").value==="custom"?"block":"none";
+  lines=loadLinesForCurrent();
+  const p=getPeriodForKey(currentPeriodKey);if(p)document.getElementById("inv-num").value=calcInvoiceNum(p);
+  renderPeriodGrid();renderLines();updateTotal();
 }
 
-// ── PERIOD HELPERS ────────────────────────────────────────────────────────────
-function getPeriodForKey(key) {
-  return getPeriods().find(p => p.key === key);
-}
-function getPeriodLabel() {
-  const p = getPeriodForKey(currentPeriodKey);
-  return p ? p.label : "";
-}
-function getEndDate() {
-  const p = getPeriodForKey(currentPeriodKey);
-  return p ? p.endDate : "";
+function getClient(){
+  const v=document.getElementById("client").value;
+  if(v==="bisson"||v==="rivard")return CLIENTS[v];
+  return{name:document.getElementById("c-name").value||"Client",addr:document.getElementById("c-addr").value||"",
+    city:document.getElementById("c-city").value||"",postal:"",phone:document.getElementById("c-phone").value||"",email:"",contact:""};
 }
 
-// ── DATE FORMAT ───────────────────────────────────────────────────────────────
-function formatDate(d) {
-  if (!d) return "";
-  const [yr, mo, dy] = d.split("-");
-  if (!yr || !mo || !dy) return d;
+function getPeriodForKey(key){return getPeriods().find(p=>p.key===key);}
+function getPeriodLabel(){const p=getPeriodForKey(currentPeriodKey);return p?p.label:"";}
+function getEndDate(){const p=getPeriodForKey(currentPeriodKey);return p?p.endDate:"";}
+
+function formatDate(d){
+  if(!d)return"";const[yr,mo,dy]=d.split("-");if(!yr||!mo||!dy)return d;
   return `${parseInt(dy)} ${MONTHS_FR[parseInt(mo)].substring(0,4)}.`;
 }
 
-// ── TRANSLATION VIA CLAUDE API ────────────────────────────────────────────────
-async function translateToFrench(text) {
-  if (!text || !text.trim()) return text;
-  // If already looks French (no obvious English words), skip
-  const englishWords = /\b(meeting|review|set up|setup|finishing|research|investigation|update|check|follow|with|and|for|the|to|of|in|at|on|by|from|into|about)\b/i;
-  if (!englishWords.test(text)) return text;
-  try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 200,
-        messages: [{
-          role: "user",
-          content: `Traduis cette description de tâche de consultant en français québécois professionnel. Conserve les noms propres (Linda, Ramzi, Azure, Monday, Power BI, CRM, GRO, etc.) tels quels. Retourne UNIQUEMENT la traduction, sans guillemets ni explication:\n\n${text}`
-        }]
-      })
-    });
-    const data = await resp.json();
-    const translated = data?.content?.[0]?.text?.trim();
-    return translated || text;
-  } catch { return text; }
+async function translateToFrench(text){
+  if(!text||!text.trim())return text;
+  const englishWords=/\b(meeting|review|set up|setup|finishing|research|investigation|update|check|follow|with|and|for|the|to|of|in|at|on|by|from|into|about)\b/i;
+  if(!englishWords.test(text))return text;
+  try{
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,
+        messages:[{role:"user",content:`Traduis cette description de tâche de consultant en français québécois professionnel. Conserve les noms propres (Linda, Ramzi, Azure, Monday, Power BI, CRM, GRO, etc.) tels quels. Retourne UNIQUEMENT la traduction, sans guillemets ni explication:\n\n${text}`}]})});
+    const data=await resp.json();return data?.content?.[0]?.text?.trim()||text;
+  }catch{return text;}
 }
 
-// ── LINE ITEMS ────────────────────────────────────────────────────────────────
-// Activity log queue — batched to avoid hammering GitHub on rapid edits
-let _logQueue = [];
-let _logTimer  = null;
-
-function logActivity(action, lineData, extra) {
-  const client  = getClient().name;
-  const period  = getPeriodLabel();
-  const invNum  = document.getElementById("inv-num").value || "?";
-  const now     = new Date();
-  const ts      = now.toLocaleString("fr-CA", { dateStyle:"short", timeStyle:"short" });
-  const desc    = (lineData?.desc || "").replace(/"/g, "'").substring(0, 80);
-  const hrs     = lineData?.hrs || "";
-  const date    = lineData?.date || "";
-  const detail  = extra ? String(extra).replace(/"/g, "'").substring(0, 60) : "";
+let _logQueue=[],_logTimer=null;
+function logActivity(action,lineData,extra){
+  const client=getClient().name,period=getPeriodLabel();
+  const invNum=document.getElementById("inv-num").value||"?";
+  const now=new Date(),ts=now.toLocaleString("fr-CA",{dateStyle:"short",timeStyle:"short"});
+  const desc=(lineData?.desc||"").replace(/"/g,"'").substring(0,80);
+  const hrs=lineData?.hrs||"",date=lineData?.date||"";
+  const detail=extra?String(extra).replace(/"/g,"'").substring(0,60):"";
   _logQueue.push(`"${ts}","${client}","Facture ${invNum}","${period}","${action}","${desc}","${hrs}","${date}","${detail}"`);
-  // Debounce: flush after 3s of inactivity
-  clearTimeout(_logTimer);
-  _logTimer = setTimeout(flushActivityLog, 3000);
+  clearTimeout(_logTimer);_logTimer=setTimeout(flushActivityLog,3000);
 }
 
-async function flushActivityLog() {
-  if (!_logQueue.length) return;
-  const token = getGithubToken();
-  if (!token || !token.startsWith("ghp_")) { _logQueue = []; return; }
-  const rows    = [..._logQueue];
-  _logQueue     = [];
-  const folder   = clientFolder();
-  const CSV_PATH = `${folder}/logs/activity-log.csv`;
-  const CSV_HEADER = "Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail\n";
-  try {
-    const sha = await githubGetFileSha(token, CSV_PATH);
-    let existing = CSV_HEADER;
-    if (sha) {
-      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_PATH}`, {
-        headers: { "Authorization": `token ${token}` }
-      });
-      const d = await r.json();
-      existing = atob(d.content.replace(/\n/g, ""));
-    }
-    const updated = existing + rows.join("\n") + "\n";
-    const b64 = btoa(unescape(encodeURIComponent(updated)));
-    await githubPutFile(token, CSV_PATH, b64, `Activity log: ${rows.length} event${rows.length>1?"s":""}`, sha);
-  } catch(e) {
-    // Silent fail — don't disrupt UX
-  }
+async function flushActivityLog(){
+  if(!_logQueue.length)return;
+  const token=getGithubToken();if(!token||!token.startsWith("ghp_")){_logQueue=[];return;}
+  const rows=[..._logQueue];_logQueue=[];
+  const folder=clientFolder(),CSV_PATH=`${folder}/logs/activity-log.csv`;
+  const CSV_HEADER="Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail\n";
+  try{
+    const sha=await githubGetFileSha(token,CSV_PATH);
+    let existing=CSV_HEADER;
+    if(sha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_PATH}`,{headers:{"Authorization":`token ${token}`}});
+      const d=await r.json();existing=atob(d.content.replace(/\n/g,""));}
+    const updated=existing+rows.join("\n")+"\n";
+    const b64=btoa(unescape(encodeURIComponent(updated)));
+    await githubPutFile(token,CSV_PATH,b64,`Activity log: ${rows.length} event${rows.length>1?"s":""}`,sha);
+  }catch(e){}
 }
 
-function addLine(desc="", hrs="", date="", startOpen=true) {
-  const id = Date.now() + Math.floor(Math.random()*10000);
-  if (!date) {
-    const now = new Date();
-    const p = getPeriodForKey(currentPeriodKey);
-    let day = now.getDate();
-    if (p) {
-      const maxDay = p.half === 1 ? 15 : p.endDay;
-      const minDay = p.half === 1 ? 1 : 16;
-      if (now.getMonth()+1 === p.month && now.getFullYear() === p.year) {
-        day = Math.min(Math.max(day, minDay), maxDay);
-      } else {
-        day = p.half === 1 ? 1 : 16;
-      }
-      date = `${p.year}-${String(p.month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+function addLine(desc="",hrs="",date="",startOpen=true){
+  const id=Date.now()+Math.floor(Math.random()*10000);
+  if(!date){
+    const now=new Date(),p=getPeriodForKey(currentPeriodKey);let day=now.getDate();
+    if(p){
+      const maxDay=p.half===1?15:p.endDay,minDay=p.half===1?1:16;
+      if(now.getMonth()+1===p.month&&now.getFullYear()===p.year){day=Math.min(Math.max(day,minDay),maxDay);}
+      else{day=p.half===1?1:16;}
+      date=`${p.year}-${String(p.month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     }
   }
-  lines.push({ id, desc, hrs, date });
-  document.querySelectorAll(".line-editor.open").forEach(el => {
-    el.classList.remove("open");
-    el.previousElementSibling.classList.remove("open");
+  lines.push({id,desc,hrs,date});
+  document.querySelectorAll(".line-editor.open").forEach(el=>{
+    el.classList.remove("open");el.previousElementSibling.classList.remove("open");
     el.previousElementSibling.querySelector(".chevron")?.classList.remove("open");
     refreshSummary(el.closest(".line-item"));
   });
-  appendLineDOM(id, lines.length-1, desc, hrs, date, startOpen);
-  renumberTags();
-  updateTotal();
-  saveCurrentLines();
-  if (desc || hrs) logActivity("AJOUT", { desc, hrs, date });
-  if (startOpen) {
-    setTimeout(() => {
-      const ta = document.querySelector(`[data-lineid="${id}"] textarea`);
-      if (ta) { ta.scrollIntoView({behavior:"smooth",block:"center"}); ta.focus(); }
-    }, 60);
-  }
+  appendLineDOM(id,lines.length-1,desc,hrs,date,startOpen);
+  renumberTags();updateTotal();saveCurrentLines();
+  if(desc||hrs)logActivity("AJOUT",{desc,hrs,date});
+  if(startOpen){setTimeout(()=>{const ta=document.querySelector(`[data-lineid="${id}"] textarea`);if(ta){ta.scrollIntoView({behavior:"smooth",block:"center"});ta.focus();}},60);}
 }
 
-function toggleLine(id) {
-  const el = document.querySelector(`[data-lineid="${id}"]`);
-  if (!el) return;
-  const summary = el.querySelector(".line-summary");
-  const editor  = el.querySelector(".line-editor");
-  const chev    = el.querySelector(".chevron");
-  const isOpen  = editor.classList.contains("open");
-  if (isOpen) {
-    editor.classList.remove("open"); summary.classList.remove("open"); chev.classList.remove("open");
-    refreshSummary(el);
-  } else {
-    document.querySelectorAll(".line-editor.open").forEach(oe => {
-      oe.classList.remove("open"); oe.previousElementSibling.classList.remove("open");
+function toggleLine(id){
+  const el=document.querySelector(`[data-lineid="${id}"]`);if(!el)return;
+  const summary=el.querySelector(".line-summary"),editor=el.querySelector(".line-editor"),chev=el.querySelector(".chevron");
+  const isOpen=editor.classList.contains("open");
+  if(isOpen){editor.classList.remove("open");summary.classList.remove("open");chev.classList.remove("open");refreshSummary(el);}
+  else{
+    document.querySelectorAll(".line-editor.open").forEach(oe=>{
+      oe.classList.remove("open");oe.previousElementSibling.classList.remove("open");
       oe.previousElementSibling.querySelector(".chevron")?.classList.remove("open");
       refreshSummary(oe.closest(".line-item"));
     });
-    editor.classList.add("open"); summary.classList.add("open"); chev.classList.add("open");
-    setTimeout(() => { el.scrollIntoView({behavior:"smooth",block:"nearest"}); }, 40);
+    editor.classList.add("open");summary.classList.add("open");chev.classList.add("open");
+    setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"nearest"}),40);
   }
 }
 
-function refreshSummary(itemEl) {
-  if (!itemEl) return;
-  const id = parseFloat(itemEl.getAttribute("data-lineid"));
-  const l = lines.find(x => x.id === id); if (!l) return;
-  const rate = parseFloat(document.getElementById("rate").value)||0;
-  const hrs = parseFloat(l.hrs)||0;
-  const amt = hrs ? (hrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $" : "";
-  const descEl = itemEl.querySelector(".sum-desc");
-  const metaEl = itemEl.querySelector(".sum-meta");
-  const dateEl = itemEl.querySelector(".sum-date");
-  if (descEl) { descEl.textContent = l.desc||"Sans description"; descEl.className="sum-desc"+(l.desc?"":" empty"); }
-  if (metaEl) metaEl.textContent = hrs ? `${hrs}h${amt?"  ·  "+amt:""}` : "";
-  if (dateEl) dateEl.textContent = formatDate(l.date);
+function refreshSummary(itemEl){
+  if(!itemEl)return;const id=parseFloat(itemEl.getAttribute("data-lineid"));
+  const l=lines.find(x=>x.id===id);if(!l)return;
+  const rate=parseFloat(document.getElementById("rate").value)||0,hrs=parseFloat(l.hrs)||0;
+  const amt=hrs?(hrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $":"";
+  const descEl=itemEl.querySelector(".sum-desc"),metaEl=itemEl.querySelector(".sum-meta"),dateEl=itemEl.querySelector(".sum-date");
+  if(descEl){descEl.textContent=l.desc||"Sans description";descEl.className="sum-desc"+(l.desc?"":" empty");}
+  if(metaEl)metaEl.textContent=hrs?`${hrs}h${amt?"  ·  "+amt:""}`:"";;
+  if(dateEl)dateEl.textContent=formatDate(l.date);
 }
 
-function removeLine(id) {
-  const deleted = lines.find(l => l.id === id);
-  lines = lines.filter(l => l.id !== id);
-  const el = document.querySelector(`[data-lineid="${id}"]`);
-  if (el) el.remove();
-  renumberTags(); updateTotal(); saveCurrentLines();
-  if (deleted) logActivity("SUPPRESSION", deleted);
-  if (!lines.length) {
-    document.getElementById("lines").innerHTML = `<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche.</p>`;
-  }
+function removeLine(id){
+  const deleted=lines.find(l=>l.id===id);lines=lines.filter(l=>l.id!==id);
+  const el=document.querySelector(`[data-lineid="${id}"]`);if(el)el.remove();
+  renumberTags();updateTotal();saveCurrentLines();if(deleted)logActivity("SUPPRESSION",deleted);
+  if(!lines.length)document.getElementById("lines").innerHTML=`<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche.</p>`;
 }
 
-function renumberTags() {
-  document.querySelectorAll("#lines .line-item").forEach((el,i) => {
-    const tag = el.querySelector(".tag"); if (tag) tag.textContent = `#${i+1}`;
-  });
-}
+function renumberTags(){document.querySelectorAll("#lines .line-item").forEach((el,i)=>{const tag=el.querySelector(".tag");if(tag)tag.textContent=`#${i+1}`;});}
 
-let _updateLogTimers = {};
-function updateLine(id, field, val) {
-  const l = lines.find(x => x.id === id);
-  if (l) {
-    const oldVal = l[field];
-    l[field] = val;
-    updateTotal();
-    refreshSummary(document.querySelector(`[data-lineid="${id}"]`));
-    saveCurrentLines();
-    // Debounce per-line to avoid logging every keystroke
+let _updateLogTimers={};
+function updateLine(id,field,val){
+  const l=lines.find(x=>x.id===id);
+  if(l){const oldVal=l[field];l[field]=val;updateTotal();refreshSummary(document.querySelector(`[data-lineid="${id}"]`));saveCurrentLines();
     clearTimeout(_updateLogTimers[id]);
-    _updateLogTimers[id] = setTimeout(() => {
-      if (String(oldVal) !== String(val)) {
-        logActivity("MODIFICATION", l, `${field}: "${oldVal}" → "${val}"`);
-      }
-    }, 2000);
-  }
+    _updateLogTimers[id]=setTimeout(()=>{if(String(oldVal)!==String(val))logActivity("MODIFICATION",l,`${field}: "${oldVal}" -> "${val}"`);},2000);}
 }
 
-function updateTotal() {
-  const rate = parseFloat(document.getElementById("rate").value)||0;
-  const total = lines.reduce((s,l) => s+(parseFloat(l.hrs)||0), 0);
-  document.getElementById("total-hrs").textContent = total%1===0 ? total.toFixed(0) : total;
-  document.getElementById("total-amt").textContent = (total*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  document.querySelectorAll("#lines .line-item").forEach(el => {
-    if (!el.querySelector(".line-editor.open")) refreshSummary(el);
-  });
+function updateTotal(){
+  const rate=parseFloat(document.getElementById("rate").value)||0;
+  const total=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+  document.getElementById("total-hrs").textContent=total%1===0?total.toFixed(0):total;
+  document.getElementById("total-amt").textContent=(total*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
+  document.querySelectorAll("#lines .line-item").forEach(el=>{if(!el.querySelector(".line-editor.open"))refreshSummary(el);});
 }
 
-async function blurAndTranslate(id, el) {
-  const l = lines.find(x => x.id === id); if (!l || !l.desc) return;
-  const wrap = el.closest(".line-editor");
-  // Show spinner
-  let spinner = wrap.querySelector(".translating");
-  if (!spinner) {
-    spinner = document.createElement("div");
-    spinner.className = "translating";
-    spinner.innerHTML = '<div class="spinner"></div><span>Traduction en cours...</span>';
-    wrap.querySelector(".row").after(spinner);
-  }
-  spinner.style.display = "inline-flex";
-  const translated = await translateToFrench(l.desc);
-  spinner.style.display = "none";
-  if (translated !== l.desc) {
-    l.desc = translated;
-    el.value = translated;
-    saveCurrentLines();
-    refreshSummary(el.closest(".line-item"));
-  }
+async function blurAndTranslate(id,el){
+  const l=lines.find(x=>x.id===id);if(!l||!l.desc)return;
+  const wrap=el.closest(".line-editor");let spinner=wrap.querySelector(".translating");
+  if(!spinner){spinner=document.createElement("div");spinner.className="translating";
+    spinner.innerHTML='<div class="spinner"></div><span>Traduction en cours...</span>';wrap.querySelector(".row").after(spinner);}
+  spinner.style.display="inline-flex";
+  const translated=await translateToFrench(l.desc);spinner.style.display="none";
+  if(translated!==l.desc){l.desc=translated;el.value=translated;saveCurrentLines();refreshSummary(el.closest(".line-item"));}
 }
 
-function appendLineDOM(id, idx, desc, hrs, date, startOpen) {
-  const container = document.getElementById("lines");
-  const empty = document.getElementById("empty-msg"); if (empty) empty.remove();
-  const rate = parseFloat(document.getElementById("rate").value)||0;
-  const h = parseFloat(hrs)||0;
-  const amt = h ? (h*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $" : "";
-  const d = document.createElement("div");
-  d.className = "line-item"; d.setAttribute("data-lineid", id);
-  d.innerHTML = `
+function appendLineDOM(id,idx,desc,hrs,date,startOpen){
+  const container=document.getElementById("lines");
+  const empty=document.getElementById("empty-msg");if(empty)empty.remove();
+  const rate=parseFloat(document.getElementById("rate").value)||0;
+  const h=parseFloat(hrs)||0,amt=h?(h*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $":"";
+  const d=document.createElement("div");d.className="line-item";d.setAttribute("data-lineid",id);
+  d.innerHTML=`
     <div class="line-summary${startOpen?" open":""}" onclick="toggleLine(${id})">
       <span class="tag">#${idx+1}</span>
       <span class="sum-desc${desc?"":" empty"}">${desc||"Sans description"}</span>
       <span class="sum-date">${formatDate(date)}</span>
       <span class="sum-meta">${h?h+"h"+(amt?"  ·  "+amt:""):""}</span>
-      <span class="chevron${startOpen?" open":""}">▾</span>
+      <span class="chevron${startOpen?" open":""}">&#x25BE;</span>
     </div>
     <div class="line-editor${startOpen?" open":""}">
       <div class="line-header">
@@ -624,627 +429,266 @@ function appendLineDOM(id, idx, desc, hrs, date, startOpen) {
       </div>
       <div class="row" style="margin-bottom:8px">
         <div><label>Description</label>
-          <textarea placeholder="Ex: Réunion intégration Monday – points de blocage"
+          <textarea placeholder="Ex: Réunion intégration Monday"
             oninput="updateLine(${id},'desc',this.value)"
             onblur="blurAndTranslate(${id},this)">${desc}</textarea></div>
       </div>
       <div class="row r2" style="margin-bottom:12px">
-        <div><label>Heures</label>
-          <input type="number" step="0.25" min="0.25" placeholder="ex: 1.5" value="${hrs}"
-            oninput="updateLine(${id},'hrs',this.value)"></div>
-        <div><label>Date</label>
-          <input type="date" value="${date}"
-            onchange="updateLine(${id},'date',this.value)"></div>
+        <div><label>Heures</label><input type="number" step="0.25" min="0.25" placeholder="ex: 1.5" value="${hrs}" oninput="updateLine(${id},'hrs',this.value)"></div>
+        <div><label>Date</label><input type="date" value="${date}" onchange="updateLine(${id},'date',this.value)"></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #e0ddd6;padding-top:10px">
-        <button class="btn" style="font-size:12px;padding:5px 14px;color:#555" onclick="toggleLine(${id})">✓ Réduire</button>
+        <button class="btn" style="font-size:12px;padding:5px 14px;color:#555" onclick="toggleLine(${id})">&#x2713; Réduire</button>
         <button class="btn" style="font-size:12px;padding:5px 18px;color:#185FA5;border-color:#185FA5" onclick="addLine()">+ Ajouter une tâche</button>
       </div>
     </div>`;
   container.appendChild(d);
 }
 
-function renderLines() {
-  const c = document.getElementById("lines"); c.innerHTML = "";
-  if (!lines.length) {
-    c.innerHTML = `<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche. Cliquez "+ Ajouter une tâche".</p>`;
-    updateTotal(); return;
-  }
-  lines.forEach((l,i) => appendLineDOM(l.id, i, l.desc, l.hrs, l.date, false));
-  updateTotal();
+function renderLines(){
+  const c=document.getElementById("lines");c.innerHTML="";
+  if(!lines.length){c.innerHTML=`<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche. Cliquez "+ Ajouter une tâche".</p>`;updateTotal();return;}
+  lines.forEach((l,i)=>appendLineDOM(l.id,i,l.desc,l.hrs,l.date,false));updateTotal();
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
-function showTab(tab) {
-  if (tab === "preview") {
-    renderPreview();
-    document.getElementById("form-wrap").style.display = "none";
-    document.getElementById("preview-wrap").style.display = "block";
-  } else {
-    document.getElementById("form-wrap").style.display = "block";
-    document.getElementById("preview-wrap").style.display = "none";
-  }
+function showTab(tab){
+  if(tab==="preview"){renderPreview();document.getElementById("form-wrap").style.display="none";document.getElementById("preview-wrap").style.display="block";}
+  else{document.getElementById("form-wrap").style.display="block";document.getElementById("preview-wrap").style.display="none";}
 }
 
-// ── PREVIEW ───────────────────────────────────────────────────────────────────
-function renderPreview() {
-  const client = getClient();
-  const period = getPeriodLabel();
-  const rate = parseFloat(document.getElementById("rate").value)||0;
-  const num = document.getElementById("inv-num").value||"—";
-  const totalHrs = lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
-  const totalAmt = (totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  const today = new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
-  const hrsDisplay = totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
-  const multiplierLabel = `${hrsDisplay}h × ${rate.toLocaleString("fr-CA")} $/h`;
-
-  const rows = lines.map((l,i) => {
-    const hrs = parseFloat(l.hrs)||0;
-    const bg = i%2===0?"#fff":"#fafaf8";
-    return `<tr style="background:${bg}">
-      <td>${l.desc||"(sans description)"}</td>
-      <td style="white-space:nowrap;text-align:center">${formatDate(l.date)}</td>
-      <td style="text-align:center">${hrs%1===0?hrs.toFixed(0):hrs}</td>
-    </tr>`;
-  }).join("");
-
-  document.getElementById("preview-content").innerHTML = `
+function renderPreview(){
+  const client=getClient(),period=getPeriodLabel();
+  const rate=parseFloat(document.getElementById("rate").value)||0,num=document.getElementById("inv-num").value||"—";
+  const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+  const totalAmt=(totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
+  const today=new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
+  const hrsDisplay=totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
+  const multiplierLabel=`${hrsDisplay}h x ${rate.toLocaleString("fr-CA")} $/h`;
+  const rows=lines.map((l,i)=>{const hrs=parseFloat(l.hrs)||0,bg=i%2===0?"#fff":"#fafaf8";
+    return `<tr style="background:${bg}"><td>${l.desc||"(sans description)"}</td><td style="white-space:nowrap;text-align:center">${formatDate(l.date)}</td><td style="text-align:center">${hrs%1===0?hrs.toFixed(0):hrs}</td></tr>`;}).join("");
+  document.getElementById("preview-content").innerHTML=`
     <div class="preview-invoice">
       <div class="inv-header">
-        <div>
-          <div class="inv-label">Facture</div>
-          <div class="inv-title">No. ${num}</div>
-          <div class="inv-period-sub">${period}</div>
-        </div>
-        <div class="inv-right">
-          <div class="inv-name">${ME.name}</div>
-          <div>${ME.email}</div>
-          <div>${ME.title}</div>
-        </div>
+        <div><div class="inv-label">Facture</div><div class="inv-title">No. ${num}</div><div class="inv-period-sub">${period}</div></div>
+        <div class="inv-right"><div class="inv-name">${ME.name}</div><div>${ME.email}</div><div>${ME.title}</div></div>
       </div>
       <div class="inv-meta">
-        <div class="inv-meta-block">
-          <div class="lbl">Facturé à</div>
-          <div class="val">${client.name}</div>
-          <div class="sub">${client.addr}<br>${client.city} ${client.postal}<br>${client.phone}</div>
-        </div>
-        <div class="inv-meta-block" style="text-align:right">
-          <div class="lbl">Période</div>
-          <div class="val">${period}</div>
-          <div class="sub" style="margin-top:8px">Émise le ${today}</div>
-        </div>
+        <div class="inv-meta-block"><div class="lbl">Facturé à</div><div class="val">${client.name}</div><div class="sub">${client.addr}<br>${client.city} ${client.postal}<br>${client.phone}</div></div>
+        <div class="inv-meta-block" style="text-align:right"><div class="lbl">Période</div><div class="val">${period}</div><div class="sub" style="margin-top:8px">Émise le ${today}</div></div>
       </div>
       <hr class="hr">
-      <table class="inv-table">
-        <thead><tr>
-          <th>Description</th>
-          <th style="text-align:center">Date</th>
-          <th style="text-align:center">Heures</th>
-        </tr></thead>
-        <tbody>${rows||'<tr><td colspan="3" style="text-align:center;color:#aaa;padding:16px">Aucune tâche</td></tr>'}</tbody>
-      </table>
+      <table class="inv-table"><thead><tr><th>Description</th><th style="text-align:center">Date</th><th style="text-align:center">Heures</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="3" style="text-align:center;color:#aaa;padding:16px">Aucune tâche</td></tr>'}</tbody></table>
       <hr class="hr">
       <div class="inv-footer-row">
-        <div class="inv-footer-note">Payable à la réception par virement Interac au <strong>${ME.email}</strong>.<br>C'est un plaisir de faire affaire avec ${client.name}. Merci!</div>
-        <div class="inv-total-chip">
-          <div class="chip-lbl">${multiplierLabel}</div>
-          <div class="chip-amt">${totalAmt}</div>
-        </div>
+        <div class="inv-footer-note">Payable à la réception par virement Interac au <strong>${ME.email}</strong>.<br>C\'est un plaisir de faire affaire avec ${client.name}. Merci!</div>
+        <div class="inv-total-chip"><div class="chip-lbl">${multiplierLabel}</div><div class="chip-amt">${totalAmt}</div></div>
       </div>
     </div>`;
 }
 
-// ── PDF DOWNLOAD ──────────────────────────────────────────────────────────────
-async function downloadPDF() {
-  if (!window.jspdf) { showToast("jsPDF en chargement, réessayez."); return; }
-  const client = getClient();
-  const num    = document.getElementById("inv-num").value||"X";
-  const rate   = parseFloat(document.getElementById("rate").value)||0;
-  const totalHrs = lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
-  const totalAmt = (totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  const period   = getPeriodLabel();
-  const endDate  = getEndDate();
-  const today    = new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
-  const fname    = `${client.name} - ${endDate} - Invoice ${num}.pdf`;
-
-  const blob = generatePDFBlob();
-
-  // Download locally
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href=url; a.download=fname; a.click();
-  URL.revokeObjectURL(url);
-
-  // Log invoice generation
-  logActivity("FACTURE GÉNÉRÉE", { desc: fname, hrs: invoiceData.hours, date: invoiceData.issued }, invoiceData.total);
-
-  // Push to GitHub asynchronously
-  pushToGitHub(blob, fname, {
-    num, client: client.name, period,
-    issued: today,
-    hours: totalHrs % 1 === 0 ? totalHrs.toFixed(0) : totalHrs,
-    rate, total: totalAmt
-  });
+async function downloadPDF(){
+  if(!window.jspdf){showToast("jsPDF en chargement, réessayez.");return;}
+  const client=getClient(),num=document.getElementById("inv-num").value||"X";
+  const rate=parseFloat(document.getElementById("rate").value)||0;
+  const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+  const totalAmt=(totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
+  const period=getPeriodLabel(),endDate=getEndDate();
+  const today=new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
+  const fname=`${client.name} - ${endDate} - Invoice ${num}.pdf`;
+  const invoiceData={num,client:client.name,period,issued:today,hours:totalHrs%1===0?totalHrs.toFixed(0):totalHrs,rate,total:totalAmt};
+  const blob=generatePDFBlob();
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=fname;a.click();URL.revokeObjectURL(url);
+  logActivity("FACTURE GÉNÉRÉE",{desc:fname,hrs:invoiceData.hours,date:invoiceData.issued},invoiceData.total);
+  pushToGitHub(blob,fname,invoiceData);
 }
 
-function generatePDFBlob() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:"pt", format:"letter" });
-  const client = getClient();
-  const period = getPeriodLabel();
-  const rate = parseFloat(document.getElementById("rate").value)||0;
-  const num = document.getElementById("inv-num").value||"X";
-  const totalHrs = lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
-  const totalAmt = (totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  const hrsDisplay = totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
-  const multiplierLabel = `${hrsDisplay}h  x  ${rate} $/h`;
-  const today = new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
-
-  const PW=612, PAD=36, TW=612-72;
-  const BLUE=[24,95,165], LBLUE=[181,212,244];
-  const DARK=[17,17,17], MID=[85,85,85], MUTED=[136,136,136];
-  const GRAYBG=[240,240,238], ALTROW=[250,250,248], ROWLINE=[238,238,238];
-
-  let y = PAD;
-
-  // HEADER
-  doc.setFillColor(...BLUE); doc.rect(PAD,y,TW,72,"F");
-  doc.setFont("helvetica","bold"); doc.setTextColor(...LBLUE); doc.setFontSize(7);
-  doc.text("FACTURE", PAD+14, y+16);
-  doc.setTextColor(255,255,255); doc.setFontSize(22);
-  doc.text(`No. ${num}`, PAD+14, y+38);
-  doc.setFont("helvetica","normal"); doc.setTextColor(...LBLUE); doc.setFontSize(9);
-  doc.text(period, PAD+14, y+54);
-  doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255); doc.setFontSize(12);
-  doc.text(ME.name, PW-PAD-14, y+22, {align:"right"});
-  doc.setFont("helvetica","normal"); doc.setTextColor(...LBLUE); doc.setFontSize(8);
-  doc.text(ME.email, PW-PAD-14, y+35, {align:"right"});
-  doc.text(ME.title, PW-PAD-14, y+47, {align:"right"});
-  y += 82;
-
-  // META
-  doc.setFont("helvetica","bold"); doc.setTextColor(...MUTED); doc.setFontSize(7);
-  doc.text("FACTURÉ À", PAD+4, y+10);
-  doc.setFont("helvetica","bold"); doc.setTextColor(...DARK); doc.setFontSize(11);
-  doc.text(client.name, PAD+4, y+23);
-  doc.setFont("helvetica","normal"); doc.setTextColor(...MID); doc.setFontSize(8);
-  doc.text(client.addr, PAD+4, y+34);
-  doc.text(`${client.city} ${client.postal}`, PAD+4, y+44);
-  doc.text(client.phone, PAD+4, y+54);
-  doc.setFont("helvetica","bold"); doc.setTextColor(...MUTED); doc.setFontSize(7);
-  doc.text("PÉRIODE", PW-PAD-4, y+10, {align:"right"});
-  doc.setFont("helvetica","bold"); doc.setTextColor(...DARK); doc.setFontSize(11);
-  doc.text(period, PW-PAD-4, y+23, {align:"right"});
-  doc.setFont("helvetica","normal"); doc.setTextColor(...MID); doc.setFontSize(8);
-  doc.text(`Émise le : ${today}`, PW-PAD-4, y+44, {align:"right"});
-  y += 64;
-  doc.setDrawColor(221,221,221); doc.setLineWidth(0.5);
-  doc.line(PAD,y,PW-PAD,y); y+=10;
-
-  // TABLE HEADER
-  const CW=[TW*0.72,TW*0.16,TW*0.12];
-  const cx=[PAD,PAD+CW[0],PAD+CW[0]+CW[1]];
-  doc.setFillColor(...GRAYBG); doc.rect(PAD,y,TW,20,"F");
-  doc.setFont("helvetica","bold"); doc.setTextColor(...MUTED); doc.setFontSize(7);
-  doc.text("DESCRIPTION",cx[0]+5,y+13);
-  doc.text("DATE",cx[1]+CW[1]/2,y+13,{align:"center"});
-  doc.text("HEURES",cx[2]+CW[2]/2,y+13,{align:"center"});
-  y+=20;
-
-// TABLE ROWS
-  const PAGE_H = 792;
-  const MARGIN_BOTTOM = 80; // space needed for total + footer
-
-  lines.forEach((l,i) => {
-    const hrs=parseFloat(l.hrs)||0;
-    const hrsStr=hrs%1===0?String(hrs):String(hrs);
+function generatePDFBlob(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:"pt",format:"letter"});
+  const client=getClient(),period=getPeriodLabel();
+  const rate=parseFloat(document.getElementById("rate").value)||0,num=document.getElementById("inv-num").value||"X";
+  const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+  const totalAmt=(totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
+  const hrsDisplay=totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
+  const multiplierLabel=`${hrsDisplay}h  x  ${rate} $/h`;
+  const today=new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
+  const PW=612,PAD=36,TW=612-72;
+  const BLUE=[24,95,165],LBLUE=[181,212,244],DARK=[17,17,17],MID=[85,85,85],MUTED=[136,136,136];
+  const GRAYBG=[240,240,238],ALTROW=[250,250,248],ROWLINE=[238,238,238];
+  const PAGE_H=792,MARGIN_BOTTOM=80;
+  let y=PAD;
+  doc.setFillColor(...BLUE);doc.rect(PAD,y,TW,72,"F");
+  doc.setFont("helvetica","bold");doc.setTextColor(...LBLUE);doc.setFontSize(7);doc.text("FACTURE",PAD+14,y+16);
+  doc.setTextColor(255,255,255);doc.setFontSize(22);doc.text(`No. ${num}`,PAD+14,y+38);
+  doc.setFont("helvetica","normal");doc.setTextColor(...LBLUE);doc.setFontSize(9);doc.text(period,PAD+14,y+54);
+  doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);doc.setFontSize(12);doc.text(ME.name,PW-PAD-14,y+22,{align:"right"});
+  doc.setFont("helvetica","normal");doc.setTextColor(...LBLUE);doc.setFontSize(8);
+  doc.text(ME.email,PW-PAD-14,y+35,{align:"right"});doc.text(ME.title,PW-PAD-14,y+47,{align:"right"});
+  y+=82;
+  doc.setFont("helvetica","bold");doc.setTextColor(...MUTED);doc.setFontSize(7);doc.text("FACTURÉ À",PAD+4,y+10);
+  doc.setFont("helvetica","bold");doc.setTextColor(...DARK);doc.setFontSize(11);doc.text(client.name,PAD+4,y+23);
+  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(8);
+  doc.text(client.addr,PAD+4,y+34);doc.text(`${client.city} ${client.postal}`,PAD+4,y+44);doc.text(client.phone,PAD+4,y+54);
+  doc.setFont("helvetica","bold");doc.setTextColor(...MUTED);doc.setFontSize(7);doc.text("PÉRIODE",PW-PAD-4,y+10,{align:"right"});
+  doc.setFont("helvetica","bold");doc.setTextColor(...DARK);doc.setFontSize(11);doc.text(period,PW-PAD-4,y+23,{align:"right"});
+  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(8);doc.text(`Émise le : ${today}`,PW-PAD-4,y+44,{align:"right"});
+  y+=64;doc.setDrawColor(221,221,221);doc.setLineWidth(0.5);doc.line(PAD,y,PW-PAD,y);y+=10;
+  const CW=[TW*0.72,TW*0.16,TW*0.12],cx=[PAD,PAD+CW[0],PAD+CW[0]+CW[1]];
+  function drawTableHeader(){
+    doc.setFillColor(...GRAYBG);doc.rect(PAD,y,TW,20,"F");
+    doc.setFont("helvetica","bold");doc.setTextColor(...MUTED);doc.setFontSize(7);
+    doc.text("DESCRIPTION",cx[0]+5,y+13);
+    doc.text("DATE",cx[1]+CW[1]/2,y+13,{align:"center"});
+    doc.text("HEURES",cx[2]+CW[2]/2,y+13,{align:"center"});
+    y+=20;
+  }
+  drawTableHeader();
+  lines.forEach((l,i)=>{
+    const hrs=parseFloat(l.hrs)||0,hrsStr=String(hrs);
     const maxW=CW[0]-12;
-    doc.setFont("helvetica","normal"); doc.setFontSize(8);
+    doc.setFont("helvetica","normal");doc.setFontSize(8);
     const descLines=doc.splitTextToSize(l.desc||"(sans description)",maxW);
-    const rowH=Math.max(18, descLines.length*11+8);
-
-    // ── PAGE BREAK ──────────────────────────────────────────────────────────
-    if (y + rowH + MARGIN_BOTTOM > PAGE_H) {
-      doc.addPage();
-      y = PAD;
-      // Reprint table header on new page
-      doc.setFillColor(...GRAYBG); doc.rect(PAD,y,TW,20,"F");
-      doc.setFont("helvetica","bold"); doc.setTextColor(...MUTED); doc.setFontSize(7);
-      doc.text("DESCRIPTION",cx[0]+5,y+13);
-      doc.text("DATE",cx[1]+CW[1]/2,y+13,{align:"center"});
-      doc.text("HEURES",cx[2]+CW[2]/2,y+13,{align:"center"});
-      y+=20;
-    }
-
+    const rowH=Math.max(18,descLines.length*11+8);
+    if(y+rowH+MARGIN_BOTTOM>PAGE_H){doc.addPage();y=PAD;drawTableHeader();}
     if(i%2===1){doc.setFillColor(...ALTROW);}else{doc.setFillColor(255,255,255);}
     doc.rect(PAD,y,TW,rowH,"F");
-    doc.setDrawColor(...ROWLINE); doc.setLineWidth(0.3);
-    doc.line(PAD,y+rowH,PW-PAD,y+rowH);
-    doc.setTextColor(...DARK); doc.text(descLines,cx[0]+5,y+12);
-    doc.setTextColor(...MID);
-    doc.text(formatDate(l.date),cx[1]+CW[1]/2,y+rowH/2+3,{align:"center"});
-    doc.setTextColor(...DARK);
-    doc.text(hrsStr,cx[2]+CW[2]/2,y+rowH/2+3,{align:"center"});
+    doc.setDrawColor(...ROWLINE);doc.setLineWidth(0.3);doc.line(PAD,y+rowH,PW-PAD,y+rowH);
+    doc.setTextColor(...DARK);doc.text(descLines,cx[0]+5,y+12);
+    doc.setTextColor(...MID);doc.text(formatDate(l.date),cx[1]+CW[1]/2,y+rowH/2+3,{align:"center"});
+    doc.setTextColor(...DARK);doc.text(hrsStr,cx[2]+CW[2]/2,y+rowH/2+3,{align:"center"});
     y+=rowH;
   });
   y+=12;
-
-  // TOTAL
   const totalColW=TW*0.33;
-  doc.setFont("helvetica","normal"); doc.setTextColor(...MID); doc.setFontSize(10);
-  doc.text(multiplierLabel,PAD+6,y+16);
-  doc.setFillColor(...BLUE); doc.rect(PW-PAD-totalColW,y,totalColW,32,"F");
-  doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255); doc.setFontSize(14);
-  doc.text(totalAmt,PW-PAD-10,y+21,{align:"right"});
-  y+=44;
-
-  // FOOTER
-  y+=12;
-  doc.setFont("helvetica","normal"); doc.setTextColor(...MID); doc.setFontSize(10);
+  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(10);doc.text(multiplierLabel,PAD+6,y+16);
+  doc.setFillColor(...BLUE);doc.rect(PW-PAD-totalColW,y,totalColW,32,"F");
+  doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);doc.setFontSize(14);doc.text(totalAmt,PW-PAD-10,y+21,{align:"right"});
+  y+=44;y+=12;
+  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(10);
   const footerLines=doc.splitTextToSize(`Payable à la réception par virement Interac au ${ME.email}. C'est un plaisir de faire affaire avec ${client.name}. Merci!`,TW);
   doc.text(footerLines,PAD,y);
-
   return doc.output("blob");
 }
 
-// ── EMAIL ─────────────────────────────────────────────────────────────────────
-function openEmailModal() {
-  const client = getClient();
-  const num = document.getElementById("inv-num").value||"X";
-  const period = getPeriodLabel();
-  const contactName = client.contact || "Madame";
-  const billingEmail = client.email || "";
-
-  // Contextual greeting based on day of week
-  const day = new Date().getDay();
-  let greeting;
-  if (day === 1) {
-    greeting = `Bon matin ${contactName},\n\nJ'espère que tu as passé un excellent weekend et que tu attaques cette semaine avec toute ton énergie habituelle :)`;
-  } else if (day === 5) {
-    greeting = `Bon matin ${contactName},\n\nJ'espère que tu passes une belle fin de semaine et que tu profiteras bien du weekend qui approche!`;
-  } else if (day === 0 || day === 6) {
-    greeting = `Bonjour ${contactName},\n\nJ'espère que tu passes un excellent weekend :)`;
-  } else {
-    const midWeek = [
-      `Bonjour ${contactName} :)\n\nJ'espère que ta semaine se passe bien et que tu trouves quelques moments de répit dans tout ça!`,
-      `Bonjour ${contactName},\n\nJ'espère que tu vas bien et que la semaine te traite bien jusqu'ici :)`,
-      `Bon matin ${contactName},\n\nJ'espère que tout roule bien de ton côté!`
-    ];
-    greeting = midWeek[num % midWeek.length];
-  }
-
-  const body =
-`${greeting}
-
-Tu trouveras en pièce jointe ma facture No. ${num} pour la période du ${period}.
-
-Comme à l'habitude, le paiement peut être effectué par virement Interac à ${ME.email}.
-
-N'hésite surtout pas si tu as des questions ou si quoi que ce soit nécessite une correction.
-
-Bonne journée et merci pour ton temps :)
-
-Cordialement,
-Karim Chaouche
-${ME.email}
-(514)-553-2640`;
-
-  document.getElementById("email-to").value = billingEmail;
-  document.getElementById("email-cc").value = ME.email;
-  document.getElementById("email-subject").value = `Facture No. ${num} – ${period} – Karim Chaouche`;
-  document.getElementById("email-body").value = body;
-  document.getElementById("email-modal").classList.add("open");
+function openEmailModal(){
+  const client=getClient(),num=document.getElementById("inv-num").value||"X";
+  const period=getPeriodLabel(),contactName=client.contact||"Madame",billingEmail=client.email||"";
+  const day=new Date().getDay();let greeting;
+  if(day===1)greeting=`Bon matin ${contactName},\n\nJ'espère que tu as passé un excellent weekend et que tu attaques cette semaine avec toute ton énergie habituelle :)`;
+  else if(day===5)greeting=`Bon matin ${contactName},\n\nJ'espère que tu passes une belle fin de semaine et que tu profiteras bien du weekend qui approche!`;
+  else if(day===0||day===6)greeting=`Bonjour ${contactName},\n\nJ'espère que tu passes un excellent weekend :)`;
+  else{const midWeek=[`Bonjour ${contactName} :)\n\nJ'espère que ta semaine se passe bien et que tu trouves quelques moments de répit dans tout ça!`,`Bonjour ${contactName},\n\nJ'espère que tu vas bien et que la semaine te traite bien jusqu'ici :)`,`Bon matin ${contactName},\n\nJ'espère que tout roule bien de ton côté!`];greeting=midWeek[num%midWeek.length];}
+  const body=`${greeting}\n\nTu trouveras en pièce jointe ma facture No. ${num} pour la période du ${period}.\n\nComme à l'habitude, le paiement peut être effectué par virement Interac à ${ME.email}.\n\nN'hésite surtout pas si tu as des questions ou si quoi que ce soit nécessite une correction.\n\nBonne journée et merci pour ton temps :)\n\nCordialement,\nKarim Chaouche\n${ME.email}\n(514)-553-2640`;
+  document.getElementById("email-to").value=billingEmail;document.getElementById("email-cc").value=ME.email;
+  document.getElementById("email-subject").value=`Facture No. ${num} – ${period} – Karim Chaouche`;
+  document.getElementById("email-body").value=body;document.getElementById("email-modal").classList.add("open");
 }
-function closeEmailModal() {
-  document.getElementById("email-modal").classList.remove("open");
-}
-
-async function sendEmail() {
-  const to = document.getElementById("email-to").value;
-  const cc = document.getElementById("email-cc").value;
-  const subject = document.getElementById("email-subject").value;
-  const body = document.getElementById("email-body").value;
-  if (!to) { showToast("Veuillez entrer un destinataire."); return; }
-
-  // Build mailto with PDF attachment hint (mailto can't attach files — open mail client)
-  const mailtoLink = `mailto:${encodeURIComponent(to)}?cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  // Also download the PDF so user can attach manually
-  await downloadPDF();
-  closeEmailModal();
-  // Short delay then open mail client
-  setTimeout(() => { window.location.href = mailtoLink; }, 600);
+function closeEmailModal(){document.getElementById("email-modal").classList.remove("open");}
+async function sendEmail(){
+  const to=document.getElementById("email-to").value,cc=document.getElementById("email-cc").value;
+  const subject=document.getElementById("email-subject").value,body=document.getElementById("email-body").value;
+  if(!to){showToast("Veuillez entrer un destinataire.");return;}
+  const mailtoLink=`mailto:${encodeURIComponent(to)}?cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  await downloadPDF();closeEmailModal();
+  setTimeout(()=>{window.location.href=mailtoLink;},600);
   showToast("PDF téléchargé — joignez-le à l'email qui s'ouvre.");
 }
 
-// ── GITHUB SYNC ───────────────────────────────────────────────────────────────
-const GITHUB_REPO  = "kchaouche17/billing-app";
-const GITHUB_TOKEN_KEY = "kc_github_token";
-
-// Client → folder mapping
-const CLIENT_FOLDERS = {
-  bisson: "bisson-expert",
-  rivard: "soudures-rivard",
-  custom: "accounting-documents"
-};
-
-function clientFolder() {
-  return CLIENT_FOLDERS[document.getElementById("client").value] || "accounting-documents";
+const GITHUB_REPO="kchaouche17/billing-app",GITHUB_TOKEN_KEY="kc_github_token";
+const CLIENT_FOLDERS={bisson:"bisson-expert",rivard:"soudures-rivard",custom:"accounting-documents"};
+function clientFolder(){return CLIENT_FOLDERS[document.getElementById("client").value]||"accounting-documents";}
+function saveGithubToken(){const val=document.getElementById("github-token").value.trim();if(val)localStorage.setItem(GITHUB_TOKEN_KEY,val);else localStorage.removeItem(GITHUB_TOKEN_KEY);}
+function toggleTokenVisibility(){const inp=document.getElementById("github-token");inp.type=inp.type==="password"?"text":"password";}
+function getGithubToken(){return localStorage.getItem(GITHUB_TOKEN_KEY)||document.getElementById("github-token").value.trim();}
+function setGithubStatus(msg,color="#888"){const el=document.getElementById("github-status");if(el){el.textContent=msg;el.style.color=color;}}
+async function githubGetFileSha(token,path){
+  const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,{headers:{"Authorization":`token ${token}`,"Accept":"application/vnd.github.v3+json"}});
+  if(r.status===404)return null;const d=await r.json();return d.sha||null;
 }
-
-function saveGithubToken() {
-  const val = document.getElementById("github-token").value.trim();
-  if (val) localStorage.setItem(GITHUB_TOKEN_KEY, val);
-  else localStorage.removeItem(GITHUB_TOKEN_KEY);
-}
-
-function toggleTokenVisibility() {
-  const inp = document.getElementById("github-token");
-  inp.type = inp.type === "password" ? "text" : "password";
-}
-
-function getGithubToken() {
-  return localStorage.getItem(GITHUB_TOKEN_KEY) || document.getElementById("github-token").value.trim();
-}
-
-function setGithubStatus(msg, color="#888") {
-  const el = document.getElementById("github-status");
-  if (el) { el.textContent = msg; el.style.color = color; }
-}
-
-async function githubGetFileSha(token, path) {
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-    headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }
-  });
-  if (r.status === 404) return null;
-  const d = await r.json();
-  return d.sha || null;
-}
-
-async function githubPutFile(token, path, contentB64, message, sha) {
-  const body = { message, content: contentB64 };
-  if (sha) body.sha = sha;
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-    method: "PUT",
-    headers: { "Authorization": `token ${token}`, "Content-Type": "application/json", "Accept": "application/vnd.github.v3+json" },
-    body: JSON.stringify(body)
-  });
+async function githubPutFile(token,path,contentB64,message,sha){
+  const body={message,content:contentB64};if(sha)body.sha=sha;
+  const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,{method:"PUT",headers:{"Authorization":`token ${token}`,"Content-Type":"application/json","Accept":"application/vnd.github.v3+json"},body:JSON.stringify(body)});
   return r.ok;
 }
-
-async function pushToGitHub(pdfBlob, filename, invoiceData) {
-  const token = getGithubToken();
-  if (!token || !token.startsWith("ghp_")) {
-    setGithubStatus("⚠ Token manquant", "#e8a800");
-    return;
-  }
-  const folder = clientFolder();
-  const pdfPath = `${folder}/invoices/${filename}`;
-  const csvPath = `${folder}/logs/invoices-log.csv`;
-  const csvHeader = "No,Client,Période,Date émission,Heures,Taux,Total,Fichier\n";
-
-  setGithubStatus("⏳ Envoi vers GitHub...", "#185FA5");
-  try {
-    // 1. Upload PDF
-    const pdfB64 = await new Promise((res, rej) => {
-      const reader = new FileReader();
-      reader.onload = () => res(reader.result.split(",")[1]);
-      reader.onerror = rej;
-      reader.readAsDataURL(pdfBlob);
-    });
-    const pdfSha = await githubGetFileSha(token, pdfPath);
-    const pdfOk  = await githubPutFile(token, pdfPath, pdfB64, `Add invoice: ${filename}`, pdfSha);
-
-    // 2. Update invoices-log.csv
-    const csvSha = await githubGetFileSha(token, csvPath);
-    let csvContent = csvHeader;
-    if (csvSha) {
-      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`, {
-        headers: { "Authorization": `token ${token}` }
-      });
-      const d = await r.json();
-      csvContent = atob(d.content.replace(/\n/g, ""));
-    }
-    const newRow = `${invoiceData.num},"${invoiceData.client}","${invoiceData.period}","${invoiceData.issued}",${invoiceData.hours},${invoiceData.rate},"${invoiceData.total}","${filename}"`;
-    if (!csvContent.includes(`"${filename}"`)) csvContent += newRow + "\n";
-    const csvB64 = btoa(unescape(encodeURIComponent(csvContent)));
-    const csvOk  = await githubPutFile(token, csvPath, csvB64, `Update invoices log: ${filename}`, csvSha);
-
-    if (pdfOk && csvOk) setGithubStatus("✅ Sauvegardé sur GitHub", "#1a7a4a");
-    else setGithubStatus("⚠ Erreur partielle", "#e8a800");
-  } catch(e) {
-    setGithubStatus("❌ Erreur: " + e.message, "#E24B4A");
-  }
+async function pushToGitHub(pdfBlob,filename,invoiceData){
+  const token=getGithubToken();if(!token||!token.startsWith("ghp_")){setGithubStatus("Manque token","#e8a800");return;}
+  const folder=clientFolder(),pdfPath=`${folder}/invoices/${filename}`,csvPath=`${folder}/logs/invoices-log.csv`;
+  const csvHeader="No,Client,Période,Date émission,Heures,Taux,Total,Fichier\n";
+  setGithubStatus("Envoi GitHub...","#185FA5");
+  try{
+    const pdfB64=await new Promise((res,rej)=>{const reader=new FileReader();reader.onload=()=>res(reader.result.split(",")[1]);reader.onerror=rej;reader.readAsDataURL(pdfBlob);});
+    const pdfSha=await githubGetFileSha(token,pdfPath);
+    const pdfOk=await githubPutFile(token,pdfPath,pdfB64,`Add invoice: ${filename}`,pdfSha);
+    const csvSha=await githubGetFileSha(token,csvPath);
+    let csvContent=csvHeader;
+    if(csvSha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`,{headers:{"Authorization":`token ${token}`}});const d=await r.json();csvContent=atob(d.content.replace(/\n/g,""));}
+    const newRow=`${invoiceData.num},"${invoiceData.client}","${invoiceData.period}","${invoiceData.issued}",${invoiceData.hours},${invoiceData.rate},"${invoiceData.total}","${filename}"`;
+    if(!csvContent.includes(`"${filename}"`))csvContent+=newRow+"\n";
+    const csvB64=btoa(unescape(encodeURIComponent(csvContent)));
+    const csvOk=await githubPutFile(token,csvPath,csvB64,`Update invoices log: ${filename}`,csvSha);
+    if(pdfOk&&csvOk)setGithubStatus("Sauvegardé GitHub","#1a7a4a");else setGithubStatus("Erreur partielle","#e8a800");
+  }catch(e){setGithubStatus("Erreur: "+e.message,"#E24B4A");}
 }
 
-
-function exportData() {
-  const all = loadAll();
-  const flags = {};
-  ['kc_seeded_inv5','kc_seeded_inv6'].forEach(k => {
-    if (localStorage.getItem(k)) flags[k] = '1';
-  });
-  const bundle = { version: 1, exported: new Date().toISOString(), data: all, flags };
-  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `factures-backup-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('✅ Sauvegarde exportée!');
+function exportData(){
+  const all=loadAll(),flags={};['kc_seeded_inv5','kc_seeded_inv6'].forEach(k=>{if(localStorage.getItem(k))flags[k]='1';});
+  const bundle={version:1,exported:new Date().toISOString(),data:all,flags};
+  const blob=new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=`factures-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);showToast('Sauvegarde exportée!');
 }
 
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const bundle = JSON.parse(e.target.result);
-      const incoming = bundle.data || bundle; // support both formats
-      const current = loadAll();
-      // Merge: incoming data wins for keys that don't exist locally, but keep local edits
-      const merged = { ...incoming, ...current };
-      // For periods that exist in incoming but NOT in current, import them
-      Object.keys(incoming).forEach(k => {
-        if (!current[k] || current[k].length === 0) merged[k] = incoming[k];
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      // Restore seed flags so seeds don't overwrite imported data
-      if (bundle.flags) {
-        Object.keys(bundle.flags).forEach(k => localStorage.setItem(k, bundle.flags[k]));
-      }
-      // Reload current view
-      lines = loadLinesForCurrent();
-      renderPeriodGrid();
-      renderLines();
-      updateTotal();
-      showToast(`✅ ${Object.keys(incoming).length} périodes importées!`);
-    } catch {
-      showToast('❌ Fichier invalide.');
-    }
+function importData(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    try{
+      const bundle=JSON.parse(e.target.result),incoming=bundle.data||bundle,current=loadAll();
+      const merged={...incoming,...current};
+      Object.keys(incoming).forEach(k=>{if(!current[k]||current[k].length===0)merged[k]=incoming[k];});
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(merged));
+      if(bundle.flags)Object.keys(bundle.flags).forEach(k=>localStorage.setItem(k,bundle.flags[k]));
+      lines=loadLinesForCurrent();renderPeriodGrid();renderLines();updateTotal();
+      showToast(`${Object.keys(incoming).length} périodes importées!`);
+    }catch{showToast('Fichier invalide.');}
   };
-  reader.readAsText(file);
-  event.target.value = ''; // reset so same file can be re-imported
+  reader.readAsText(file);event.target.value='';
 }
 
-
-function showToast(msg, duration=3500) {
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), duration);
+function showToast(msg,duration=3500){
+  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),duration);
 }
 
-// ── SEED DATA – Bisson Invoice 6 (Apr 16–30 2026) ───────────────────────────
-(function seedInvoice6() {
-  const SEED_KEY = "bisson::2026-04-P2";
-  const SEEDED_FLAG = "kc_seeded_inv6";
-  if (localStorage.getItem(SEEDED_FLAG)) return;
-  const all = (function(){ try{ return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}"); }catch{return{};} })();
-  const tasks = [
-    ["2026-04-15", 3.00,  "KPIs – Processus de ventes KPIs"],
-    ["2026-04-16", 0.25,  "Rencontre avec Josianne – Problématique appels de soumission"],
-    ["2026-04-16", 4.00,  "KPIs – Processus de ventes KPIs – Conception visuelle du tableau de bord"],
-    ["2026-04-16", 1.25,  "Formation Linda sur l'IA – Claude"],
-    ["2026-04-16", 0.50,  "Réunion intégration Azure Database"],
-    ["2026-04-16", 0.75,  "Rencontre avec Sarah – Problématique de vues et d'export de données Monday"],
-    ["2026-04-16", 0.50,  "QA – Power BI KPIs ventes – Avec Vincent et JF"],
-    ["2026-04-16", 1.00,  "Modifications du tableau de bord suite aux rétroactions"],
-    ["2026-04-17", 1.00,  "Rencontre – Pratiques RH avec JF"],
-    ["2026-04-15", 0.50,  "Soudures Rivard – Déplacement"],
-    ["2026-04-15", 2.75,  "Soudures Rivard – Réunion d'introduction"],
-    ["2026-04-17", 0.50,  "Soudures Rivard – Communication et organisation de rencontres avec David et Olivier"],
-    ["2026-04-17", 2.00,  "Soudures Rivard – Configuration et test de Claude Cowork avec GitHub"],
-    ["2026-04-17", 0.50,  "Connexion du tableau de bord KPI aux sources de données pour le rafraîchissement"],
-    ["2026-04-20", 1.00,  "Organisation des dernières demandes"],
-    ["2026-04-20", 2.50,  "Validation des données – Demandes, propositions et contrats"],
-    ["2026-04-20", 1.75,  "Nouveau programme de bonus – Ajustements Power BI"],
-  ];
-  all[SEED_KEY] = tasks.map(([date,hrs,desc],i) => ({id: 1800000000000+i, date, hrs, desc}));
-  localStorage.setItem("kc_invoices_v1", JSON.stringify(all));
-  localStorage.setItem(SEEDED_FLAG, "1");
-})();
-(function seedInvoice5() {
-  const SEED_KEY = "bisson::2026-04-P1";
-  const SEEDED_FLAG = "kc_seeded_inv5";
-  if (localStorage.getItem(SEEDED_FLAG)) return;
-  const all = (function(){ try{ return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}"); }catch{return{};} })();
-  const tasks = [
-    ["2026-03-31",0.75,"Rédaction BR KPIs – Jean-François"],
-    ["2026-04-02",0.75,"Communications avec fournisseurs de services (MS Solutions, Julien Bergeron & Vandere)"],
-    ["2026-04-02",0.50,"Finalisation BR KPIs – Jean-François"],
-    ["2026-04-02",0.50,"Réunion avec Alexis Bélanger – Liste de matériaux et suivi de la maintenance + notes"],
-    ["2026-04-02",0.50,"Réunion de lancement – Bisson Expert"],
-    ["2026-04-02",0.50,"Modifications CRM Linda"],
-    ["2026-04-02",0.75,"Révision Tech Binder Bisson Expert"],
-    ["2026-04-07",0.50,"Révision Tech Binder Bisson Expert"],
-    ["2026-04-07",0.75,"Communications avec fournisseurs de services"],
-    ["2026-04-07",0.25,"Message d'introduction dans l'équipe pour Vanessa"],
-    ["2026-04-07",0.50,"Message d'introduction aux fournisseurs de service + envois"],
-    ["2026-04-07",0.75,"Réunion Azure"],
-    ["2026-04-07",0.75,"Organisation des nouvelles demandes d'amélioration continue"],
-    ["2026-04-07",0.50,"Réunion de suivi avec Charles Pariseau – GRO"],
-    ["2026-04-07",0.25,"Discussions stratégiques – Monday"],
-    ["2026-04-07",0.50,"Organisation des nouvelles demandes – Linda, Power BI Bonus, problème Telus et intégration potentielle Fuel iX"],
-    ["2026-04-07",0.25,"Mise à jour cartographie TI pour inclure Callrail et Google"],
-    ["2026-04-08",0.50,"Communications avec Benjamin et Maxime de Vandere – Questions sécurité des données"],
-    ["2026-04-08",1.00,"Configuration CRM Linda – Ajustements finaux"],
-    ["2026-04-08",0.50,"Réunion avec Julien – Power BI, tableau de bord JF, utilisation données corporatives"],
-    ["2026-04-08",0.75,"Recherche sur la fuite de données de l'application Ramzi + réunion avec Benjamin (avocat)"],
-    ["2026-04-09",4.50,"Ajustements des vues Linda – CRM"],
-    ["2026-04-09",0.25,"Réunion d'introduction avec Joseph Passineau – ARIV"],
-    ["2026-04-09",0.50,"Réunion avec Maxime de Vandere – Survol de la configuration CRM"],
-    ["2026-04-09",0.50,"Réunion Azure – avec GRO"],
-    ["2026-04-09",0.50,"Recherche de solution pour afficher des notes personnalisées et privées pour Linda"],
-    ["2026-04-10",0.50,"Communications avec fournisseurs de services"],
-    ["2026-04-10",0.75,"Investigation des processus, déclencheurs et interdépendances CRM"],
-    ["2026-04-10",1.50,"Réunion de mise au point avec GRO"],
-    ["2026-04-10",0.25,"Modification de la vue Linda CRM – Ajustement de l'affichage des colonnes"],
-    ["2026-04-13",5.00,"Visite de chantier – Ramzi"],
-    ["2026-04-13",0.75,"Révision du nouveau calcul des primes + révision de la configuration actuelle Power BI"],
-    ["2026-04-13",0.25,"Configuration Slack et investigation pour pousser des données vers Maestro depuis Monday"],
-    ["2026-04-13",1.50,"Réunion avec Vanessa – Processus de paie et autres sujets"],
-    ["2026-04-13",1.25,"Recherche et solution pour l'intégration Maestro X Monday – Transfert de données"],
-    ["2026-04-14",0.50,"Configuration des nouveaux outils sur le nouvel ordinateur"],
-    ["2026-04-14",2.00,"Power BI – Exploration du modèle et ajout de sources de données"],
-    ["2026-04-14",3.00,"Power BI – Cartographie des champs de données pour les KPIs"],
-    ["2026-04-14",0.75,"Réunion avec Ramzi & Vincent – Application"],
-    ["2026-04-14",2.00,"Power BI – Cartographie des champs de données pour les KPIs"],
-  ];
-  all[SEED_KEY] = tasks.map(([date,hrs,desc],i) => ({id: 1700000000000+i, date, hrs, desc}));
-  localStorage.setItem("kc_invoices_v1", JSON.stringify(all));
-  localStorage.setItem(SEEDED_FLAG, "1");
+(function seedInvoice6(){
+  const SEED_KEY="bisson::2026-04-P2",SEEDED_FLAG="kc_seeded_inv6";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[["2026-04-15",3.00,"KPIs – Processus de ventes KPIs"],["2026-04-16",0.25,"Rencontre avec Josianne – Problématique appels de soumission"],["2026-04-16",4.00,"KPIs – Processus de ventes KPIs – Conception visuelle du tableau de bord"],["2026-04-16",1.25,"Formation Linda sur l'IA – Claude"],["2026-04-16",0.50,"Réunion intégration Azure Database"],["2026-04-16",0.75,"Rencontre avec Sarah – Problématique de vues et d'export de données Monday"],["2026-04-16",0.50,"QA – Power BI KPIs ventes – Avec Vincent et JF"],["2026-04-16",1.00,"Modifications du tableau de bord suite aux rétroactions"],["2026-04-17",1.00,"Rencontre – Pratiques RH avec JF"],["2026-04-15",0.50,"Soudures Rivard – Déplacement"],["2026-04-15",2.75,"Soudures Rivard – Réunion d'introduction"],["2026-04-17",0.50,"Soudures Rivard – Communication et organisation de rencontres avec David et Olivier"],["2026-04-17",2.00,"Soudures Rivard – Configuration et test de Claude Cowork avec GitHub"],["2026-04-17",0.50,"Connexion du tableau de bord KPI aux sources de données pour le rafraîchissement"],["2026-04-20",1.00,"Organisation des dernières demandes"],["2026-04-20",2.50,"Validation des données – Demandes, propositions et contrats"],["2026-04-20",1.75,"Nouveau programme de bonus – Ajustements Power BI"]];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1800000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
 })();
 
-// ── SEED DATA – Soudures Rivard Invoice 1 (Apr 16–30 2026) ──────────────────
-(function seedRivard1() {
-  const SEED_KEY = "rivard::2026-04-P2";
-  const SEEDED_FLAG = "kc_seeded_rivard1";
-  if (localStorage.getItem(SEEDED_FLAG)) return;
-  const all = (function(){ try{ return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}"); }catch{return{};} })();
-  const tasks = [
-    ["2026-04-24", 1.25, "Réunion – Révision du processus de création des commandes et de la facturation"],
-    ["2026-04-24", 0.50, "Déplacement"],
-    ["2026-04-24", 0.25, "Réunion – Processus de préparation des rencontres quotidiennes de production"],
-    ["2026-04-24", 1.00, "Ajustements du processus de création des commandes et de la facturation pour inclure les bons de commande"],
-    ["2026-04-24", 2.25, "Intégration du processus de gestion des commandes en attente dans l'automatisation"],
-  ];
-  all[SEED_KEY] = tasks.map(([date,hrs,desc],i) => ({id: 1900000000000+i, date, hrs, desc}));
-  localStorage.setItem("kc_invoices_v1", JSON.stringify(all));
-  localStorage.setItem(SEEDED_FLAG, "1");
+(function seedInvoice5(){
+  const SEED_KEY="bisson::2026-04-P1",SEEDED_FLAG="kc_seeded_inv5";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[["2026-03-31",0.75,"Rédaction BR KPIs – Jean-François"],["2026-04-02",0.75,"Communications avec fournisseurs de services (MS Solutions, Julien Bergeron & Vandere)"],["2026-04-02",0.50,"Finalisation BR KPIs – Jean-François"],["2026-04-02",0.50,"Réunion avec Alexis Bélanger – Liste de matériaux et suivi de la maintenance + notes"],["2026-04-02",0.50,"Réunion de lancement – Bisson Expert"],["2026-04-02",0.50,"Modifications CRM Linda"],["2026-04-02",0.75,"Révision Tech Binder Bisson Expert"],["2026-04-07",0.50,"Révision Tech Binder Bisson Expert"],["2026-04-07",0.75,"Communications avec fournisseurs de services"],["2026-04-07",0.25,"Message d'introduction dans l'équipe pour Vanessa"],["2026-04-07",0.50,"Message d'introduction aux fournisseurs de service + envois"],["2026-04-07",0.75,"Réunion Azure"],["2026-04-07",0.75,"Organisation des nouvelles demandes d'amélioration continue"],["2026-04-07",0.50,"Réunion de suivi avec Charles Pariseau – GRO"],["2026-04-07",0.25,"Discussions stratégiques – Monday"],["2026-04-07",0.50,"Organisation des nouvelles demandes – Linda, Power BI Bonus, problème Telus et intégration potentielle Fuel iX"],["2026-04-07",0.25,"Mise à jour cartographie TI pour inclure Callrail et Google"],["2026-04-08",0.50,"Communications avec Benjamin et Maxime de Vandere – Questions sécurité des données"],["2026-04-08",1.00,"Configuration CRM Linda – Ajustements finaux"],["2026-04-08",0.50,"Réunion avec Julien – Power BI, tableau de bord JF, utilisation données corporatives"],["2026-04-08",0.75,"Recherche sur la fuite de données de l'application Ramzi + réunion avec Benjamin (avocat)"],["2026-04-09",4.50,"Ajustements des vues Linda – CRM"],["2026-04-09",0.25,"Réunion d'introduction avec Joseph Passineau – ARIV"],["2026-04-09",0.50,"Réunion avec Maxime de Vandere – Survol de la configuration CRM"],["2026-04-09",0.50,"Réunion Azure – avec GRO"],["2026-04-09",0.50,"Recherche de solution pour afficher des notes personnalisées et privées pour Linda"],["2026-04-10",0.50,"Communications avec fournisseurs de services"],["2026-04-10",0.75,"Investigation des processus, déclencheurs et interdépendances CRM"],["2026-04-10",1.50,"Réunion de mise au point avec GRO"],["2026-04-10",0.25,"Modification de la vue Linda CRM – Ajustement de l'affichage des colonnes"],["2026-04-13",5.00,"Visite de chantier – Ramzi"],["2026-04-13",0.75,"Révision du nouveau calcul des primes + révision de la configuration actuelle Power BI"],["2026-04-13",0.25,"Configuration Slack et investigation pour pousser des données vers Maestro depuis Monday"],["2026-04-13",1.50,"Réunion avec Vanessa – Processus de paie et autres sujets"],["2026-04-13",1.25,"Recherche et solution pour l'intégration Maestro X Monday – Transfert de données"],["2026-04-14",0.50,"Configuration des nouveaux outils sur le nouvel ordinateur"],["2026-04-14",2.00,"Power BI – Exploration du modèle et ajout de sources de données"],["2026-04-14",3.00,"Power BI – Cartographie des champs de données pour les KPIs"],["2026-04-14",0.75,"Réunion avec Ramzi & Vincent – Application"],["2026-04-14",2.00,"Power BI – Cartographie des champs de données pour les KPIs"]];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1700000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
 })();
-const invoiceData = {
-    num, client: client.name, period,
-    issued: today,
-    hours: totalHrs % 1 === 0 ? totalHrs.toFixed(0) : totalHrs,
-    rate, total: totalAmt
-  };
 
-  const blob = generatePDFBlob();
+(function seedRivard1(){
+  const SEED_KEY="rivard::2026-04-P2",SEEDED_FLAG="kc_seeded_rivard1";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[["2026-04-24",1.25,"Réunion – Révision du processus de création des commandes et de la facturation"],["2026-04-24",0.50,"Déplacement"],["2026-04-24",0.25,"Réunion – Processus de préparation des rencontres quotidiennes de production"],["2026-04-24",1.00,"Ajustements du processus de création des commandes et de la facturation pour inclure les bons de commande"],["2026-04-24",2.25,"Intégration du processus de gestion des commandes en attente dans l'automatisation"]];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1900000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
 
-  // Download locally
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href=url; a.download=fname; a.click();
-  URL.revokeObjectURL(url);
-
-  // Log invoice generation
-  logActivity("FACTURE GÉNÉRÉE", { desc: fname, hrs: invoiceData.hours, date: invoiceData.issued }, invoiceData.total);
-
-  // Push to GitHub asynchronously
-  pushToGitHub(blob, fname, invoiceData);
-}
-
-(function init() {
-  currentPeriodKey = detectCurrentPeriod();
-  lines = loadLinesForCurrent();
-  const p = getPeriodForKey(currentPeriodKey);
-  if (p) document.getElementById("inv-num").value = calcInvoiceNum(p);
-  // Restore saved GitHub token
-  const savedToken = localStorage.getItem(GITHUB_TOKEN_KEY);
-  if (savedToken) document.getElementById("github-token").value = savedToken;
-  renderPeriodGrid();
-  renderLines();
-  if (!lines.length) addLine();
+(function init(){
+  currentPeriodKey=detectCurrentPeriod();lines=loadLinesForCurrent();
+  const p=getPeriodForKey(currentPeriodKey);if(p)document.getElementById("inv-num").value=calcInvoiceNum(p);
+  const savedToken=localStorage.getItem(GITHUB_TOKEN_KEY);if(savedToken)document.getElementById("github-token").value=savedToken;
+  renderPeriodGrid();renderLines();if(!lines.length)addLine();
 })();
 </script>
 </body>
