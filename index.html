@@ -632,7 +632,7 @@ async function pushToGitHub(pdfBlob,filename,invoiceData){
 }
 
 function exportData(){
-  const all=loadAll(),flags={};['kc_seeded_inv5','kc_seeded_inv6'].forEach(k=>{if(localStorage.getItem(k))flags[k]='1';});
+  const all=loadAll(),flags={};['kc_seeded_inv1','kc_seeded_inv2','kc_seeded_inv3','kc_seeded_inv4','kc_seeded_inv5','kc_seeded_inv6'].forEach(k=>{if(localStorage.getItem(k))flags[k]='1';});
   const bundle={version:1,exported:new Date().toISOString(),data:all,flags};
   const blob=new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');
@@ -665,6 +665,211 @@ function showToast(msg,duration=3500){
   const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
   const tasks=[["2026-04-15",3.00,"KPIs – Processus de ventes KPIs"],["2026-04-16",0.25,"Rencontre avec Josianne – Problématique appels de soumission"],["2026-04-16",4.00,"KPIs – Processus de ventes KPIs – Conception visuelle du tableau de bord"],["2026-04-16",1.25,"Formation Linda sur l'IA – Claude"],["2026-04-16",0.50,"Réunion intégration Azure Database"],["2026-04-16",0.75,"Rencontre avec Sarah – Problématique de vues et d'export de données Monday"],["2026-04-16",0.50,"QA – Power BI KPIs ventes – Avec Vincent et JF"],["2026-04-16",1.00,"Modifications du tableau de bord suite aux rétroactions"],["2026-04-17",1.00,"Rencontre – Pratiques RH avec JF"],["2026-04-15",0.50,"Soudures Rivard – Déplacement"],["2026-04-15",2.75,"Soudures Rivard – Réunion d'introduction"],["2026-04-17",0.50,"Soudures Rivard – Communication et organisation de rencontres avec David et Olivier"],["2026-04-17",2.00,"Soudures Rivard – Configuration et test de Claude Cowork avec GitHub"],["2026-04-17",0.50,"Connexion du tableau de bord KPI aux sources de données pour le rafraîchissement"],["2026-04-20",1.00,"Organisation des dernières demandes"],["2026-04-20",2.50,"Validation des données – Demandes, propositions et contrats"],["2026-04-20",1.75,"Nouveau programme de bonus – Ajustements Power BI"]];
   all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1800000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+
+(function seedInvoice1(){
+  const SEED_KEY="bisson::2026-02-P1",SEEDED_FLAG="kc_seeded_inv1";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-02-01",2.50,"Meeting introduction avec équipe"],
+    ["2026-02-02",0.50,"Tentatives d'accès et accès aux tableaux de bord"],
+    ["2026-02-03",0.75,"Meeting avec Pascal pour survol de Telus Connect"],
+    ["2026-02-04",1.00,"Revoir documentation sur les données sensibles + meeting avec Benjamin pour détails"],
+    ["2026-02-05",0.75,"Survol de la plateforme Kronos"],
+    ["2026-02-06",1.00,"Survol des différents tableaux de bord sur Power BI"],
+    ["2026-02-07",2.00,"Analyse des résultats du tableau de bord nommé Job Cost"],
+    ["2026-02-10",0.50,"Prise de connaissance de la problématique reliée aux courriels de Vincent vers Groupex + contacter MS Solutions"],
+    ["2026-02-11",0.50,"Rencontre avec Webit"],
+    ["2026-02-12",0.50,"Recherche de solutions pour nouveaux projets (Power BI + Display)"],
+    ["2026-02-13",1.50,"Analyse de l'environnement du site web"],
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1100000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice2(){
+  const SEED_KEY="bisson::2026-02-P2",SEEDED_FLAG="kc_seeded_inv2";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-02-16",0.50,"Rencontre demande de permis et outils de réservation de l'équipement"],
+    ["2026-02-17",0.50,"Configuration de it@bissonexpert.com"],
+    ["2026-02-17",0.50,"Accès InputKit + Monday"],
+    ["2026-02-18",0.50,"Rencontre avec MS Solutions pour implantation DKIM & DMARC pour sécurité courriel"],
+    ["2026-02-19",1.50,"Rencontre Monday"],
+    ["2026-02-20",1.00,"Révision de la proposition de MS Solutions pour DKIM & DMARC + communications"],
+    ["2026-02-23",0.50,"Rencontre avec Vincent et Pascal pour gestion des projets futurs"],
+    ["2026-02-23",0.50,"Gestion problématique InputKit avec Myriam"],
+    ["2026-02-24",0.50,"Environnement technologique – Cartographie"],
+    ["2026-02-24",1.00,"Rencontre avec Myriam pour création de contrat dans le CRM"],
+    ["2026-02-25",0.50,"2e rencontre avec Ramzi pour outils de réservation"],
+    ["2026-02-25",0.50,"Rencontre avec compétiteur MS Solutions pour DMARC & DKIM Valimail"],
+    ["2026-02-26",0.50,"Rencontre avec MS Solutions pour DKIM & DMARC – Démo solution"],
+    ["2026-02-27",0.50,"Création de documents pour Bisson Expert (BR, Spec Doc)"],
+    ["2026-02-28",2.50,"CRM – Flux révision et cartographie des intégrations"],
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1200000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice3(){
+  const SEED_KEY="bisson::2026-03-P1",SEEDED_FLAG="kc_seeded_inv3";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-03-02",0.50,"Meeting Bisson & GRO – Collecte d'info lié à Maestro"],
+    ["2026-03-03",1.50,"Meeting Bisson & GRO – Atelier Échéancier"],
+    ["2026-03-04",1.50,"Création d'un Business Requirements et document de spécifications techniques pour solution acte foncier du Québec – Finalisation"],
+    ["2026-03-05",1.00,"Organisation Channel IT dans Teams"],
+    ["2026-03-05",0.50,"Recherche Nominis + communications"],
+    ["2026-03-06",0.50,"Rencontre avec la prod pour avoir détails sur les permis avant de commencer les travaux"],
+    ["2026-03-06",1.00,"Création d'un Business Requirements et document de spécifications techniques pour solution du flag pour les permis"],
+    ["2026-03-09",1.00,"Suivi du progrès de Monday"],
+    ["2026-03-09",3.00,"Ajustements cartographie"],
+    ["2026-03-10",2.00,"Rencontre intégration Monday, gestion de projet et production"],
+    ["2026-03-10",0.50,"Rencontre intégration Monday"],
+    ["2026-03-11",1.50,"Rencontre priorisation avec Jean-François"],
+    ["2026-03-11",0.50,"Communications UKG, Valimail et Vandere pour sécurité des courriels"],
+    ["2026-03-12",2.00,"Rencontre avec Jérémy pour primes + création d'un Business Requirements"],
+    ["2026-03-13",3.00,"Azure rencontre + investigation AutoCad"],
+    ["2026-03-13",1.50,"Analyse processus de vente de A à Z"],
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1300000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice4(){
+  const SEED_KEY="bisson::2026-03-P2",SEEDED_FLAG="kc_seeded_inv4";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-03-16",0.50,"Meeting – Primes additionnelles avec Vincent"],
+    ["2026-03-16",1.00,"Ajustement du Business Requirements pour les primes additionnelles"],
+    ["2026-03-17",0.50,"Création du Business Requirements pour configuration CRM Linda"],
+    ["2026-03-17",0.25,"Rencontre utilisation AutoCad avec Ingénierie"],
+    ["2026-03-17",0.50,"Ajustement solution AutoCad suite à la rencontre avec Ingénierie"],
+    ["2026-03-18",0.25,"Rencontre avec Myriam pour problème avec CRM – Champ de Notes"],
+    ["2026-03-18",0.25,"Smartsheet Bisson – Survol"],
+    ["2026-03-18",1.50,"GRO – Monday meeting"],
+    ["2026-03-19",0.25,"Meeting avec JF et Pascal pour décision intégration Azure"],
+    ["2026-03-19",0.25,"Meeting avec MS Solutions pour l'intégration Azure"],
+    ["2026-03-20",0.50,"Meeting avec Linda pour requirements CRM"],
+    ["2026-03-23",7.75,"Configuration du CRM pour Linda"],
+    ["2026-03-23",0.25,"Meeting processus de prise de rendez-vous avec Stéphane"],
+    ["2026-03-24",1.00,"Meeting avec Julien pour sources de données pour Power BI"],
+    ["2026-03-25",2.00,"Meeting Monday"],
+    ["2026-03-25",0.50,"Meeting avec Dany St-Pierre pour comprendre son utilisation du processus de rendez-vous"],
+    ["2026-03-26",0.50,"Meeting intégration Azure"],
+    ["2026-03-26",0.50,"Communications avec Vandere pour la configuration CRM de Linda"],
+    ["2026-03-27",1.00,"Ajustements Business Requirements CRM Linda"],
+    ["2026-03-30",5.00,"Configuration accès et formulaires pour Linda"],
+    ["2026-03-30",0.50,"Meeting avec Vandere pour confirmer l'environnement dans lequel créer la vue pour Linda"],
+    ["2026-03-31",0.50,"Meeting avec Julien pour accès base de données + VPN"],
+    ["2026-03-31",0.50,"Meeting clarification des rôles"],
+    ["2026-03-31",0.50,"Configuration lien favoris pour Centre de ventes dans le CRM + ajouter accès pour créer des projets"],
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1400000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice1(){
+  const SEED_KEY="bisson::2026-02-P1",SEEDED_FLAG="kc_seeded_inv1";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-02-15",2.50,"Meeting Introduction avec équipe"],
+    ["2026-02-15",0.50,"Tentatives d'accès et accès aux tableaux de bord"],
+    ["2026-02-15",0.75,"Meeting avec Pascal – Survol de Telus Connect"],
+    ["2026-02-15",1.00,"Documentation données sensibles + meeting avec Benjamin pour détails"],
+    ["2026-02-15",0.75,"Survol de la plateforme Kronos"],
+    ["2026-02-15",1.00,"Survol des différents tableaux de bord sur Power BI"],
+    ["2026-02-15",2.00,"Analyse des résultats du tableau de bord Job Cost"],
+    ["2026-02-15",0.50,"Problématique courriels Vincent vers Groupex + contacter MS Solutions"],
+    ["2026-02-15",0.50,"Rencontre avec Webit"],
+    ["2026-02-15",0.50,"Recherche de solutions pour nouveaux projets (Power BI + Display)"],
+    ["2026-02-15",1.50,"Analyse de l'environnement du site web"]
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1100000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice2(){
+  const SEED_KEY="bisson::2026-02-P2",SEEDED_FLAG="kc_seeded_inv2";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-02-28",0.50,"Rencontre demande de permis et outils de réservation de l'équipement"],
+    ["2026-02-28",0.50,"Configuration de it@bissonexpert.com"],
+    ["2026-02-28",0.50,"Accès InputKit + Monday"],
+    ["2026-02-28",0.50,"Rencontre avec MS Solutions pour implantation DKIM & DMARC – sécurité courriel"],
+    ["2026-02-28",1.50,"Rencontre Monday"],
+    ["2026-02-28",1.00,"Révision proposition MS Solutions DKIM & DMARC + Communications"],
+    ["2026-02-28",0.50,"Rencontre avec Vincent et Pascal – gestion des projets futurs"],
+    ["2026-02-28",0.50,"Gestion problématique InputKit avec Myriam"],
+    ["2026-02-28",0.50,"Environnement technologique Cartographie"],
+    ["2026-02-28",1.00,"Rencontre avec Myriam – création de contrat dans le CRM"],
+    ["2026-02-28",0.50,"2e rencontre avec Ramzi – outils de réservation"],
+    ["2026-02-28",0.50,"Rencontre avec compétiteur MS Solution – Valimail DMARC & DKIM"],
+    ["2026-02-28",0.50,"Rencontre avec MS Solutions – DKIM & DMARC Démo solution"],
+    ["2026-02-28",0.50,"Création de documents pour Bisson Expert (BR, Spec Doc)"],
+    ["2026-02-28",2.50,"CRM Flux révision et cartographie des intégrations"]
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1200000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice3(){
+  const SEED_KEY="bisson::2026-03-P1",SEEDED_FLAG="kc_seeded_inv3";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-03-15",0.50,"Meeting Bisson & GRO – Collecte d'info liée à Maestro"],
+    ["2026-03-15",1.50,"Meeting Bisson & GRO – Atelier Échéancier"],
+    ["2026-03-15",1.50,"BR + Spec Tech – solution acte foncier du Québec"],
+    ["2026-03-15",1.00,"Organisation Channel IT dans Teams"],
+    ["2026-03-15",0.50,"Recherche Nominis + communications"],
+    ["2026-03-15",0.50,"Rencontre prod – détails permis avant travaux"],
+    ["2026-03-15",1.00,"BR + Spec Tech – solution flag permis (Ramzi)"],
+    ["2026-03-15",1.00,"Suivi du progrès de Monday"],
+    ["2026-03-15",3.00,"Ajustements cartographie"],
+    ["2026-03-15",2.00,"Rencontre intégration Monday, gestion de projet et production"],
+    ["2026-03-15",0.50,"Rencontre intégration Monday"],
+    ["2026-03-15",1.50,"Rencontre priorisation avec Jean-François"],
+    ["2026-03-15",0.50,"Communications UKG, Valimail et Vendere – sécurité des courriels"],
+    ["2026-03-15",2.00,"Rencontre avec Jérémy – primes + création BR"],
+    ["2026-03-15",3.00,"Azure rencontre + investigation AutoCad"],
+    ["2026-03-15",1.50,"Analyse processus de vente de A à Z"]
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1300000000000+i,date,hrs,desc}));
+  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+})();
+
+(function seedInvoice4(){
+  const SEED_KEY="bisson::2026-03-P2",SEEDED_FLAG="kc_seeded_inv4";if(localStorage.getItem(SEEDED_FLAG))return;
+  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
+  const tasks=[
+    ["2026-03-31",0.50,"Meeting – Primes additionnelles avec Vincent"],
+    ["2026-03-31",1.00,"Ajustement BR primes additionnelles"],
+    ["2026-03-31",0.50,"Création BR configuration CRM Linda"],
+    ["2026-03-31",0.25,"Rencontre utilisation AutoCad avec Ingénierie"],
+    ["2026-03-31",0.50,"Ajustement solution AutoCad suite à la rencontre avec Ingénierie"],
+    ["2026-03-31",0.25,"Rencontre Myriam – problème CRM champ Notes"],
+    ["2026-03-31",0.25,"Smartsheet Bisson overview"],
+    ["2026-03-18",1.50,"GRO – Monday meeting 03-18-2026"],
+    ["2026-03-31",0.25,"Meeting JF et Pascal – décision intégration Azure"],
+    ["2026-03-31",0.25,"Meeting MS Solutions – intégration Azure"],
+    ["2026-03-31",0.50,"Meeting Linda – Requirements CRM"],
+    ["2026-03-31",7.75,"Configuration CRM pour Linda"],
+    ["2026-03-31",0.25,"Meeting processus prise de rendez-vous avec Stéphane"],
+    ["2026-03-31",1.00,"Meeting Julien – sources de données Power BI"],
+    ["2026-03-25",2.00,"Meeting Monday 03-25-2026"],
+    ["2026-03-31",0.50,"Meeting Dany St-Pierre – processus de rendez-vous"],
+    ["2026-03-26",0.50,"Meeting intégration Azure 03-26-2026"],
+    ["2026-03-31",0.50,"Communications Vandere – configuration CRM Linda"],
+    ["2026-03-31",1.00,"Ajustements BR CRM Linda"],
+    ["2026-03-31",5.00,"Configuration accès et formulaires pour Linda"],
+    ["2026-03-31",0.50,"Meeting Vandere – confirmer environnement vue Linda"],
+    ["2026-03-31",0.50,"Meeting Julien – accès base de données + VPN"],
+    ["2026-03-31",0.50,"Meeting clarification des rôles"],
+    ["2026-03-31",0.50,"Configuration lien favoris Centre de ventes CRM + accès projets"]
+  ];
+  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1400000000000+i,date,hrs,desc}));
   localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
 })();
 
