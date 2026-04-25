@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -441,495 +442,481 @@ function appendLineDOM(id,idx,desc,hrs,date,startOpen){
           <textarea placeholder="Ex: Réunion intégration Monday"
             oninput="updateLine(${id},'desc',this.value)"
             onblur="blurAndTranslate(${id},this)">${desc}</textarea></div>
-      </div>
-      <div class="row r2" style="margin-bottom:12px">
-        <div><label>Heures</label><input type="number" step="0.25" min="0.25" placeholder="ex: 1.5" value="${hrs}" oninput="updateLine(${id},'hrs',this.value)"></div>
-        <div><label>Date</label><input type="date" value="${date}" onchange="updateLine(${id},'date',this.value)"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #e0ddd6;padding-top:10px">
-        <button class="btn" style="font-size:12px;padding:5px 14px;color:#555" onclick="toggleLine(${id})">&#x2713; Réduire</button>
-        <button class="btn" style="font-size:12px;padding:5px 18px;color:#185FA5;border-color:#185FA5" onclick="addLine()">+ Ajouter une tâche</button>
-      </div>
-    </div>`;
-  container.appendChild(d);
+
+```
+  </div>
+  <div class="row r2" style="margin-bottom:12px">
+    <div><label>Heures</label><input type="number" step="0.25" min="0.25" placeholder="ex: 1.5" value="${hrs}" oninput="updateLine(${id},'hrs',this.value)"></div>
+    <div><label>Date</label><input type="date" value="${date}" onchange="updateLine(${id},'date',this.value)"></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #e0ddd6;padding-top:10px">
+    <button class="btn" style="font-size:12px;padding:5px 14px;color:#555" onclick="toggleLine(${id})">&#x2713; Réduire</button>
+    <button class="btn" style="font-size:12px;padding:5px 18px;color:#185FA5;border-color:#185FA5" onclick="addLine()">+ Ajouter une tâche</button>
+  </div>
+</div>`;
+```
+
+container.appendChild(d);
 }
 
 function renderLines(){
-  const c=document.getElementById("lines");c.innerHTML="";
-  if(!lines.length){c.innerHTML=`<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche. Cliquez "+ Ajouter une tâche".</p>`;updateTotal();return;}
-  // Sort by date ascending (oldest first)
-  lines.sort((a,b)=>{
-    const da=a.date||"",db=b.date||"";
-    if(da<db)return -1;if(da>db)return 1;return 0;
-  });
-  lines.forEach((l,i)=>appendLineDOM(l.id,i,l.desc,l.hrs,l.date,false));updateTotal();
+const c=document.getElementById(“lines”);c.innerHTML=””;
+if(!lines.length){c.innerHTML=`<p id="empty-msg" style="text-align:center;color:#aaa;padding:16px 0;font-size:13px">Aucune tâche. Cliquez "+ Ajouter une tâche".</p>`;updateTotal();return;}
+// Sort by date ascending (oldest first)
+lines.sort((a,b)=>{
+const da=a.date||””,db=b.date||””;
+if(da<db)return -1;if(da>db)return 1;return 0;
+});
+lines.forEach((l,i)=>appendLineDOM(l.id,i,l.desc,l.hrs,l.date,false));updateTotal();
 }
 
 function showTab(tab){
-  if(tab==="preview"){renderPreview();document.getElementById("form-wrap").style.display="none";document.getElementById("preview-wrap").style.display="block";}
-  else{document.getElementById("form-wrap").style.display="block";document.getElementById("preview-wrap").style.display="none";}
+if(tab===“preview”){renderPreview();document.getElementById(“form-wrap”).style.display=“none”;document.getElementById(“preview-wrap”).style.display=“block”;}
+else{document.getElementById(“form-wrap”).style.display=“block”;document.getElementById(“preview-wrap”).style.display=“none”;}
 }
 
 function renderPreview(){
-  const client=getClient(),period=getPeriodLabel();
-  const rate=parseFloat(document.getElementById("rate").value)||0,num=document.getElementById("inv-num").value||"—";
-  const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
-  const totalAmt=(totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  const today=new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
-  const hrsDisplay=totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
-  const multiplierLabel=`${hrsDisplay}h x ${rate.toLocaleString("fr-CA")} $/h`;
-  const rows=lines.map((l,i)=>{const hrs=parseFloat(l.hrs)||0,bg=i%2===0?"#fff":"#fafaf8";
-    return `<tr style="background:${bg}"><td>${l.desc||"(sans description)"}</td><td style="white-space:nowrap;text-align:center">${formatDate(l.date)}</td><td style="text-align:center">${hrs%1===0?hrs.toFixed(0):hrs}</td></tr>`;}).join("");
-  document.getElementById("preview-content").innerHTML=`
-    <div class="preview-invoice">
-      <div class="inv-header">
-        <div><div class="inv-label">Facture</div><div class="inv-title">No. ${num}</div><div class="inv-period-sub">${period}</div></div>
-        <div class="inv-right"><div class="inv-name">${ME.name}</div><div>${ME.email}</div><div>${ME.title}</div></div>
-      </div>
-      <div class="inv-meta">
-        <div class="inv-meta-block"><div class="lbl">Facturé à</div><div class="val">${client.name}</div><div class="sub">${client.addr}<br>${client.city} ${client.postal}<br>${client.phone}</div></div>
-        <div class="inv-meta-block" style="text-align:right"><div class="lbl">Période</div><div class="val">${period}</div><div class="sub" style="margin-top:8px">Émise le ${today}</div></div>
-      </div>
-      <hr class="hr">
-      <table class="inv-table"><thead><tr><th>Description</th><th style="text-align:center">Date</th><th style="text-align:center">Heures</th></tr></thead>
-      <tbody>${rows||'<tr><td colspan="3" style="text-align:center;color:#aaa;padding:16px">Aucune tâche</td></tr>'}</tbody></table>
-      <hr class="hr">
-      <div class="inv-footer-row">
-        <div class="inv-footer-note">Payable à la réception par virement Interac au <strong>${ME.email}</strong>.<br>C\'est un plaisir de faire affaire avec ${client.name}. Merci!</div>
-        <div class="inv-total-chip"><div class="chip-lbl">${multiplierLabel}</div><div class="chip-amt">${totalAmt}</div></div>
-      </div>
-    </div>`;
+const client=getClient(),period=getPeriodLabel();
+const rate=parseFloat(document.getElementById(“rate”).value)||0,num=document.getElementById(“inv-num”).value||”—”;
+const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+const totalAmt=(totalHrs*rate).toLocaleString(“fr-CA”,{minimumFractionDigits:2})+” $”;
+const today=new Date().toLocaleDateString(“fr-CA”,{day:“numeric”,month:“long”,year:“numeric”});
+const hrsDisplay=totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
+const multiplierLabel=`${hrsDisplay}h x ${rate.toLocaleString("fr-CA")} $/h`;
+const rows=lines.map((l,i)=>{const hrs=parseFloat(l.hrs)||0,bg=i%2===0?”#fff”:”#fafaf8”;
+return `<tr style="background:${bg}"><td>${l.desc||"(sans description)"}</td><td style="white-space:nowrap;text-align:center">${formatDate(l.date)}</td><td style="text-align:center">${hrs%1===0?hrs.toFixed(0):hrs}</td></tr>`;}).join(””);
+document.getElementById(“preview-content”).innerHTML=` <div class="preview-invoice"> <div class="inv-header"> <div><div class="inv-label">Facture</div><div class="inv-title">No. ${num}</div><div class="inv-period-sub">${period}</div></div> <div class="inv-right"><div class="inv-name">${ME.name}</div><div>${ME.email}</div><div>${ME.title}</div></div> </div> <div class="inv-meta"> <div class="inv-meta-block"><div class="lbl">Facturé à</div><div class="val">${client.name}</div><div class="sub">${client.addr}<br>${client.city} ${client.postal}<br>${client.phone}</div></div> <div class="inv-meta-block" style="text-align:right"><div class="lbl">Période</div><div class="val">${period}</div><div class="sub" style="margin-top:8px">Émise le ${today}</div></div> </div> <hr class="hr"> <table class="inv-table"><thead><tr><th>Description</th><th style="text-align:center">Date</th><th style="text-align:center">Heures</th></tr></thead> <tbody>${rows||'<tr><td colspan="3" style="text-align:center;color:#aaa;padding:16px">Aucune tâche</td></tr>'}</tbody></table> <hr class="hr"> <div class="inv-footer-row"> <div class="inv-footer-note">Payable à la réception par virement Interac au <strong>${ME.email}</strong>.<br>C\'est un plaisir de faire affaire avec ${client.name}. Merci!</div> <div class="inv-total-chip"><div class="chip-lbl">${multiplierLabel}</div><div class="chip-amt">${totalAmt}</div></div> </div> </div>`;
 }
 
 async function downloadPDF(){
-  if(!window.jspdf){showToast("jsPDF en chargement, réessayez.");return;}
-  const client=getClient(),num=document.getElementById("inv-num").value||"X";
-  const rate=parseFloat(document.getElementById("rate").value)||0;
-  const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
-  const totalAmt=(totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  const period=getPeriodLabel(),endDate=getEndDate();
-  const today=new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
-  const fname=`${client.name} - ${endDate} - Invoice ${num}.pdf`;
-  const invoiceData={num,client:client.name,period,issued:today,hours:totalHrs%1===0?totalHrs.toFixed(0):totalHrs,rate,total:totalAmt};
-  const blob=generatePDFBlob();
-  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=fname;a.click();URL.revokeObjectURL(url);
-  logActivity("FACTURE GÉNÉRÉE",{desc:fname,hrs:invoiceData.hours,date:invoiceData.issued},invoiceData.total);
-  pushToGitHub(blob,fname,invoiceData);
+if(!window.jspdf){showToast(“jsPDF en chargement, réessayez.”);return;}
+const client=getClient(),num=document.getElementById(“inv-num”).value||“X”;
+const rate=parseFloat(document.getElementById(“rate”).value)||0;
+const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+const totalAmt=(totalHrs*rate).toLocaleString(“fr-CA”,{minimumFractionDigits:2})+” $”;
+const period=getPeriodLabel(),endDate=getEndDate();
+const today=new Date().toLocaleDateString(“fr-CA”,{day:“numeric”,month:“long”,year:“numeric”});
+const fname=`${client.name} - ${endDate} - Invoice ${num}.pdf`;
+const invoiceData={num,client:client.name,period,issued:today,hours:totalHrs%1===0?totalHrs.toFixed(0):totalHrs,rate,total:totalAmt};
+const blob=generatePDFBlob();
+const url=URL.createObjectURL(blob);const a=document.createElement(“a”);a.href=url;a.download=fname;a.click();URL.revokeObjectURL(url);
+logActivity(“FACTURE GÉNÉRÉE”,{desc:fname,hrs:invoiceData.hours,date:invoiceData.issued},invoiceData.total);
+pushToGitHub(blob,fname,invoiceData);
 }
 
 function generatePDFBlob(){
-  const{jsPDF}=window.jspdf;
-  const doc=new jsPDF({unit:"pt",format:"letter"});
-  const client=getClient(),period=getPeriodLabel();
-  const rate=parseFloat(document.getElementById("rate").value)||0,num=document.getElementById("inv-num").value||"X";
-  const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
-  const totalAmt=(totalHrs*rate).toLocaleString("fr-CA",{minimumFractionDigits:2})+" $";
-  const hrsDisplay=totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
-  const multiplierLabel=`${hrsDisplay}h  x  ${rate} $/h`;
-  const today=new Date().toLocaleDateString("fr-CA",{day:"numeric",month:"long",year:"numeric"});
-  const PW=612,PAD=36,TW=612-72;
-  const BLUE=[24,95,165],LBLUE=[181,212,244],DARK=[17,17,17],MID=[85,85,85],MUTED=[136,136,136];
-  const GRAYBG=[240,240,238],ALTROW=[250,250,248],ROWLINE=[238,238,238];
-  const PAGE_H=792,MARGIN_BOTTOM=80;
-  let y=PAD;
-  doc.setFillColor(...BLUE);doc.rect(PAD,y,TW,72,"F");
-  doc.setFont("helvetica","bold");doc.setTextColor(...LBLUE);doc.setFontSize(7);doc.text("FACTURE",PAD+14,y+16);
-  doc.setTextColor(255,255,255);doc.setFontSize(22);doc.text(`No. ${num}`,PAD+14,y+38);
-  doc.setFont("helvetica","normal");doc.setTextColor(...LBLUE);doc.setFontSize(9);doc.text(period,PAD+14,y+54);
-  doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);doc.setFontSize(12);doc.text(ME.name,PW-PAD-14,y+22,{align:"right"});
-  doc.setFont("helvetica","normal");doc.setTextColor(...LBLUE);doc.setFontSize(8);
-  doc.text(ME.email,PW-PAD-14,y+35,{align:"right"});doc.text(ME.title,PW-PAD-14,y+47,{align:"right"});
-  y+=82;
-  doc.setFont("helvetica","bold");doc.setTextColor(...MUTED);doc.setFontSize(7);doc.text("FACTURÉ À",PAD+4,y+10);
-  doc.setFont("helvetica","bold");doc.setTextColor(...DARK);doc.setFontSize(11);doc.text(client.name,PAD+4,y+23);
-  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(8);
-  doc.text(client.addr,PAD+4,y+34);doc.text(`${client.city} ${client.postal}`,PAD+4,y+44);doc.text(client.phone,PAD+4,y+54);
-  doc.setFont("helvetica","bold");doc.setTextColor(...MUTED);doc.setFontSize(7);doc.text("PÉRIODE",PW-PAD-4,y+10,{align:"right"});
-  doc.setFont("helvetica","bold");doc.setTextColor(...DARK);doc.setFontSize(11);doc.text(period,PW-PAD-4,y+23,{align:"right"});
-  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(8);doc.text(`Émise le : ${today}`,PW-PAD-4,y+44,{align:"right"});
-  y+=64;doc.setDrawColor(221,221,221);doc.setLineWidth(0.5);doc.line(PAD,y,PW-PAD,y);y+=10;
-  const CW=[TW*0.72,TW*0.16,TW*0.12],cx=[PAD,PAD+CW[0],PAD+CW[0]+CW[1]];
-  function drawTableHeader(){
-    doc.setFillColor(...GRAYBG);doc.rect(PAD,y,TW,20,"F");
-    doc.setFont("helvetica","bold");doc.setTextColor(...MUTED);doc.setFontSize(7);
-    doc.text("DESCRIPTION",cx[0]+5,y+13);
-    doc.text("DATE",cx[1]+CW[1]/2,y+13,{align:"center"});
-    doc.text("HEURES",cx[2]+CW[2]/2,y+13,{align:"center"});
-    y+=20;
-  }
-  drawTableHeader();
-  lines.forEach((l,i)=>{
-    const hrs=parseFloat(l.hrs)||0,hrsStr=String(hrs);
-    const maxW=CW[0]-12;
-    doc.setFont("helvetica","normal");doc.setFontSize(8);
-    const descLines=doc.splitTextToSize(l.desc||"(sans description)",maxW);
-    const rowH=Math.max(18,descLines.length*11+8);
-    if(y+rowH+MARGIN_BOTTOM>PAGE_H){doc.addPage();y=PAD;drawTableHeader();}
-    if(i%2===1){doc.setFillColor(...ALTROW);}else{doc.setFillColor(255,255,255);}
-    doc.rect(PAD,y,TW,rowH,"F");
-    doc.setDrawColor(...ROWLINE);doc.setLineWidth(0.3);doc.line(PAD,y+rowH,PW-PAD,y+rowH);
-    doc.setTextColor(...DARK);doc.text(descLines,cx[0]+5,y+12);
-    doc.setTextColor(...MID);doc.text(formatDate(l.date),cx[1]+CW[1]/2,y+rowH/2+3,{align:"center"});
-    doc.setTextColor(...DARK);doc.text(hrsStr,cx[2]+CW[2]/2,y+rowH/2+3,{align:"center"});
-    y+=rowH;
-  });
-  y+=12;
-  const totalColW=TW*0.33;
-  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(10);doc.text(multiplierLabel,PAD+6,y+16);
-  doc.setFillColor(...BLUE);doc.rect(PW-PAD-totalColW,y,totalColW,32,"F");
-  doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);doc.setFontSize(14);doc.text(totalAmt,PW-PAD-10,y+21,{align:"right"});
-  y+=44;y+=12;
-  doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(10);
-  const footerLines=doc.splitTextToSize(`Payable à la réception par virement Interac au ${ME.email}. C'est un plaisir de faire affaire avec ${client.name}. Merci!`,TW);
-  doc.text(footerLines,PAD,y);
-  return doc.output("blob");
+const{jsPDF}=window.jspdf;
+const doc=new jsPDF({unit:“pt”,format:“letter”});
+const client=getClient(),period=getPeriodLabel();
+const rate=parseFloat(document.getElementById(“rate”).value)||0,num=document.getElementById(“inv-num”).value||“X”;
+const totalHrs=lines.reduce((s,l)=>s+(parseFloat(l.hrs)||0),0);
+const totalAmt=(totalHrs*rate).toLocaleString(“fr-CA”,{minimumFractionDigits:2})+” $”;
+const hrsDisplay=totalHrs%1===0?totalHrs.toFixed(0):String(totalHrs);
+const multiplierLabel=`${hrsDisplay}h  x  ${rate} $/h`;
+const today=new Date().toLocaleDateString(“fr-CA”,{day:“numeric”,month:“long”,year:“numeric”});
+const PW=612,PAD=36,TW=612-72;
+const BLUE=[24,95,165],LBLUE=[181,212,244],DARK=[17,17,17],MID=[85,85,85],MUTED=[136,136,136];
+const GRAYBG=[240,240,238],ALTROW=[250,250,248],ROWLINE=[238,238,238];
+const PAGE_H=792,MARGIN_BOTTOM=80;
+let y=PAD;
+doc.setFillColor(…BLUE);doc.rect(PAD,y,TW,72,“F”);
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(…LBLUE);doc.setFontSize(7);doc.text(“FACTURE”,PAD+14,y+16);
+doc.setTextColor(255,255,255);doc.setFontSize(22);doc.text(`No. ${num}`,PAD+14,y+38);
+doc.setFont(“helvetica”,“normal”);doc.setTextColor(…LBLUE);doc.setFontSize(9);doc.text(period,PAD+14,y+54);
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(255,255,255);doc.setFontSize(12);doc.text(ME.name,PW-PAD-14,y+22,{align:“right”});
+doc.setFont(“helvetica”,“normal”);doc.setTextColor(…LBLUE);doc.setFontSize(8);
+doc.text(ME.email,PW-PAD-14,y+35,{align:“right”});doc.text(ME.title,PW-PAD-14,y+47,{align:“right”});
+y+=82;
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(…MUTED);doc.setFontSize(7);doc.text(“FACTURÉ À”,PAD+4,y+10);
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(…DARK);doc.setFontSize(11);doc.text(client.name,PAD+4,y+23);
+doc.setFont(“helvetica”,“normal”);doc.setTextColor(…MID);doc.setFontSize(8);
+doc.text(client.addr,PAD+4,y+34);doc.text(`${client.city} ${client.postal}`,PAD+4,y+44);doc.text(client.phone,PAD+4,y+54);
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(…MUTED);doc.setFontSize(7);doc.text(“PÉRIODE”,PW-PAD-4,y+10,{align:“right”});
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(…DARK);doc.setFontSize(11);doc.text(period,PW-PAD-4,y+23,{align:“right”});
+doc.setFont(“helvetica”,“normal”);doc.setTextColor(…MID);doc.setFontSize(8);doc.text(`Émise le : ${today}`,PW-PAD-4,y+44,{align:“right”});
+y+=64;doc.setDrawColor(221,221,221);doc.setLineWidth(0.5);doc.line(PAD,y,PW-PAD,y);y+=10;
+const CW=[TW*0.72,TW*0.16,TW*0.12],cx=[PAD,PAD+CW[0],PAD+CW[0]+CW[1]];
+function drawTableHeader(){
+doc.setFillColor(…GRAYBG);doc.rect(PAD,y,TW,20,“F”);
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(…MUTED);doc.setFontSize(7);
+doc.text(“DESCRIPTION”,cx[0]+5,y+13);
+doc.text(“DATE”,cx[1]+CW[1]/2,y+13,{align:“center”});
+doc.text(“HEURES”,cx[2]+CW[2]/2,y+13,{align:“center”});
+y+=20;
+}
+drawTableHeader();
+lines.forEach((l,i)=>{
+const hrs=parseFloat(l.hrs)||0,hrsStr=String(hrs);
+const maxW=CW[0]-12;
+doc.setFont(“helvetica”,“normal”);doc.setFontSize(8);
+const descLines=doc.splitTextToSize(l.desc||”(sans description)”,maxW);
+const rowH=Math.max(18,descLines.length*11+8);
+if(y+rowH+MARGIN_BOTTOM>PAGE_H){doc.addPage();y=PAD;drawTableHeader();}
+if(i%2===1){doc.setFillColor(…ALTROW);}else{doc.setFillColor(255,255,255);}
+doc.rect(PAD,y,TW,rowH,“F”);
+doc.setDrawColor(…ROWLINE);doc.setLineWidth(0.3);doc.line(PAD,y+rowH,PW-PAD,y+rowH);
+doc.setTextColor(…DARK);doc.text(descLines,cx[0]+5,y+12);
+doc.setTextColor(…MID);doc.text(formatDate(l.date),cx[1]+CW[1]/2,y+rowH/2+3,{align:“center”});
+doc.setTextColor(…DARK);doc.text(hrsStr,cx[2]+CW[2]/2,y+rowH/2+3,{align:“center”});
+y+=rowH;
+});
+y+=12;
+const totalColW=TW*0.33;
+doc.setFont(“helvetica”,“normal”);doc.setTextColor(…MID);doc.setFontSize(10);doc.text(multiplierLabel,PAD+6,y+16);
+doc.setFillColor(…BLUE);doc.rect(PW-PAD-totalColW,y,totalColW,32,“F”);
+doc.setFont(“helvetica”,“bold”);doc.setTextColor(255,255,255);doc.setFontSize(14);doc.text(totalAmt,PW-PAD-10,y+21,{align:“right”});
+y+=44;y+=12;
+doc.setFont(“helvetica”,“normal”);doc.setTextColor(…MID);doc.setFontSize(10);
+const footerLines=doc.splitTextToSize(`Payable à la réception par virement Interac au ${ME.email}. C'est un plaisir de faire affaire avec ${client.name}. Merci!`,TW);
+doc.text(footerLines,PAD,y);
+return doc.output(“blob”);
 }
 
 function openEmailModal(){
-  const client=getClient(),num=document.getElementById("inv-num").value||"X";
-  const period=getPeriodLabel(),contactName=client.contact||"Madame",billingEmail=client.email||"";
-  const day=new Date().getDay();let greeting;
-  if(day===1)greeting=`Bon matin ${contactName},\n\nJ'espère que tu as passé un excellent weekend et que tu attaques cette semaine avec toute ton énergie habituelle :)`;
-  else if(day===5)greeting=`Bon matin ${contactName},\n\nJ'espère que tu passes une belle fin de semaine et que tu profiteras bien du weekend qui approche!`;
-  else if(day===0||day===6)greeting=`Bonjour ${contactName},\n\nJ'espère que tu passes un excellent weekend :)`;
-  else{const midWeek=[`Bonjour ${contactName} :)\n\nJ'espère que ta semaine se passe bien et que tu trouves quelques moments de répit dans tout ça!`,`Bonjour ${contactName},\n\nJ'espère que tu vas bien et que la semaine te traite bien jusqu'ici :)`,`Bon matin ${contactName},\n\nJ'espère que tout roule bien de ton côté!`];greeting=midWeek[num%midWeek.length];}
-  const body=`${greeting}\n\nTu trouveras en pièce jointe ma facture No. ${num} pour la période du ${period}.\n\nComme à l'habitude, le paiement peut être effectué par virement Interac à ${ME.email}.\n\nN'hésite surtout pas si tu as des questions ou si quoi que ce soit nécessite une correction.\n\nBonne journée et merci pour ton temps :)\n\nCordialement,\nKarim Chaouche\n${ME.email}\n(514)-553-2640`;
-  document.getElementById("email-to").value=billingEmail;document.getElementById("email-cc").value=ME.email;
-  document.getElementById("email-subject").value=`Facture No. ${num} – ${period} – Karim Chaouche`;
-  document.getElementById("email-body").value=body;document.getElementById("email-modal").classList.add("open");
+const client=getClient(),num=document.getElementById(“inv-num”).value||“X”;
+const period=getPeriodLabel(),contactName=client.contact||“Madame”,billingEmail=client.email||””;
+const day=new Date().getDay();let greeting;
+if(day===1)greeting=`Bon matin ${contactName},\n\nJ'espère que tu as passé un excellent weekend et que tu attaques cette semaine avec toute ton énergie habituelle :)`;
+else if(day===5)greeting=`Bon matin ${contactName},\n\nJ'espère que tu passes une belle fin de semaine et que tu profiteras bien du weekend qui approche!`;
+else if(day===0||day===6)greeting=`Bonjour ${contactName},\n\nJ'espère que tu passes un excellent weekend :)`;
+else{const midWeek=[`Bonjour ${contactName} :)\n\nJ'espère que ta semaine se passe bien et que tu trouves quelques moments de répit dans tout ça!`,`Bonjour ${contactName},\n\nJ'espère que tu vas bien et que la semaine te traite bien jusqu'ici :)`,`Bon matin ${contactName},\n\nJ'espère que tout roule bien de ton côté!`];greeting=midWeek[num%midWeek.length];}
+const body=`${greeting}\n\nTu trouveras en pièce jointe ma facture No. ${num} pour la période du ${period}.\n\nComme à l'habitude, le paiement peut être effectué par virement Interac à ${ME.email}.\n\nN'hésite surtout pas si tu as des questions ou si quoi que ce soit nécessite une correction.\n\nBonne journée et merci pour ton temps :)\n\nCordialement,\nKarim Chaouche\n${ME.email}\n(514)-553-2640`;
+document.getElementById(“email-to”).value=billingEmail;document.getElementById(“email-cc”).value=ME.email;
+document.getElementById(“email-subject”).value=`Facture No. ${num} – ${period} – Karim Chaouche`;
+document.getElementById(“email-body”).value=body;document.getElementById(“email-modal”).classList.add(“open”);
 }
-function closeEmailModal(){document.getElementById("email-modal").classList.remove("open");}
+function closeEmailModal(){document.getElementById(“email-modal”).classList.remove(“open”);}
 async function sendEmail(){
-  const to=document.getElementById("email-to").value,cc=document.getElementById("email-cc").value;
-  const subject=document.getElementById("email-subject").value,body=document.getElementById("email-body").value;
-  if(!to){showToast("Veuillez entrer un destinataire.");return;}
-  const mailtoLink=`mailto:${encodeURIComponent(to)}?cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  await downloadPDF();closeEmailModal();
-  setTimeout(()=>{window.location.href=mailtoLink;},600);
-  showToast("PDF téléchargé — joignez-le à l'email qui s'ouvre.");
+const to=document.getElementById(“email-to”).value,cc=document.getElementById(“email-cc”).value;
+const subject=document.getElementById(“email-subject”).value,body=document.getElementById(“email-body”).value;
+if(!to){showToast(“Veuillez entrer un destinataire.”);return;}
+const mailtoLink=`mailto:${encodeURIComponent(to)}?cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+await downloadPDF();closeEmailModal();
+setTimeout(()=>{window.location.href=mailtoLink;},600);
+showToast(“PDF téléchargé — joignez-le à l’email qui s’ouvre.”);
 }
 
-const GITHUB_REPO="kchaouche17/billing-app",GITHUB_TOKEN_KEY="kc_github_token";
-const CLIENT_FOLDERS={bisson:"bisson-expert",rivard:"soudures-rivard",custom:"accounting-documents"};
-function clientFolder(){return CLIENT_FOLDERS[document.getElementById("client").value]||"accounting-documents";}
-function saveGithubToken(){const val=document.getElementById("github-token").value.trim();if(val)localStorage.setItem(GITHUB_TOKEN_KEY,val);else localStorage.removeItem(GITHUB_TOKEN_KEY);}
-function toggleTokenVisibility(){const inp=document.getElementById("github-token");inp.type=inp.type==="password"?"text":"password";}
-function getGithubToken(){return localStorage.getItem(GITHUB_TOKEN_KEY)||document.getElementById("github-token").value.trim();}
-function setGithubStatus(msg,color="#888"){const el=document.getElementById("github-status");if(el){el.textContent=msg;el.style.color=color;}}
+const GITHUB_REPO=“kchaouche17/billing-app”,GITHUB_TOKEN_KEY=“kc_github_token”;
+const CLIENT_FOLDERS={bisson:“bisson-expert”,rivard:“soudures-rivard”,custom:“accounting-documents”};
+function clientFolder(){return CLIENT_FOLDERS[document.getElementById(“client”).value]||“accounting-documents”;}
+function saveGithubToken(){const val=document.getElementById(“github-token”).value.trim();if(val)localStorage.setItem(GITHUB_TOKEN_KEY,val);else localStorage.removeItem(GITHUB_TOKEN_KEY);}
+function toggleTokenVisibility(){const inp=document.getElementById(“github-token”);inp.type=inp.type===“password”?“text”:“password”;}
+function getGithubToken(){return localStorage.getItem(GITHUB_TOKEN_KEY)||document.getElementById(“github-token”).value.trim();}
+function setGithubStatus(msg,color=”#888”){const el=document.getElementById(“github-status”);if(el){el.textContent=msg;el.style.color=color;}}
 async function githubGetFileSha(token,path){
-  const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,{headers:{"Authorization":`token ${token}`,"Accept":"application/vnd.github.v3+json"}});
-  if(r.status===404)return null;const d=await r.json();return d.sha||null;
+const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,{headers:{“Authorization”:`token ${token}`,“Accept”:“application/vnd.github.v3+json”}});
+if(r.status===404)return null;const d=await r.json();return d.sha||null;
 }
 async function githubPutFile(token,path,contentB64,message,sha){
-  const body={message,content:contentB64};if(sha)body.sha=sha;
-  const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,{method:"PUT",headers:{"Authorization":`token ${token}`,"Content-Type":"application/json","Accept":"application/vnd.github.v3+json"},body:JSON.stringify(body)});
-  return r.ok;
+const body={message,content:contentB64};if(sha)body.sha=sha;
+const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,{method:“PUT”,headers:{“Authorization”:`token ${token}`,“Content-Type”:“application/json”,“Accept”:“application/vnd.github.v3+json”},body:JSON.stringify(body)});
+return r.ok;
 }
 async function pushToGitHub(pdfBlob,filename,invoiceData){
-  const token=getGithubToken();if(!token||!token.startsWith("ghp_")){setGithubStatus("Manque token","#e8a800");return;}
-  const folder=clientFolder(),pdfPath=`${folder}/invoices/${filename}`,csvPath=`${folder}/logs/invoices-log.csv`;
-  const csvHeader="No,Client,Période,Date émission,Heures,Taux,Total,Fichier\n";
-  setGithubStatus("Envoi GitHub...","#185FA5");
-  try{
-    const pdfB64=await new Promise((res,rej)=>{const reader=new FileReader();reader.onload=()=>res(reader.result.split(",")[1]);reader.onerror=rej;reader.readAsDataURL(pdfBlob);});
-    const pdfSha=await githubGetFileSha(token,pdfPath);
-    const pdfOk=await githubPutFile(token,pdfPath,pdfB64,`Add invoice: ${filename}`,pdfSha);
-    const csvSha=await githubGetFileSha(token,csvPath);
-    let csvContent=csvHeader;
-    if(csvSha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`,{headers:{"Authorization":`token ${token}`}});const d=await r.json();
-      const csvBytes=Uint8Array.from(atob(d.content.replace(/\n/g,"")),c=>c.charCodeAt(0));
-      csvContent=new TextDecoder("utf-8").decode(csvBytes);}
-    const newRow=`${invoiceData.num},"${invoiceData.client}","${invoiceData.period}","${invoiceData.issued}",${invoiceData.hours},${invoiceData.rate},"${invoiceData.total}","${filename}"`;
-    if(!csvContent.includes(`"${filename}"`))csvContent+=newRow+"\n";
-    const csvB64=btoa(String.fromCharCode(...new TextEncoder().encode(csvContent)));
-    const csvOk=await githubPutFile(token,csvPath,csvB64,`Update invoices log: ${filename}`,csvSha);
-    if(pdfOk&&csvOk)setGithubStatus("Sauvegardé GitHub","#1a7a4a");else setGithubStatus("Erreur partielle","#e8a800");
-  }catch(e){setGithubStatus("Erreur: "+e.message,"#E24B4A");}
+const token=getGithubToken();if(!token||!token.startsWith(“ghp_”)){setGithubStatus(“Manque token”,”#e8a800”);return;}
+const folder=clientFolder(),pdfPath=`${folder}/invoices/${filename}`,csvPath=`${folder}/logs/invoices-log.csv`;
+const csvHeader=“No,Client,Période,Date émission,Heures,Taux,Total,Fichier\n”;
+setGithubStatus(“Envoi GitHub…”,”#185FA5”);
+try{
+const pdfB64=await new Promise((res,rej)=>{const reader=new FileReader();reader.onload=()=>res(reader.result.split(”,”)[1]);reader.onerror=rej;reader.readAsDataURL(pdfBlob);});
+const pdfSha=await githubGetFileSha(token,pdfPath);
+const pdfOk=await githubPutFile(token,pdfPath,pdfB64,`Add invoice: ${filename}`,pdfSha);
+const csvSha=await githubGetFileSha(token,csvPath);
+let csvContent=csvHeader;
+if(csvSha){const r=await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${csvPath}`,{headers:{“Authorization”:`token ${token}`}});const d=await r.json();
+const csvBytes=Uint8Array.from(atob(d.content.replace(/\n/g,””)),c=>c.charCodeAt(0));
+csvContent=new TextDecoder(“utf-8”).decode(csvBytes);}
+const newRow=`${invoiceData.num},"${invoiceData.client}","${invoiceData.period}","${invoiceData.issued}",${invoiceData.hours},${invoiceData.rate},"${invoiceData.total}","${filename}"`;
+if(!csvContent.includes(`"${filename}"`))csvContent+=newRow+”\n”;
+const csvB64=btoa(String.fromCharCode(…new TextEncoder().encode(csvContent)));
+const csvOk=await githubPutFile(token,csvPath,csvB64,`Update invoices log: ${filename}`,csvSha);
+if(pdfOk&&csvOk)setGithubStatus(“Sauvegardé GitHub”,”#1a7a4a”);else setGithubStatus(“Erreur partielle”,”#e8a800”);
+}catch(e){setGithubStatus(“Erreur: “+e.message,”#E24B4A”);}
 }
 
 function exportData(){
-  const all=loadAll(),flags={};['kc_seeded_inv1','kc_seeded_inv2','kc_seeded_inv3','kc_seeded_inv4','kc_seeded_inv5','kc_seeded_inv6'].forEach(k=>{if(localStorage.getItem(k))flags[k]='1';});
-  const bundle={version:1,exported:new Date().toISOString(),data:all,flags};
-  const blob=new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');
-  a.href=url;a.download=`factures-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);showToast('Sauvegarde exportée!');
+const all=loadAll(),flags={};[‘kc_seeded_inv1’,‘kc_seeded_inv2’,‘kc_seeded_inv3’,‘kc_seeded_inv4’,‘kc_seeded_inv5’,‘kc_seeded_inv6’].forEach(k=>{if(localStorage.getItem(k))flags[k]=‘1’;});
+const bundle={version:1,exported:new Date().toISOString(),data:all,flags};
+const blob=new Blob([JSON.stringify(bundle,null,2)],{type:‘application/json’});
+const url=URL.createObjectURL(blob);const a=document.createElement(‘a’);
+a.href=url;a.download=`factures-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);showToast(‘Sauvegarde exportée!’);
 }
 
 function importData(event){
-  const file=event.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=(e)=>{
-    try{
-      const bundle=JSON.parse(e.target.result),incoming=bundle.data||bundle,current=loadAll();
-      const merged={...incoming,...current};
-      Object.keys(incoming).forEach(k=>{if(!current[k]||current[k].length===0)merged[k]=incoming[k];});
-      localStorage.setItem(STORAGE_KEY,JSON.stringify(merged));
-      if(bundle.flags)Object.keys(bundle.flags).forEach(k=>localStorage.setItem(k,bundle.flags[k]));
-      lines=loadLinesForCurrent();renderPeriodGrid();renderLines();updateTotal();
-      showToast(`${Object.keys(incoming).length} périodes importées!`);
-    }catch{showToast('Fichier invalide.');}
-  };
-  reader.readAsText(file);event.target.value='';
+const file=event.target.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=(e)=>{
+try{
+const bundle=JSON.parse(e.target.result),incoming=bundle.data||bundle,current=loadAll();
+const merged={…incoming,…current};
+Object.keys(incoming).forEach(k=>{if(!current[k]||current[k].length===0)merged[k]=incoming[k];});
+localStorage.setItem(STORAGE_KEY,JSON.stringify(merged));
+if(bundle.flags)Object.keys(bundle.flags).forEach(k=>localStorage.setItem(k,bundle.flags[k]));
+lines=loadLinesForCurrent();renderPeriodGrid();renderLines();updateTotal();
+showToast(`${Object.keys(incoming).length} périodes importées!`);
+}catch{showToast(‘Fichier invalide.’);}
+};
+reader.readAsText(file);event.target.value=’’;
 }
 
 function showToast(msg,duration=3500){
-  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),duration);
+const t=document.getElementById(“toast”);t.textContent=msg;t.classList.add(“show”);setTimeout(()=>t.classList.remove(“show”),duration);
 }
 
 (function seedInvoice6(){
-  const SEED_KEY="bisson::2026-04-P2",SEEDED_FLAG="kc_seeded_inv6";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[["2026-04-15",3.00,"KPIs – Processus de ventes KPIs"],["2026-04-16",0.25,"Rencontre avec Josianne – Problématique appels de soumission"],["2026-04-16",4.00,"KPIs – Processus de ventes KPIs – Conception visuelle du tableau de bord"],["2026-04-16",1.25,"Formation Linda sur l'IA – Claude"],["2026-04-16",0.50,"Réunion intégration Azure Database"],["2026-04-16",0.75,"Rencontre avec Sarah – Problématique de vues et d'export de données Monday"],["2026-04-16",0.50,"QA – Power BI KPIs ventes – Avec Vincent et JF"],["2026-04-16",1.00,"Modifications du tableau de bord suite aux rétroactions"],["2026-04-17",1.00,"Rencontre – Pratiques RH avec JF"],["2026-04-15",0.50,"Soudures Rivard – Déplacement"],["2026-04-15",2.75,"Soudures Rivard – Réunion d'introduction"],["2026-04-17",0.50,"Soudures Rivard – Communication et organisation de rencontres avec David et Olivier"],["2026-04-17",2.00,"Soudures Rivard – Configuration et test de Claude Cowork avec GitHub"],["2026-04-17",0.50,"Connexion du tableau de bord KPI aux sources de données pour le rafraîchissement"],["2026-04-20",1.00,"Organisation des dernières demandes"],["2026-04-20",2.50,"Validation des données – Demandes, propositions et contrats"],["2026-04-20",1.75,"Nouveau programme de bonus – Ajustements Power BI"]];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1800000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
-})();
-
-
-(function seedInvoice1(){
-  const SEED_KEY="bisson::2026-02-P1",SEEDED_FLAG="kc_seeded_inv1";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-02-01",2.50,"Meeting introduction avec équipe"],
-    ["2026-02-02",0.50,"Tentatives d'accès et accès aux tableaux de bord"],
-    ["2026-02-03",0.75,"Meeting avec Pascal pour survol de Telus Connect"],
-    ["2026-02-04",1.00,"Revoir documentation sur les données sensibles + meeting avec Benjamin pour détails"],
-    ["2026-02-05",0.75,"Survol de la plateforme Kronos"],
-    ["2026-02-06",1.00,"Survol des différents tableaux de bord sur Power BI"],
-    ["2026-02-07",2.00,"Analyse des résultats du tableau de bord nommé Job Cost"],
-    ["2026-02-10",0.50,"Prise de connaissance de la problématique reliée aux courriels de Vincent vers Groupex + contacter MS Solutions"],
-    ["2026-02-11",0.50,"Rencontre avec Webit"],
-    ["2026-02-12",0.50,"Recherche de solutions pour nouveaux projets (Power BI + Display)"],
-    ["2026-02-13",1.50,"Analyse de l'environnement du site web"],
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1100000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
-})();
-
-(function seedInvoice2(){
-  const SEED_KEY="bisson::2026-02-P2",SEEDED_FLAG="kc_seeded_inv2";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-02-16",0.50,"Rencontre demande de permis et outils de réservation de l'équipement"],
-    ["2026-02-17",0.50,"Configuration de it@bissonexpert.com"],
-    ["2026-02-17",0.50,"Accès InputKit + Monday"],
-    ["2026-02-18",0.50,"Rencontre avec MS Solutions pour implantation DKIM & DMARC pour sécurité courriel"],
-    ["2026-02-19",1.50,"Rencontre Monday"],
-    ["2026-02-20",1.00,"Révision de la proposition de MS Solutions pour DKIM & DMARC + communications"],
-    ["2026-02-23",0.50,"Rencontre avec Vincent et Pascal pour gestion des projets futurs"],
-    ["2026-02-23",0.50,"Gestion problématique InputKit avec Myriam"],
-    ["2026-02-24",0.50,"Environnement technologique – Cartographie"],
-    ["2026-02-24",1.00,"Rencontre avec Myriam pour création de contrat dans le CRM"],
-    ["2026-02-25",0.50,"2e rencontre avec Ramzi pour outils de réservation"],
-    ["2026-02-25",0.50,"Rencontre avec compétiteur MS Solutions pour DMARC & DKIM Valimail"],
-    ["2026-02-26",0.50,"Rencontre avec MS Solutions pour DKIM & DMARC – Démo solution"],
-    ["2026-02-27",0.50,"Création de documents pour Bisson Expert (BR, Spec Doc)"],
-    ["2026-02-28",2.50,"CRM – Flux révision et cartographie des intégrations"],
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1200000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
-})();
-
-(function seedInvoice3(){
-  const SEED_KEY="bisson::2026-03-P1",SEEDED_FLAG="kc_seeded_inv3";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-03-02",0.50,"Meeting Bisson & GRO – Collecte d'info lié à Maestro"],
-    ["2026-03-03",1.50,"Meeting Bisson & GRO – Atelier Échéancier"],
-    ["2026-03-04",1.50,"Création d'un Business Requirements et document de spécifications techniques pour solution acte foncier du Québec – Finalisation"],
-    ["2026-03-05",1.00,"Organisation Channel IT dans Teams"],
-    ["2026-03-05",0.50,"Recherche Nominis + communications"],
-    ["2026-03-06",0.50,"Rencontre avec la prod pour avoir détails sur les permis avant de commencer les travaux"],
-    ["2026-03-06",1.00,"Création d'un Business Requirements et document de spécifications techniques pour solution du flag pour les permis"],
-    ["2026-03-09",1.00,"Suivi du progrès de Monday"],
-    ["2026-03-09",3.00,"Ajustements cartographie"],
-    ["2026-03-10",2.00,"Rencontre intégration Monday, gestion de projet et production"],
-    ["2026-03-10",0.50,"Rencontre intégration Monday"],
-    ["2026-03-11",1.50,"Rencontre priorisation avec Jean-François"],
-    ["2026-03-11",0.50,"Communications UKG, Valimail et Vandere pour sécurité des courriels"],
-    ["2026-03-12",2.00,"Rencontre avec Jérémy pour primes + création d'un Business Requirements"],
-    ["2026-03-13",3.00,"Azure rencontre + investigation AutoCad"],
-    ["2026-03-13",1.50,"Analyse processus de vente de A à Z"],
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1300000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
-})();
-
-(function seedInvoice4(){
-  const SEED_KEY="bisson::2026-03-P2",SEEDED_FLAG="kc_seeded_inv4";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-03-16",0.50,"Meeting – Primes additionnelles avec Vincent"],
-    ["2026-03-16",1.00,"Ajustement du Business Requirements pour les primes additionnelles"],
-    ["2026-03-17",0.50,"Création du Business Requirements pour configuration CRM Linda"],
-    ["2026-03-17",0.25,"Rencontre utilisation AutoCad avec Ingénierie"],
-    ["2026-03-17",0.50,"Ajustement solution AutoCad suite à la rencontre avec Ingénierie"],
-    ["2026-03-18",0.25,"Rencontre avec Myriam pour problème avec CRM – Champ de Notes"],
-    ["2026-03-18",0.25,"Smartsheet Bisson – Survol"],
-    ["2026-03-18",1.50,"GRO – Monday meeting"],
-    ["2026-03-19",0.25,"Meeting avec JF et Pascal pour décision intégration Azure"],
-    ["2026-03-19",0.25,"Meeting avec MS Solutions pour l'intégration Azure"],
-    ["2026-03-20",0.50,"Meeting avec Linda pour requirements CRM"],
-    ["2026-03-23",7.75,"Configuration du CRM pour Linda"],
-    ["2026-03-23",0.25,"Meeting processus de prise de rendez-vous avec Stéphane"],
-    ["2026-03-24",1.00,"Meeting avec Julien pour sources de données pour Power BI"],
-    ["2026-03-25",2.00,"Meeting Monday"],
-    ["2026-03-25",0.50,"Meeting avec Dany St-Pierre pour comprendre son utilisation du processus de rendez-vous"],
-    ["2026-03-26",0.50,"Meeting intégration Azure"],
-    ["2026-03-26",0.50,"Communications avec Vandere pour la configuration CRM de Linda"],
-    ["2026-03-27",1.00,"Ajustements Business Requirements CRM Linda"],
-    ["2026-03-30",5.00,"Configuration accès et formulaires pour Linda"],
-    ["2026-03-30",0.50,"Meeting avec Vandere pour confirmer l'environnement dans lequel créer la vue pour Linda"],
-    ["2026-03-31",0.50,"Meeting avec Julien pour accès base de données + VPN"],
-    ["2026-03-31",0.50,"Meeting clarification des rôles"],
-    ["2026-03-31",0.50,"Configuration lien favoris pour Centre de ventes dans le CRM + ajouter accès pour créer des projets"],
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1400000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“bisson::2026-04-P2”,SEEDED_FLAG=“kc_seeded_inv6”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[[“2026-04-15”,3.00,“KPIs – Processus de ventes KPIs”],[“2026-04-16”,0.25,“Rencontre avec Josianne – Problématique appels de soumission”],[“2026-04-16”,4.00,“KPIs – Processus de ventes KPIs – Conception visuelle du tableau de bord”],[“2026-04-16”,1.25,“Formation Linda sur l’IA – Claude”],[“2026-04-16”,0.50,“Réunion intégration Azure Database”],[“2026-04-16”,0.75,“Rencontre avec Sarah – Problématique de vues et d’export de données Monday”],[“2026-04-16”,0.50,“QA – Power BI KPIs ventes – Avec Vincent et JF”],[“2026-04-16”,1.00,“Modifications du tableau de bord suite aux rétroactions”],[“2026-04-17”,1.00,“Rencontre – Pratiques RH avec JF”],[“2026-04-15”,0.50,“Soudures Rivard – Déplacement”],[“2026-04-15”,2.75,“Soudures Rivard – Réunion d’introduction”],[“2026-04-17”,0.50,“Soudures Rivard – Communication et organisation de rencontres avec David et Olivier”],[“2026-04-17”,2.00,“Soudures Rivard – Configuration et test de Claude Cowork avec GitHub”],[“2026-04-17”,0.50,“Connexion du tableau de bord KPI aux sources de données pour le rafraîchissement”],[“2026-04-20”,1.00,“Organisation des dernières demandes”],[“2026-04-20”,2.50,“Validation des données – Demandes, propositions et contrats”],[“2026-04-20”,1.75,“Nouveau programme de bonus – Ajustements Power BI”]];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1800000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function seedInvoice1(){
-  const SEED_KEY="bisson::2026-02-P1",SEEDED_FLAG="kc_seeded_inv1";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-02-15",2.50,"Meeting Introduction avec équipe"],
-    ["2026-02-15",0.50,"Tentatives d'accès et accès aux tableaux de bord"],
-    ["2026-02-15",0.75,"Meeting avec Pascal – Survol de Telus Connect"],
-    ["2026-02-15",1.00,"Documentation données sensibles + meeting avec Benjamin pour détails"],
-    ["2026-02-15",0.75,"Survol de la plateforme Kronos"],
-    ["2026-02-15",1.00,"Survol des différents tableaux de bord sur Power BI"],
-    ["2026-02-15",2.00,"Analyse des résultats du tableau de bord Job Cost"],
-    ["2026-02-15",0.50,"Problématique courriels Vincent vers Groupex + contacter MS Solutions"],
-    ["2026-02-15",0.50,"Rencontre avec Webit"],
-    ["2026-02-15",0.50,"Recherche de solutions pour nouveaux projets (Power BI + Display)"],
-    ["2026-02-15",1.50,"Analyse de l'environnement du site web"]
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1100000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“bisson::2026-02-P1”,SEEDED_FLAG=“kc_seeded_inv1”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-02-01”,2.50,“Meeting introduction avec équipe”],
+[“2026-02-02”,0.50,“Tentatives d’accès et accès aux tableaux de bord”],
+[“2026-02-03”,0.75,“Meeting avec Pascal pour survol de Telus Connect”],
+[“2026-02-04”,1.00,“Revoir documentation sur les données sensibles + meeting avec Benjamin pour détails”],
+[“2026-02-05”,0.75,“Survol de la plateforme Kronos”],
+[“2026-02-06”,1.00,“Survol des différents tableaux de bord sur Power BI”],
+[“2026-02-07”,2.00,“Analyse des résultats du tableau de bord nommé Job Cost”],
+[“2026-02-10”,0.50,“Prise de connaissance de la problématique reliée aux courriels de Vincent vers Groupex + contacter MS Solutions”],
+[“2026-02-11”,0.50,“Rencontre avec Webit”],
+[“2026-02-12”,0.50,“Recherche de solutions pour nouveaux projets (Power BI + Display)”],
+[“2026-02-13”,1.50,“Analyse de l’environnement du site web”],
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1100000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function seedInvoice2(){
-  const SEED_KEY="bisson::2026-02-P2",SEEDED_FLAG="kc_seeded_inv2";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-02-28",0.50,"Rencontre demande de permis et outils de réservation de l'équipement"],
-    ["2026-02-28",0.50,"Configuration de it@bissonexpert.com"],
-    ["2026-02-28",0.50,"Accès InputKit + Monday"],
-    ["2026-02-28",0.50,"Rencontre avec MS Solutions pour implantation DKIM & DMARC – sécurité courriel"],
-    ["2026-02-28",1.50,"Rencontre Monday"],
-    ["2026-02-28",1.00,"Révision proposition MS Solutions DKIM & DMARC + Communications"],
-    ["2026-02-28",0.50,"Rencontre avec Vincent et Pascal – gestion des projets futurs"],
-    ["2026-02-28",0.50,"Gestion problématique InputKit avec Myriam"],
-    ["2026-02-28",0.50,"Environnement technologique Cartographie"],
-    ["2026-02-28",1.00,"Rencontre avec Myriam – création de contrat dans le CRM"],
-    ["2026-02-28",0.50,"2e rencontre avec Ramzi – outils de réservation"],
-    ["2026-02-28",0.50,"Rencontre avec compétiteur MS Solution – Valimail DMARC & DKIM"],
-    ["2026-02-28",0.50,"Rencontre avec MS Solutions – DKIM & DMARC Démo solution"],
-    ["2026-02-28",0.50,"Création de documents pour Bisson Expert (BR, Spec Doc)"],
-    ["2026-02-28",2.50,"CRM Flux révision et cartographie des intégrations"]
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1200000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“bisson::2026-02-P2”,SEEDED_FLAG=“kc_seeded_inv2”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-02-16”,0.50,“Rencontre demande de permis et outils de réservation de l’équipement”],
+[“2026-02-17”,0.50,“Configuration de it@bissonexpert.com”],
+[“2026-02-17”,0.50,“Accès InputKit + Monday”],
+[“2026-02-18”,0.50,“Rencontre avec MS Solutions pour implantation DKIM & DMARC pour sécurité courriel”],
+[“2026-02-19”,1.50,“Rencontre Monday”],
+[“2026-02-20”,1.00,“Révision de la proposition de MS Solutions pour DKIM & DMARC + communications”],
+[“2026-02-23”,0.50,“Rencontre avec Vincent et Pascal pour gestion des projets futurs”],
+[“2026-02-23”,0.50,“Gestion problématique InputKit avec Myriam”],
+[“2026-02-24”,0.50,“Environnement technologique – Cartographie”],
+[“2026-02-24”,1.00,“Rencontre avec Myriam pour création de contrat dans le CRM”],
+[“2026-02-25”,0.50,“2e rencontre avec Ramzi pour outils de réservation”],
+[“2026-02-25”,0.50,“Rencontre avec compétiteur MS Solutions pour DMARC & DKIM Valimail”],
+[“2026-02-26”,0.50,“Rencontre avec MS Solutions pour DKIM & DMARC – Démo solution”],
+[“2026-02-27”,0.50,“Création de documents pour Bisson Expert (BR, Spec Doc)”],
+[“2026-02-28”,2.50,“CRM – Flux révision et cartographie des intégrations”],
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1200000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function seedInvoice3(){
-  const SEED_KEY="bisson::2026-03-P1",SEEDED_FLAG="kc_seeded_inv3";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-03-15",0.50,"Meeting Bisson & GRO – Collecte d'info liée à Maestro"],
-    ["2026-03-15",1.50,"Meeting Bisson & GRO – Atelier Échéancier"],
-    ["2026-03-15",1.50,"BR + Spec Tech – solution acte foncier du Québec"],
-    ["2026-03-15",1.00,"Organisation Channel IT dans Teams"],
-    ["2026-03-15",0.50,"Recherche Nominis + communications"],
-    ["2026-03-15",0.50,"Rencontre prod – détails permis avant travaux"],
-    ["2026-03-15",1.00,"BR + Spec Tech – solution flag permis (Ramzi)"],
-    ["2026-03-15",1.00,"Suivi du progrès de Monday"],
-    ["2026-03-15",3.00,"Ajustements cartographie"],
-    ["2026-03-15",2.00,"Rencontre intégration Monday, gestion de projet et production"],
-    ["2026-03-15",0.50,"Rencontre intégration Monday"],
-    ["2026-03-15",1.50,"Rencontre priorisation avec Jean-François"],
-    ["2026-03-15",0.50,"Communications UKG, Valimail et Vendere – sécurité des courriels"],
-    ["2026-03-15",2.00,"Rencontre avec Jérémy – primes + création BR"],
-    ["2026-03-15",3.00,"Azure rencontre + investigation AutoCad"],
-    ["2026-03-15",1.50,"Analyse processus de vente de A à Z"]
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1300000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“bisson::2026-03-P1”,SEEDED_FLAG=“kc_seeded_inv3”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-03-02”,0.50,“Meeting Bisson & GRO – Collecte d’info lié à Maestro”],
+[“2026-03-03”,1.50,“Meeting Bisson & GRO – Atelier Échéancier”],
+[“2026-03-04”,1.50,“Création d’un Business Requirements et document de spécifications techniques pour solution acte foncier du Québec – Finalisation”],
+[“2026-03-05”,1.00,“Organisation Channel IT dans Teams”],
+[“2026-03-05”,0.50,“Recherche Nominis + communications”],
+[“2026-03-06”,0.50,“Rencontre avec la prod pour avoir détails sur les permis avant de commencer les travaux”],
+[“2026-03-06”,1.00,“Création d’un Business Requirements et document de spécifications techniques pour solution du flag pour les permis”],
+[“2026-03-09”,1.00,“Suivi du progrès de Monday”],
+[“2026-03-09”,3.00,“Ajustements cartographie”],
+[“2026-03-10”,2.00,“Rencontre intégration Monday, gestion de projet et production”],
+[“2026-03-10”,0.50,“Rencontre intégration Monday”],
+[“2026-03-11”,1.50,“Rencontre priorisation avec Jean-François”],
+[“2026-03-11”,0.50,“Communications UKG, Valimail et Vandere pour sécurité des courriels”],
+[“2026-03-12”,2.00,“Rencontre avec Jérémy pour primes + création d’un Business Requirements”],
+[“2026-03-13”,3.00,“Azure rencontre + investigation AutoCad”],
+[“2026-03-13”,1.50,“Analyse processus de vente de A à Z”],
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1300000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function seedInvoice4(){
-  const SEED_KEY="bisson::2026-03-P2",SEEDED_FLAG="kc_seeded_inv4";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-03-31",0.50,"Meeting – Primes additionnelles avec Vincent"],
-    ["2026-03-31",1.00,"Ajustement BR primes additionnelles"],
-    ["2026-03-31",0.50,"Création BR configuration CRM Linda"],
-    ["2026-03-31",0.25,"Rencontre utilisation AutoCad avec Ingénierie"],
-    ["2026-03-31",0.50,"Ajustement solution AutoCad suite à la rencontre avec Ingénierie"],
-    ["2026-03-31",0.25,"Rencontre Myriam – problème CRM champ Notes"],
-    ["2026-03-31",0.25,"Smartsheet Bisson overview"],
-    ["2026-03-18",1.50,"GRO – Monday meeting 03-18-2026"],
-    ["2026-03-31",0.25,"Meeting JF et Pascal – décision intégration Azure"],
-    ["2026-03-31",0.25,"Meeting MS Solutions – intégration Azure"],
-    ["2026-03-31",0.50,"Meeting Linda – Requirements CRM"],
-    ["2026-03-31",7.75,"Configuration CRM pour Linda"],
-    ["2026-03-31",0.25,"Meeting processus prise de rendez-vous avec Stéphane"],
-    ["2026-03-31",1.00,"Meeting Julien – sources de données Power BI"],
-    ["2026-03-25",2.00,"Meeting Monday 03-25-2026"],
-    ["2026-03-31",0.50,"Meeting Dany St-Pierre – processus de rendez-vous"],
-    ["2026-03-26",0.50,"Meeting intégration Azure 03-26-2026"],
-    ["2026-03-31",0.50,"Communications Vandere – configuration CRM Linda"],
-    ["2026-03-31",1.00,"Ajustements BR CRM Linda"],
-    ["2026-03-31",5.00,"Configuration accès et formulaires pour Linda"],
-    ["2026-03-31",0.50,"Meeting Vandere – confirmer environnement vue Linda"],
-    ["2026-03-31",0.50,"Meeting Julien – accès base de données + VPN"],
-    ["2026-03-31",0.50,"Meeting clarification des rôles"],
-    ["2026-03-31",0.50,"Configuration lien favoris Centre de ventes CRM + accès projets"]
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1400000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“bisson::2026-03-P2”,SEEDED_FLAG=“kc_seeded_inv4”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-03-16”,0.50,“Meeting – Primes additionnelles avec Vincent”],
+[“2026-03-16”,1.00,“Ajustement du Business Requirements pour les primes additionnelles”],
+[“2026-03-17”,0.50,“Création du Business Requirements pour configuration CRM Linda”],
+[“2026-03-17”,0.25,“Rencontre utilisation AutoCad avec Ingénierie”],
+[“2026-03-17”,0.50,“Ajustement solution AutoCad suite à la rencontre avec Ingénierie”],
+[“2026-03-18”,0.25,“Rencontre avec Myriam pour problème avec CRM – Champ de Notes”],
+[“2026-03-18”,0.25,“Smartsheet Bisson – Survol”],
+[“2026-03-18”,1.50,“GRO – Monday meeting”],
+[“2026-03-19”,0.25,“Meeting avec JF et Pascal pour décision intégration Azure”],
+[“2026-03-19”,0.25,“Meeting avec MS Solutions pour l’intégration Azure”],
+[“2026-03-20”,0.50,“Meeting avec Linda pour requirements CRM”],
+[“2026-03-23”,7.75,“Configuration du CRM pour Linda”],
+[“2026-03-23”,0.25,“Meeting processus de prise de rendez-vous avec Stéphane”],
+[“2026-03-24”,1.00,“Meeting avec Julien pour sources de données pour Power BI”],
+[“2026-03-25”,2.00,“Meeting Monday”],
+[“2026-03-25”,0.50,“Meeting avec Dany St-Pierre pour comprendre son utilisation du processus de rendez-vous”],
+[“2026-03-26”,0.50,“Meeting intégration Azure”],
+[“2026-03-26”,0.50,“Communications avec Vandere pour la configuration CRM de Linda”],
+[“2026-03-27”,1.00,“Ajustements Business Requirements CRM Linda”],
+[“2026-03-30”,5.00,“Configuration accès et formulaires pour Linda”],
+[“2026-03-30”,0.50,“Meeting avec Vandere pour confirmer l’environnement dans lequel créer la vue pour Linda”],
+[“2026-03-31”,0.50,“Meeting avec Julien pour accès base de données + VPN”],
+[“2026-03-31”,0.50,“Meeting clarification des rôles”],
+[“2026-03-31”,0.50,“Configuration lien favoris pour Centre de ventes dans le CRM + ajouter accès pour créer des projets”],
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1400000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
+})();
+
+(function seedInvoice1(){
+const SEED_KEY=“bisson::2026-02-P1”,SEEDED_FLAG=“kc_seeded_inv1”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-02-15”,2.50,“Meeting Introduction avec équipe”],
+[“2026-02-15”,0.50,“Tentatives d’accès et accès aux tableaux de bord”],
+[“2026-02-15”,0.75,“Meeting avec Pascal – Survol de Telus Connect”],
+[“2026-02-15”,1.00,“Documentation données sensibles + meeting avec Benjamin pour détails”],
+[“2026-02-15”,0.75,“Survol de la plateforme Kronos”],
+[“2026-02-15”,1.00,“Survol des différents tableaux de bord sur Power BI”],
+[“2026-02-15”,2.00,“Analyse des résultats du tableau de bord Job Cost”],
+[“2026-02-15”,0.50,“Problématique courriels Vincent vers Groupex + contacter MS Solutions”],
+[“2026-02-15”,0.50,“Rencontre avec Webit”],
+[“2026-02-15”,0.50,“Recherche de solutions pour nouveaux projets (Power BI + Display)”],
+[“2026-02-15”,1.50,“Analyse de l’environnement du site web”]
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1100000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
+})();
+
+(function seedInvoice2(){
+const SEED_KEY=“bisson::2026-02-P2”,SEEDED_FLAG=“kc_seeded_inv2”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-02-28”,0.50,“Rencontre demande de permis et outils de réservation de l’équipement”],
+[“2026-02-28”,0.50,“Configuration de it@bissonexpert.com”],
+[“2026-02-28”,0.50,“Accès InputKit + Monday”],
+[“2026-02-28”,0.50,“Rencontre avec MS Solutions pour implantation DKIM & DMARC – sécurité courriel”],
+[“2026-02-28”,1.50,“Rencontre Monday”],
+[“2026-02-28”,1.00,“Révision proposition MS Solutions DKIM & DMARC + Communications”],
+[“2026-02-28”,0.50,“Rencontre avec Vincent et Pascal – gestion des projets futurs”],
+[“2026-02-28”,0.50,“Gestion problématique InputKit avec Myriam”],
+[“2026-02-28”,0.50,“Environnement technologique Cartographie”],
+[“2026-02-28”,1.00,“Rencontre avec Myriam – création de contrat dans le CRM”],
+[“2026-02-28”,0.50,“2e rencontre avec Ramzi – outils de réservation”],
+[“2026-02-28”,0.50,“Rencontre avec compétiteur MS Solution – Valimail DMARC & DKIM”],
+[“2026-02-28”,0.50,“Rencontre avec MS Solutions – DKIM & DMARC Démo solution”],
+[“2026-02-28”,0.50,“Création de documents pour Bisson Expert (BR, Spec Doc)”],
+[“2026-02-28”,2.50,“CRM Flux révision et cartographie des intégrations”]
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1200000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
+})();
+
+(function seedInvoice3(){
+const SEED_KEY=“bisson::2026-03-P1”,SEEDED_FLAG=“kc_seeded_inv3”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-03-15”,0.50,“Meeting Bisson & GRO – Collecte d’info liée à Maestro”],
+[“2026-03-15”,1.50,“Meeting Bisson & GRO – Atelier Échéancier”],
+[“2026-03-15”,1.50,“BR + Spec Tech – solution acte foncier du Québec”],
+[“2026-03-15”,1.00,“Organisation Channel IT dans Teams”],
+[“2026-03-15”,0.50,“Recherche Nominis + communications”],
+[“2026-03-15”,0.50,“Rencontre prod – détails permis avant travaux”],
+[“2026-03-15”,1.00,“BR + Spec Tech – solution flag permis (Ramzi)”],
+[“2026-03-15”,1.00,“Suivi du progrès de Monday”],
+[“2026-03-15”,3.00,“Ajustements cartographie”],
+[“2026-03-15”,2.00,“Rencontre intégration Monday, gestion de projet et production”],
+[“2026-03-15”,0.50,“Rencontre intégration Monday”],
+[“2026-03-15”,1.50,“Rencontre priorisation avec Jean-François”],
+[“2026-03-15”,0.50,“Communications UKG, Valimail et Vendere – sécurité des courriels”],
+[“2026-03-15”,2.00,“Rencontre avec Jérémy – primes + création BR”],
+[“2026-03-15”,3.00,“Azure rencontre + investigation AutoCad”],
+[“2026-03-15”,1.50,“Analyse processus de vente de A à Z”]
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1300000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
+})();
+
+(function seedInvoice4(){
+const SEED_KEY=“bisson::2026-03-P2”,SEEDED_FLAG=“kc_seeded_inv4”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-03-31”,0.50,“Meeting – Primes additionnelles avec Vincent”],
+[“2026-03-31”,1.00,“Ajustement BR primes additionnelles”],
+[“2026-03-31”,0.50,“Création BR configuration CRM Linda”],
+[“2026-03-31”,0.25,“Rencontre utilisation AutoCad avec Ingénierie”],
+[“2026-03-31”,0.50,“Ajustement solution AutoCad suite à la rencontre avec Ingénierie”],
+[“2026-03-31”,0.25,“Rencontre Myriam – problème CRM champ Notes”],
+[“2026-03-31”,0.25,“Smartsheet Bisson overview”],
+[“2026-03-18”,1.50,“GRO – Monday meeting 03-18-2026”],
+[“2026-03-31”,0.25,“Meeting JF et Pascal – décision intégration Azure”],
+[“2026-03-31”,0.25,“Meeting MS Solutions – intégration Azure”],
+[“2026-03-31”,0.50,“Meeting Linda – Requirements CRM”],
+[“2026-03-31”,7.75,“Configuration CRM pour Linda”],
+[“2026-03-31”,0.25,“Meeting processus prise de rendez-vous avec Stéphane”],
+[“2026-03-31”,1.00,“Meeting Julien – sources de données Power BI”],
+[“2026-03-25”,2.00,“Meeting Monday 03-25-2026”],
+[“2026-03-31”,0.50,“Meeting Dany St-Pierre – processus de rendez-vous”],
+[“2026-03-26”,0.50,“Meeting intégration Azure 03-26-2026”],
+[“2026-03-31”,0.50,“Communications Vandere – configuration CRM Linda”],
+[“2026-03-31”,1.00,“Ajustements BR CRM Linda”],
+[“2026-03-31”,5.00,“Configuration accès et formulaires pour Linda”],
+[“2026-03-31”,0.50,“Meeting Vandere – confirmer environnement vue Linda”],
+[“2026-03-31”,0.50,“Meeting Julien – accès base de données + VPN”],
+[“2026-03-31”,0.50,“Meeting clarification des rôles”],
+[“2026-03-31”,0.50,“Configuration lien favoris Centre de ventes CRM + accès projets”]
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1400000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function seedInvoice5(){
-  const SEED_KEY="bisson::2026-04-P1",SEEDED_FLAG="kc_seeded_inv5";if(localStorage.getItem(SEEDED_FLAG))return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[["2026-03-31",0.75,"Rédaction BR KPIs – Jean-François"],["2026-04-02",0.75,"Communications avec fournisseurs de services (MS Solutions, Julien Bergeron & Vandere)"],["2026-04-02",0.50,"Finalisation BR KPIs – Jean-François"],["2026-04-02",0.50,"Réunion avec Alexis Bélanger – Liste de matériaux et suivi de la maintenance + notes"],["2026-04-02",0.50,"Réunion de lancement – Bisson Expert"],["2026-04-02",0.50,"Modifications CRM Linda"],["2026-04-02",0.75,"Révision Tech Binder Bisson Expert"],["2026-04-07",0.50,"Révision Tech Binder Bisson Expert"],["2026-04-07",0.75,"Communications avec fournisseurs de services"],["2026-04-07",0.25,"Message d'introduction dans l'équipe pour Vanessa"],["2026-04-07",0.50,"Message d'introduction aux fournisseurs de service + envois"],["2026-04-07",0.75,"Réunion Azure"],["2026-04-07",0.75,"Organisation des nouvelles demandes d'amélioration continue"],["2026-04-07",0.50,"Réunion de suivi avec Charles Pariseau – GRO"],["2026-04-07",0.25,"Discussions stratégiques – Monday"],["2026-04-07",0.50,"Organisation des nouvelles demandes – Linda, Power BI Bonus, problème Telus et intégration potentielle Fuel iX"],["2026-04-07",0.25,"Mise à jour cartographie TI pour inclure Callrail et Google"],["2026-04-08",0.50,"Communications avec Benjamin et Maxime de Vandere – Questions sécurité des données"],["2026-04-08",1.00,"Configuration CRM Linda – Ajustements finaux"],["2026-04-08",0.50,"Réunion avec Julien – Power BI, tableau de bord JF, utilisation données corporatives"],["2026-04-08",0.75,"Recherche sur la fuite de données de l'application Ramzi + réunion avec Benjamin (avocat)"],["2026-04-09",4.50,"Ajustements des vues Linda – CRM"],["2026-04-09",0.25,"Réunion d'introduction avec Joseph Passineau – ARIV"],["2026-04-09",0.50,"Réunion avec Maxime de Vandere – Survol de la configuration CRM"],["2026-04-09",0.50,"Réunion Azure – avec GRO"],["2026-04-09",0.50,"Recherche de solution pour afficher des notes personnalisées et privées pour Linda"],["2026-04-10",0.50,"Communications avec fournisseurs de services"],["2026-04-10",0.75,"Investigation des processus, déclencheurs et interdépendances CRM"],["2026-04-10",1.50,"Réunion de mise au point avec GRO"],["2026-04-10",0.25,"Modification de la vue Linda CRM – Ajustement de l'affichage des colonnes"],["2026-04-13",5.00,"Visite de chantier – Ramzi"],["2026-04-13",0.75,"Révision du nouveau calcul des primes + révision de la configuration actuelle Power BI"],["2026-04-13",0.25,"Configuration Slack et investigation pour pousser des données vers Maestro depuis Monday"],["2026-04-13",1.50,"Réunion avec Vanessa – Processus de paie et autres sujets"],["2026-04-13",1.25,"Recherche et solution pour l'intégration Maestro X Monday – Transfert de données"],["2026-04-14",0.50,"Configuration des nouveaux outils sur le nouvel ordinateur"],["2026-04-14",2.00,"Power BI – Exploration du modèle et ajout de sources de données"],["2026-04-14",3.00,"Power BI – Cartographie des champs de données pour les KPIs"],["2026-04-14",0.75,"Réunion avec Ramzi & Vincent – Application"],["2026-04-14",2.00,"Power BI – Cartographie des champs de données pour les KPIs"]];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1700000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“bisson::2026-04-P1”,SEEDED_FLAG=“kc_seeded_inv5”;if(localStorage.getItem(SEEDED_FLAG))return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[[“2026-03-31”,0.75,“Rédaction BR KPIs – Jean-François”],[“2026-04-02”,0.75,“Communications avec fournisseurs de services (MS Solutions, Julien Bergeron & Vandere)”],[“2026-04-02”,0.50,“Finalisation BR KPIs – Jean-François”],[“2026-04-02”,0.50,“Réunion avec Alexis Bélanger – Liste de matériaux et suivi de la maintenance + notes”],[“2026-04-02”,0.50,“Réunion de lancement – Bisson Expert”],[“2026-04-02”,0.50,“Modifications CRM Linda”],[“2026-04-02”,0.75,“Révision Tech Binder Bisson Expert”],[“2026-04-07”,0.50,“Révision Tech Binder Bisson Expert”],[“2026-04-07”,0.75,“Communications avec fournisseurs de services”],[“2026-04-07”,0.25,“Message d’introduction dans l’équipe pour Vanessa”],[“2026-04-07”,0.50,“Message d’introduction aux fournisseurs de service + envois”],[“2026-04-07”,0.75,“Réunion Azure”],[“2026-04-07”,0.75,“Organisation des nouvelles demandes d’amélioration continue”],[“2026-04-07”,0.50,“Réunion de suivi avec Charles Pariseau – GRO”],[“2026-04-07”,0.25,“Discussions stratégiques – Monday”],[“2026-04-07”,0.50,“Organisation des nouvelles demandes – Linda, Power BI Bonus, problème Telus et intégration potentielle Fuel iX”],[“2026-04-07”,0.25,“Mise à jour cartographie TI pour inclure Callrail et Google”],[“2026-04-08”,0.50,“Communications avec Benjamin et Maxime de Vandere – Questions sécurité des données”],[“2026-04-08”,1.00,“Configuration CRM Linda – Ajustements finaux”],[“2026-04-08”,0.50,“Réunion avec Julien – Power BI, tableau de bord JF, utilisation données corporatives”],[“2026-04-08”,0.75,“Recherche sur la fuite de données de l’application Ramzi + réunion avec Benjamin (avocat)”],[“2026-04-09”,4.50,“Ajustements des vues Linda – CRM”],[“2026-04-09”,0.25,“Réunion d’introduction avec Joseph Passineau – ARIV”],[“2026-04-09”,0.50,“Réunion avec Maxime de Vandere – Survol de la configuration CRM”],[“2026-04-09”,0.50,“Réunion Azure – avec GRO”],[“2026-04-09”,0.50,“Recherche de solution pour afficher des notes personnalisées et privées pour Linda”],[“2026-04-10”,0.50,“Communications avec fournisseurs de services”],[“2026-04-10”,0.75,“Investigation des processus, déclencheurs et interdépendances CRM”],[“2026-04-10”,1.50,“Réunion de mise au point avec GRO”],[“2026-04-10”,0.25,“Modification de la vue Linda CRM – Ajustement de l’affichage des colonnes”],[“2026-04-13”,5.00,“Visite de chantier – Ramzi”],[“2026-04-13”,0.75,“Révision du nouveau calcul des primes + révision de la configuration actuelle Power BI”],[“2026-04-13”,0.25,“Configuration Slack et investigation pour pousser des données vers Maestro depuis Monday”],[“2026-04-13”,1.50,“Réunion avec Vanessa – Processus de paie et autres sujets”],[“2026-04-13”,1.25,“Recherche et solution pour l’intégration Maestro X Monday – Transfert de données”],[“2026-04-14”,0.50,“Configuration des nouveaux outils sur le nouvel ordinateur”],[“2026-04-14”,2.00,“Power BI – Exploration du modèle et ajout de sources de données”],[“2026-04-14”,3.00,“Power BI – Cartographie des champs de données pour les KPIs”],[“2026-04-14”,0.75,“Réunion avec Ramzi & Vincent – Application”],[“2026-04-14”,2.00,“Power BI – Cartographie des champs de données pour les KPIs”]];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1700000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function seedRivard1(){
-  const SEED_KEY="rivard::2026-04-P2",SEEDED_FLAG="kc_seeded_rivard1b";
-  if(localStorage.getItem(SEEDED_FLAG)) return;
-  const all=(function(){try{return JSON.parse(localStorage.getItem("kc_invoices_v1")||"{}");}catch{return{};}})();
-  const tasks=[
-    ["2026-04-15",2.75,"Rencontre d'introduction + Visite Manufacture"],
-    ["2026-04-15",0.50,"Déplacement"],
-    ["2026-04-15",2.50,"Configuration Github – Documentation pour Rivard + Github pour tester applications développées"],
-    ["2026-04-17",1.00,"Configuration Claude pour Soudures Rivard"],
-    ["2026-04-17",0.50,"Communications avec différents intervenants internes et externes à Soudures Rivard"],
-    ["2026-04-22",0.50,"Déplacement"],
-    ["2026-04-22",0.50,"Rencontre avec David et Sébastien – Ingénierie"],
-    ["2026-04-22",6.50,"Configuration workflow commandes avec Claude"],
-    ["2026-04-24",1.25,"Réunion – Révision du processus de création des commandes et de la facturation"],
-    ["2026-04-24",0.50,"Déplacement"],
-    ["2026-04-24",0.25,"Réunion – Processus de préparation des rencontres quotidiennes de production"],
-    ["2026-04-24",1.00,"Ajustements du processus de création des commandes et de la facturation pour inclure les bons de commande"],
-    ["2026-04-24",2.25,"Intégration du processus de gestion des commandes en attente dans l'automatisation"]
-  ];
-  all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1900000000000+i,date,hrs,desc}));
-  localStorage.setItem("kc_invoices_v1",JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,"1");
+const SEED_KEY=“rivard::2026-04-P2”,SEEDED_FLAG=“kc_seeded_rivard1b”;
+if(localStorage.getItem(SEEDED_FLAG)) return;
+const all=(function(){try{return JSON.parse(localStorage.getItem(“kc_invoices_v1”)||”{}”);}catch{return{};}})();
+const tasks=[
+[“2026-04-15”,2.75,“Rencontre d’introduction + Visite Manufacture”],
+[“2026-04-15”,0.50,“Déplacement”],
+[“2026-04-15”,2.50,“Configuration Github – Documentation pour Rivard + Github pour tester applications développées”],
+[“2026-04-17”,1.00,“Configuration Claude pour Soudures Rivard”],
+[“2026-04-17”,0.50,“Communications avec différents intervenants internes et externes à Soudures Rivard”],
+[“2026-04-22”,0.50,“Déplacement”],
+[“2026-04-22”,0.50,“Rencontre avec David et Sébastien – Ingénierie”],
+[“2026-04-22”,6.50,“Configuration workflow commandes avec Claude”],
+[“2026-04-24”,1.25,“Réunion – Révision du processus de création des commandes et de la facturation”],
+[“2026-04-24”,0.50,“Déplacement”],
+[“2026-04-24”,0.25,“Réunion – Processus de préparation des rencontres quotidiennes de production”],
+[“2026-04-24”,1.00,“Ajustements du processus de création des commandes et de la facturation pour inclure les bons de commande”],
+[“2026-04-24”,2.25,“Intégration du processus de gestion des commandes en attente dans l’automatisation”]
+];
+all[SEED_KEY]=tasks.map(([date,hrs,desc],i)=>({id:1900000000000+i,date,hrs,desc}));
+localStorage.setItem(“kc_invoices_v1”,JSON.stringify(all));localStorage.setItem(SEEDED_FLAG,“1”);
 })();
 
 (function init(){
-  currentPeriodKey=detectCurrentPeriod();lines=loadLinesForCurrent();
-  const p=getPeriodForKey(currentPeriodKey);if(p)document.getElementById("inv-num").value=calcInvoiceNum(p);
-  const savedToken=localStorage.getItem(GITHUB_TOKEN_KEY);
-  if(savedToken){
-    document.getElementById("github-token").value=savedToken;
-    setGithubStatus("Token chargé","#1a7a4a");
-  }
-  renderPeriodGrid();renderLines();if(!lines.length)addLine();
+currentPeriodKey=detectCurrentPeriod();lines=loadLinesForCurrent();
+const p=getPeriodForKey(currentPeriodKey);if(p)document.getElementById(“inv-num”).value=calcInvoiceNum(p);
+const savedToken=localStorage.getItem(GITHUB_TOKEN_KEY);
+if(savedToken){
+document.getElementById(“github-token”).value=savedToken;
+setGithubStatus(“Token chargé”,”#1a7a4a”);
+}
+renderPeriodGrid();renderLines();if(!lines.length)addLine();
 })();
 </script>
+
 </body>
 </html>
