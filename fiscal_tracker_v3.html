@@ -325,7 +325,20 @@ let syncInterval = null;
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
-// Init handled by setup modal below
+window.addEventListener('DOMContentLoaded', () => {
+  const ak = localStorage.getItem('fiscal_api_key');
+  const gh = localStorage.getItem('fiscal_gh_token');
+  if (!ak || !gh) {
+    // Show setup modal — don't init anything yet
+    document.getElementById('setupModal').style.display = 'flex';
+  } else {
+    // Keys exist — hide modal and start
+    document.getElementById('setupModal').style.display = 'none';
+    loadLedger();
+    loadActivityLog();
+    initGitHub();
+  }
+});
 
 // ═══════════════════════════════════════════════
 // GITHUB
@@ -906,27 +919,13 @@ function saveSetup() {
   const ak = document.getElementById('setupApiKey').value.trim();
   const gh = document.getElementById('setupGhToken').value.trim();
   if (!ak.startsWith('sk-ant') || !gh.startsWith('ghp_')) {
-    alert('Clés invalides — vérifies le format');
-    return;
+    alert('Clés invalides — vérifies le format'); return;
   }
   localStorage.setItem('fiscal_api_key', ak);
   localStorage.setItem('fiscal_gh_token', gh);
   document.getElementById('setupModal').style.display = 'none';
-  initGitHub();
+  loadLedger(); loadActivityLog(); initGitHub();
 }
-
-// Override DOMContentLoaded to show setup if keys missing
-window.addEventListener('DOMContentLoaded', () => {
-  const ak = localStorage.getItem('fiscal_api_key');
-  const gh = localStorage.getItem('fiscal_gh_token');
-  if (!ak || !gh) {
-    document.getElementById('setupModal').style.display = 'flex';
-  } else {
-    loadLedger();
-    loadActivityLog();
-    initGitHub();
-  }
-});
 </script>
 </body>
 </html>
