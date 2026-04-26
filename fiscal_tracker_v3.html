@@ -329,12 +329,11 @@ window.addEventListener('DOMContentLoaded', () => {
   const ak = localStorage.getItem('fiscal_api_key');
   const gh = localStorage.getItem('fiscal_gh_token');
   if (!ak || !gh) {
-    // Show setup modal — don't init anything yet
     document.getElementById('setupModal').style.display = 'flex';
   } else {
-    // Keys exist — hide modal and start
     document.getElementById('setupModal').style.display = 'none';
-    loadLedger();
+    // Always clear ledger — GitHub CSV is the single source of truth
+    localStorage.removeItem('fiscal_ledger_2026');
     loadActivityLog();
     initGitHub();
   }
