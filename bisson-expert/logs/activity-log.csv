@@ -14,3 +14,6 @@ Horodatage,Client,Facture,PÃ©riode,Action,Description,Heures,Date tÃ¢che,DÃ
 2026-04-27T13:28:03.682Z,ADDED,Receipt-2647-4887-3797 (1).pdf,bisson-expert
 "2026-04-27 10 h 13","Bisson Expert","Facture 6","16–30 Avri. 2026","AJOUT","","","2026-04-27",""
 "2026-04-27 10 h 13","Bisson Expert","Facture 6","16–30 Avri. 2026","MODIFICATION","Communications","","2026-04-27","desc: 'Communications ' -> 'Communications'"
+"2026-04-27 10 h 13","Bisson Expert","Facture 6","16–30 Avri. 2026","MODIFICATION","Communications avec intervenats externes et internes","","2026-04-27","desc: 'Communications avec intervenats externes et interne' "
+"2026-04-27 10 h 13","Bisson Expert","Facture 6","16–30 Avri. 2026","MODIFICATION","Communications avec intervenats externes et internes","05","2026-04-27","hrs: '0' -> '05'"
+"2026-04-27 10 h 13","Bisson Expert","Facture 6","16–30 Avri. 2026","SUPPRESSION","","","2026-04-27",""
