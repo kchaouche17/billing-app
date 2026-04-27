@@ -189,15 +189,12 @@ tbody tr:hover td{background:var(--bg)}
 <div class="app">
   <aside class="sidebar">
     <div class="sb-section">
-      <div class="sb-label">Type de document</div>
-      <div class="type-toggle">
-        <button class="type-btn active-income" id="btnIncome" onclick="setDocType('income')">💰 Facture</button>
-        <button class="type-btn" id="btnExpense" onclick="setDocType('expense')">🧾 Dépense</button>
-      </div>
-      <select class="client-select" id="clientSelect">
+      <div class="sb-label">Client</div>
+      <select class="client-select" id="clientSelect" style="margin-top:0">
         <option value="bisson-expert">Bisson Expert</option>
         <option value="soudures-rivard">Soudures Rivard</option>
       </select>
+      <div id="detectedType" style="margin-top:8px;font-size:11px;color:var(--text-lt);font-family:var(--mono);text-align:center">Type détecté automatiquement</div>
     </div>
     <div class="sb-section">
       <div class="sb-label">Upload manuel</div>
@@ -207,7 +204,7 @@ tbody tr:hover td{background:var(--bg)}
         <div class="drop-label">Photos ou PDFs</div>
         <div class="drop-sub">jpg · png · pdf</div>
       </div>
-      <button class="analyze-btn" id="analyzeBtn" onclick="analyzeAll()" disabled>Analyser</button>
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyzeAll()" disabled>🔍 Analyser</button>
     </div>
     <div style="padding:10px 20px 8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
       <div class="sb-label" style="margin:0">Documents <span id="qCount" style="color:var(--text-lt);font-weight:400"></span></div>
@@ -257,7 +254,7 @@ tbody tr:hover td{background:var(--bg)}
 
     <div class="content">
       <div class="panel">
-        <div class="panel-title">Analyse <span class="panel-sub" id="docTypeLabel">Facture émise</span></div>
+        <div class="panel-title">Analyse <span class="panel-sub" id="docTypeLabel"></span></div>
         <div id="emptyState" class="empty">
           <div class="empty-icon">📄</div>
           <div class="empty-title">Aucun document</div>
@@ -281,7 +278,7 @@ tbody tr:hover td{background:var(--bg)}
         <div id="tabLedger" style="flex:1;overflow:auto">
           <table><thead><tr>
             <th>Date</th><th>Type</th><th>Client</th><th>Fournisseur/Client</th>
-            <th>Catégorie</th><th>Montant</th><th>Taxes</th><th>Déd./Réserve</th><th>Source</th>
+            <th>Catégorie</th><th>Montant</th><th>Taxes</th><th>Déd./Réserve</th><th>Source</th><th></th>
           </tr></thead><tbody id="ledgerBody"><tr><td colspan="9" class="no-data">Aucune entrée</td></tr></tbody></table>
         </div>
         <div id="tabActivity" style="display:none;flex:1;overflow:auto">
@@ -509,12 +506,7 @@ async function appendToCSVLog(clientId, logFile, row) {
 // ═══════════════════════════════════════════════
 // DOC TYPE
 // ═══════════════════════════════════════════════
-function setDocType(type) {
-  docType = type;
-  document.getElementById('btnIncome').className  = 'type-btn' + (type==='income' ? ' active-income' : '');
-  document.getElementById('btnExpense').className = 'type-btn' + (type==='expense' ? ' active-expense' : '');
-  document.getElementById('docTypeLabel').textContent = type==='income' ? 'Facture émise' : 'Dépense / Reçu';
-}
+function setDocType(type) { docType = type; }
 
 // ═══════════════════════════════════════════════
 // FILE HANDLING
@@ -603,7 +595,7 @@ async function analyzeItem(item) {
   item.status = 'analyzing'; renderQueue();
   const isImg = item.mediaType && item.mediaType.startsWith('image');
   const isPdf = item.mediaType === 'application/pdf';
-  const prompt = item.type === 'income' ? promptIncome() : promptExpense();
+  const prompt = promptAutoDetect();
   let msgContent;
   if (isImg) { msgContent = [{ type:'image', source:{ type:'base64', media_type:item.mediaType, data:item.base64 }}, { type:'text', text:prompt }]; }
   else if (isPdf) { msgContent = [{ type:'document', source:{ type:'base64', media_type:'application/pdf', data:item.base64 }}, { type:'text', text:prompt }]; }
@@ -623,6 +615,12 @@ async function analyzeItem(item) {
     if (data.error) throw new Error(data.error.message);
     const text = data.content.filter(b => b.type==='text').map(b => b.text).join('');
     const json = JSON.parse(text.replace(/```json|```/g,'').trim());
+    // Auto-correct doc type based on vendor/client name
+    const vendorName = json.client || json.fournisseur || '';
+    if (item.type === 'income' && isLikelyExpense(vendorName)) {
+      item.type = 'expense';
+      toast(`Type corrigé automatiquement → Dépense (${vendorName})`, '🔄', 'amber');
+    }
     item.result = { ...json, _docType:item.type, _client:item.client, _source:'manual', _fileName:item.name };
     item.status = 'done';
     // Upload to GitHub
@@ -637,11 +635,10 @@ async function analyzeItem(item) {
       await appendToCSVLog(item.client, logFile, csvRow);
       await appendToCSVLog(item.client, 'activity-log.csv', `${new Date().toISOString()},ADDED,${item.name},${item.client}`);
     }
-    addToLedger(item.result);
+    // Don't add to ledger yet — wait for user confirmation
     selectItem(item.id);
-    updateKPIs(); saveLedger();
-    addActivity('✅', `Analysé: ${item.name}`, item.client==='bisson-expert'?'Bisson Expert':'Soudures Rivard');
-    toast(`${item.name} analysé`, '✅', 'green');
+    addActivity('🔍', `Analysé — en attente confirmation: ${item.name}`, item.client==='bisson-expert'?'Bisson Expert':'Soudures Rivard');
+    toast(`${item.name} analysé — confirme avant d'ajouter`, '🔍', 'amber');
   } catch(e) {
     item.status = 'error';
     addActivity('❌', `Erreur: ${item.name}`, e.message);
@@ -656,6 +653,49 @@ function promptIncome() {
 
 function promptExpense() {
   return `Analyse ce reçu de dépense de Karim Chaouche, consultant autonome au Québec. MARQUAGE: Si des items sont marqués (surligneur ou stylo, peu importe la couleur), inclus SEULEMENT ces items. Si rien n'est marqué, inclus tout. RÈGLE TIM HORTONS: Deux traits = uniquement les timbits (réunion équipe, 50% déductible). Catégories: Essence/carburant, Stationnement, Transport, Repas d'affaires (50%), Téléphone-portion pro, Internet-portion pro, AI/API, Logiciels/abonnements, Matériel informatique, Bureau à domicile, Formation/livres, Marketing/publicité, Honoraires professionnels, Assurances, Frais bancaires, Autre. Réponds UNIQUEMENT en JSON valide: {"date":"YYYY-MM-DD","fournisseur":"","description":"","categorie":"","ligneTP80":"","ligneT2125":"","itemsInclus":[{"nom":"","montant":0.00}],"itemsExclus":[{"nom":"","montant":0.00}],"montantAvantTaxes":0.00,"tpsPaye":0.00,"tvqPaye":0.00,"totalPaye":0.00,"tauxDeductibilite":100,"montantDeductible":0.00,"notes":""}`;
+}
+
+function promptAutoDetect() {
+  return `Analyse ce document de Karim Chaouche, consultant autonome au Québec.
+DÉTECTION AUTOMATIQUE: Détermine si c'est une FACTURE ÉMISE (revenu — Karim facture un client) ou une DÉPENSE (Karim a payé quelqu'un).
+- Facture émise: le nom de Karim ou son entreprise est dans "Bill from" ou l'émetteur
+- Dépense: Karim est le client qui a payé (reçu d'achat, abonnement payé, etc.)
+
+RÈGLES DÉPENSES: Items marqués au stylo/surligneur = inclure seulement ceux-là. Tim Hortons avec deux traits = timbits uniquement (50% déd.).
+Taux 2026: TPS 5%, TVQ 9.975%, impôt ~42%, RRQ 6.4%, FSS 4.26%, RQAP 1.18%.
+Catégories dépenses: Essence/carburant, Stationnement, Transport, Repas d'affaires (50%), Téléphone-portion pro, Internet-portion pro, AI/API, Logiciels/abonnements, Matériel informatique, Bureau à domicile, Formation/livres, Marketing/publicité, Honoraires professionnels, Assurances, Frais bancaires, Autre.
+
+Réponds UNIQUEMENT en JSON valide:
+{
+  "type": "income" ou "expense",
+  "date":"YYYY-MM-DD",
+  "client":"(si revenu: nom du client)",
+  "description":"",
+  "noFacture":"(si revenu)",
+  "montantNet":0.00,
+  "tps":0.00,
+  "tvq":0.00,
+  "totalFacture":0.00,
+  "reserveImpot":0.00,
+  "reserveRRQ":0.00,
+  "reserveFSS":0.00,
+  "reserveRQAP":0.00,
+  "totalReserve":0.00,
+  "netPoches":0.00,
+  "fournisseur":"(si dépense)",
+  "categorie":"(si dépense)",
+  "ligneTP80":"(si dépense)",
+  "ligneT2125":"(si dépense)",
+  "itemsInclus":[],
+  "itemsExclus":[],
+  "montantAvantTaxes":0.00,
+  "tpsPaye":0.00,
+  "tvqPaye":0.00,
+  "totalPaye":0.00,
+  "tauxDeductibilite":100,
+  "montantDeductible":0.00,
+  "notes":""
+}`;
 }
 
 // ═══════════════════════════════════════════════
@@ -727,6 +767,7 @@ function renderLedger() {
       <td class="td-amber">${fmt(isI?(r.tps+r.tvq):(r.tpsPaye+r.tvqPaye))}</td>
       <td class="${isI?'td-amber':'td-blue'}">${fmt(isI?r.totalReserve:r.montantDeductible)}</td>
       <td>${src}</td>
+      <td><button onclick="deleteEntry(${i})" style="background:none;border:none;cursor:pointer;color:#CBD0D8;font-size:14px;padding:2px 6px;border-radius:4px;transition:all 0.15s" onmouseover="this.style.color='#AF1E2D';this.style.background='#FDF2F3'" onmouseout="this.style.color='#CBD0D8';this.style.background='none'">✕</button></td>
     </tr>`;
   }).join('');
 }
@@ -745,6 +786,32 @@ function renderClientTabs() {
       <td class="td-muted" style="font-size:10px;font-family:var(--mono)">${r._fileName||'—'}</td>
     </tr>`).join('');
   });
+}
+
+// ═══════════════════════════════════════════════
+// CONFIRM / REJECT
+// ═══════════════════════════════════════════════
+function confirmEntry(itemId) {
+  const item = queue.find(i => i.id == itemId);
+  if (!item || !item.result) return;
+  addToLedger(item.result);
+  updateKPIs();
+  addActivity('✅', `Confirmé: ${item.name}`, item.client==='bisson-expert'?'Bisson Expert':'Soudures Rivard');
+  toast(`${item.name} ajouté au registre`, '✅', 'green');
+  // Remove confirm/reject buttons from card
+  document.querySelectorAll('[onclick^="confirmEntry"], [onclick^="rejectEntry"]').forEach(el => el.parentElement.remove());
+}
+
+function rejectEntry(itemId) {
+  const item = queue.find(i => i.id == itemId);
+  if (!item) return;
+  queue = queue.filter(i => i.id != itemId);
+  selectedId = null;
+  renderQueue();
+  document.getElementById('emptyState').style.display = 'flex';
+  document.getElementById('resultArea').style.display = 'none';
+  addActivity('❌', `Rejeté: ${item.name}`, '');
+  toast(`${item.name} rejeté`, '❌', 'red');
 }
 
 // ═══════════════════════════════════════════════
@@ -823,6 +890,22 @@ function loadActivityLog() {
 // ═══════════════════════════════════════════════
 // EXPORT
 // ═══════════════════════════════════════════════
+// Known expense vendors — auto-detect doc type
+const EXPENSE_VENDORS = ['anthropic','openai','petro','couche-tard','shell','esso','tim horton','benny','bélisle','belisle','couche tard','parking','stationnement','parks canada','github','microsoft','bell','videotron'];
+
+function isLikelyExpense(name) {
+  const n = (name||'').toLowerCase();
+  return EXPENSE_VENDORS.some(v => n.includes(v));
+}
+
+function deleteEntry(index) {
+  ledger.splice(index, 1);
+  renderLedger();
+  renderClientTabs();
+  updateKPIs();
+  addActivity('🗑️', `Entrée supprimée`, '');
+}
+
 function exportCSV() {
   if (!ledger.length) { toast('Aucune donnée', '⚠️', 'amber'); return; }
   const inc = ledger.filter(r => r._docType==='income');
