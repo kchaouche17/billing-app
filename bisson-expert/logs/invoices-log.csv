@@ -1,7 +1,6 @@
-No,Client,PÃ©riode,Date Ã©mission,Heures,Taux,Sous-total,TPS,TVQ,Total,Fichier
-1,"Bisson Expert","1â15 FÃ©vr. 2026","25 avril 2026",11.5,100,"1Â 150,00 $","0,00 $","0,00 $","1Â 150,00 $","Bisson Expert - 02-15-2026 - Invoice 1.pdf"
-2,"Bisson Expert","16â28 FÃ©vr. 2026","25 avril 2026",11.5,100,"1Â 150,00 $","0,00 $","0,00 $","1Â 150,00 $","Bisson Expert - 02-28-2026 - Invoice 2.pdf"
-3,"Bisson Expert","1â15 Mars. 2026","25 avril 2026",21.5,100,"2Â 150,00 $","0,00 $","0,00 $","2Â 150,00 $","Bisson Expert - 03-15-2026 - Invoice 3.pdf"
-4,"Bisson Expert","16â31 Mars. 2026","25 avril 2026",26.25,100,"2Â 625,00 $","0,00 $","0,00 $","2Â 625,00 $","Bisson Expert - 03-31-2026 - Invoice 4.pdf"
-5,"Bisson Expert","1â15 Avri. 2026","25 avril 2026",38.25,100,"3Â 825,00 $","0,00 $","0,00 $","3Â 825,00 $","Bisson Expert - 04-15-2026 - Invoice 5.pdf"
-2026-03-03,OpenAI OpCo, LLC,GCY3IDMR-0003,20,10.77,9.23
+No,Client,Periode,Date fichier,Heures,Taux,Sous-total,TPS,TVQ,Total,Fichier
+1,Bisson Expert,1-15 Fevr. 2026,2026-02-15,11.5,100,1150.00,0.00,0.00,1150.00,Bisson Expert - 02-15-2026 - Invoice 1.pdf
+2,Bisson Expert,16-28 Fevr. 2026,2026-02-28,11.5,100,1150.00,0.00,0.00,1150.00,Bisson Expert - 02-28-2026 - Invoice 2.pdf
+3,Bisson Expert,1-15 Mars 2026,2026-03-15,21.5,100,2150.00,0.00,0.00,2150.00,Bisson Expert - 03-15-2026 - Invoice 3.pdf
+4,Bisson Expert,16-31 Mars 2026,2026-03-31,26.25,100,2625.00,0.00,0.00,2625.00,Bisson Expert - 03-31-2026 - Invoice 4.pdf
+5,Bisson Expert,1-15 Avril 2026,2026-04-15,38.25,100,3825.00,0.00,0.00,3825.00,Bisson Expert - 04-15-2026 - Invoice 5.pdf
