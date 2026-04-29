@@ -43,3 +43,4 @@ Horodatage,Client,Facture,PÃ©riode,Action,Description,Heures,Date tÃ¢che,DÃ
 "2026-04-28 15 h 16","Bisson Expert","Facture 6","16–30 Avri. 2026","MODIFICATION","Power BI - New Bonus structure - Recalculate Margins - Change conditional format","6","2026-04-28","hrs: '5.5' -> '6'"
 "2026-04-28 15 h 20","Bisson Expert","Facture 6","16–30 Avri. 2026","MODIFICATION","Power BI - New Bonus structure - Recalculate Margins - Change conditional format","6.5","2026-04-28","hrs: '6' -> '6.5'"
 "2026-04-28 21 h 06","Bisson Expert","Facture 6","16–30 Avri. 2026","AJOUT","","","2026-04-28",""
+"2026-04-28 21 h 06","Bisson Expert","Facture 6","16–30 Avri. 2026","MODIFICATION","","","2026-04-28","desc: 'P' -> ''"
