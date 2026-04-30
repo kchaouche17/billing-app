@@ -761,7 +761,7 @@ function addToLedger(r) { ledger.push(r); renderLedger(); renderClientTabs(); }
 function renderLedger() {
   const tbody = document.getElementById('ledgerBody');
   if (!ledger.length) { tbody.innerHTML = '<tr><td colspan="9" class="no-data">Aucune entrée</td></tr>'; return; }
-  tbody.innerHTML = ledger.map(r => {
+  tbody.innerHTML = ledger.map((r, i) => {
     const isI = r._docType === 'income';
     const client = r._client==='bisson-expert' ? 'Bisson' : r._client==='soudures-rivard' ? 'S. Rivard' : '—';
     const src = r._source==='github-csv' ? '<span class="badge pill-github">GitHub</span>' : '<span class="badge b-pending">Manuel</span>';
