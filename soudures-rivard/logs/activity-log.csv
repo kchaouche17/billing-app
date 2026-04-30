@@ -23,3 +23,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-04-29 18 h 50","Soudures Rivard","Facture 1","16–30 Avri. 2026","MODIFICATION","Configurations finales de la solution pour Processus de traitement des commandes","6.25","2026-04-29","hrs: '6.2' -> '6.25'"
 "2026-04-30 07 h 54","Soudures Rivard","Facture 1","16–30 Avri. 2026","AJOUT","Déplacement","0.5","2026-04-30",""
 "2026-04-30 07 h 55","Soudures Rivard","Facture 1","16–30 Avri. 2026","AJOUT","Set up travail à distance pour poste Olivier","","2026-04-30",""
+"2026-04-30 07 h 55","Soudures Rivard","Facture 1","16–30 Avri. 2026","MODIFICATION","Set up travail à distance pour poste Olivier","0.5","2026-04-30","hrs: '0' -> '0.5'"
