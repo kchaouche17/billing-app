@@ -204,6 +204,10 @@ tbody tr:hover td{background:var(--bg)}
         <div class="drop-label">Photos ou PDFs</div>
         <div class="drop-sub">jpg · png · pdf</div>
       </div>
+      <div style="margin-top:10px">
+        <label for="specificItems" style="display:block;font-size:10px;font-weight:700;color:var(--text-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px">Items spécifiques à inclure (optionnel)</label>
+        <input type="text" id="specificItems" placeholder="Ex: café, stationnement, timbits..." style="width:100%;background:var(--bg);border:1.5px solid var(--border-dk);color:var(--text);font-family:var(--font);font-size:12px;padding:7px 10px;border-radius:var(--radius-sm);outline:none" onfocus="this.style.borderColor='var(--ch-blue)'" onblur="this.style.borderColor='var(--border-dk)'" />
+      </div>
       <button class="analyze-btn" id="analyzeBtn" onclick="analyzeAll()" disabled>🔍 Analyser</button>
     </div>
     <div style="padding:10px 20px 8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
@@ -595,7 +599,8 @@ async function analyzeItem(item) {
   item.status = 'analyzing'; renderQueue();
   const isImg = item.mediaType && item.mediaType.startsWith('image');
   const isPdf = item.mediaType === 'application/pdf';
-  const prompt = promptAutoDetect();
+  const specificItems = document.getElementById('specificItems').value.trim();
+  const prompt = promptAutoDetect(specificItems);
   let msgContent;
   if (isImg) { msgContent = [{ type:'image', source:{ type:'base64', media_type:item.mediaType, data:item.base64 }}, { type:'text', text:prompt }]; }
   else if (isPdf) { msgContent = [{ type:'document', source:{ type:'base64', media_type:'application/pdf', data:item.base64 }}, { type:'text', text:prompt }]; }
@@ -655,13 +660,16 @@ function promptExpense() {
   return `Analyse ce reçu de dépense de Karim Chaouche, consultant autonome au Québec. MARQUAGE: Si des items sont marqués (surligneur ou stylo, peu importe la couleur), inclus SEULEMENT ces items. Si rien n'est marqué, inclus tout. RÈGLE TIM HORTONS: Deux traits = uniquement les timbits (réunion équipe, 50% déductible). Catégories: Essence/carburant, Stationnement, Transport, Repas d'affaires (50%), Téléphone-portion pro, Internet-portion pro, AI/API, Logiciels/abonnements, Matériel informatique, Bureau à domicile, Formation/livres, Marketing/publicité, Honoraires professionnels, Assurances, Frais bancaires, Autre. Réponds UNIQUEMENT en JSON valide: {"date":"YYYY-MM-DD","fournisseur":"","description":"","categorie":"","ligneTP80":"","ligneT2125":"","itemsInclus":[{"nom":"","montant":0.00}],"itemsExclus":[{"nom":"","montant":0.00}],"montantAvantTaxes":0.00,"tpsPaye":0.00,"tvqPaye":0.00,"totalPaye":0.00,"tauxDeductibilite":100,"montantDeductible":0.00,"notes":""}`;
 }
 
-function promptAutoDetect() {
+function promptAutoDetect(specificItems = '') {
+  const filterClause = specificItems
+    ? `\nFILTRE ITEMS OBLIGATOIRE: Inclus SEULEMENT les items suivants : ${specificItems}. Tout le reste est exclu.`
+    : '';
   return `Analyse ce document de Karim Chaouche, consultant autonome au Québec.
 DÉTECTION AUTOMATIQUE: Détermine si c'est une FACTURE ÉMISE (revenu — Karim facture un client) ou une DÉPENSE (Karim a payé quelqu'un).
 - Facture émise: le nom de Karim ou son entreprise est dans "Bill from" ou l'émetteur
 - Dépense: Karim est le client qui a payé (reçu d'achat, abonnement payé, etc.)
 
-RÈGLES DÉPENSES: Items marqués au stylo/surligneur = inclure seulement ceux-là. Tim Hortons avec deux traits = timbits uniquement (50% déd.).
+RÈGLES DÉPENSES: Items marqués au stylo/surligneur = inclure seulement ceux-là. Tim Hortons avec deux traits = timbits uniquement (50% déd.).${filterClause}
 Taux 2026: TPS 5%, TVQ 9.975%, impôt ~42%, RRQ 6.4%, FSS 4.26%, RQAP 1.18%.
 Catégories dépenses: Essence/carburant, Stationnement, Transport, Repas d'affaires (50%), Téléphone-portion pro, Internet-portion pro, AI/API, Logiciels/abonnements, Matériel informatique, Bureau à domicile, Formation/livres, Marketing/publicité, Honoraires professionnels, Assurances, Frais bancaires, Autre.
 
