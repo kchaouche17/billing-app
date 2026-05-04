@@ -72,3 +72,4 @@ Horodatage,Client,Facture,PÃÂÃÂ©riode,Action,Description,Heures,Date 
 "2026-05-01 10 h 00","Bisson Expert","Facture 7","1–15 Mai. 2026","MODIFICATION","Révisions notes derniers changements Power BI - New Bonus structure","0.5","2026-05-01","hrs: '0' -> '0.5'"
 "2026-05-04 10 h 10","Bisson Expert","Facture 7","1–15 Mai. 2026","AJOUT","2.5","","2026-05-04",""
 "2026-05-04 10 h 10","Bisson Expert","Facture 7","1–15 Mai. 2026","MODIFICATION","Power BI - Ajustements","","2026-05-04","desc: 'Power BI - Ajustement' -> 'Power BI - Ajustements'"
+"2026-05-04 10 h 10","Bisson Expert","Facture 7","1–15 Mai. 2026","MODIFICATION","Power BI - Ajustements","1.5","2026-05-04","hrs: '1' -> '1.5'"
