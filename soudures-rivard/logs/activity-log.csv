@@ -39,3 +39,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-06 20 h 02","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Ajustement pour Script 00 à 04. Finalisée","8","2026-05-06","hrs: '0.75' -> '8'"
 "2026-05-06 20 h 02","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Ajustement pour Script 00 à 04. Finalisée","8.5","2026-05-06","hrs: '8' -> '8.5'"
 "2026-05-07 09 h 07","Soudures Rivard","Facture 2","1–15 Mai. 2026","AJOUT","Communications avec intervenants externes et internes","","2026-05-07",""
+"2026-05-07 09 h 07","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Communications avec intervenants externes et internes","0.5","2026-05-07","hrs: '0' -> '0.5'"
