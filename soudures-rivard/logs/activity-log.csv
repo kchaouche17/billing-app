@@ -47,3 +47,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-11 08 h 40","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Derniers ajustements processus en amont traitement de commandes Mueller","5","2026-05-09","hrs: '' -> '5'"
 "2026-05-11 08 h 43","Soudures Rivard","Facture 2","1–15 Mai. 2026","AJOUT","Déplacement","","2026-05-11",""
 "2026-05-11 08 h 43","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Déplacement","0.5","2026-05-11","hrs: '0' -> '0.5'"
+"2026-05-11 08 h 43","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Derniers ajustements processus en amont traitement de commandes Mueller","6.5","2026-05-09","hrs: '6' -> '6.5'"
