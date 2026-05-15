@@ -64,3 +64,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-15 11 h 10","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Fix bug injection de ligne dans D0054","1","2026-05-15","hrs: '' -> '1'"
 "2026-05-15 11 h 10","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Fix bug injection de ligne dans D0054","3","2026-05-15","hrs: '' -> '3'"
 "2026-05-15 11 h 14","Soudures Rivard","Facture 2","1–15 Mai. 2026","AJOUT","Fix bug ","","2026-05-15",""
+"2026-05-15 11 h 14","Soudures Rivard","Facture 2","1–15 Mai. 2026","MODIFICATION","Fix bug 2 item lines per ","","2026-05-15","desc: 'Fix bug 2 item lines per' -> 'Fix bug 2 item lines pe"
