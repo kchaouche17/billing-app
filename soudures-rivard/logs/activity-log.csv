@@ -84,3 +84,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-25 08 h 15","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Contact Sage + troubleshooting","2.5","2026-05-25","hrs: '2' -> '2.5'"
 "2026-05-25 08 h 15","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Contact Sage + troubleshooting","2.5","2026-05-23","date: '2026-05-24' -> '2026-05-23'"
 "2026-05-25 08 h 15","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Contact Sage + troubleshooting","2.5","2026-05-22","date: '2026-05-23' -> '2026-05-22'"
+"2026-05-25 08 h 27","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Contact Sage + troubleshooting","3","2026-05-22","hrs: '2.5' -> '3'"
