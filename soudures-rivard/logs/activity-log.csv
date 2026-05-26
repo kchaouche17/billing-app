@@ -93,3 +93,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Discussion Stratégique JF","0.25","2026-05-26","desc: 'Discussion Stratégique J' -> 'Discussion Stratégique "
 "2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Rencontre Réalignement Monday","","2026-05-26",""
 "2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Rencontre Réalignement Monday","0.75","2026-05-26","hrs: '0.7' -> '0.75'"
+"2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Review Monday Project","","2026-05-26",""
