@@ -91,3 +91,5 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-26 07 h 51","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Intégration API Sage 50 pour création de factures automatiques","6.5","2026-05-26","hrs: '6' -> '6.5'"
 "2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Discussion Stratégique","","2026-05-26",""
 "2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Discussion Stratégique JF","0.25","2026-05-26","desc: 'Discussion Stratégique J' -> 'Discussion Stratégique "
+"2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Rencontre Réalignement Monday","","2026-05-26",""
+"2026-05-26 10 h 37","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Rencontre Réalignement Monday","0.75","2026-05-26","hrs: '0.7' -> '0.75'"
