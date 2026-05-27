@@ -106,3 +106,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-27 09 h 00","Bisson Expert","Facture 8","16–31 Mai. 2026","MODIFICATION","Communications internes et externes","0.25","2026-05-27","hrs: '0.2' -> '0.25'"
 "2026-05-27 09 h 01","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Déplacement","","2026-05-27",""
 "2026-05-27 09 h 01","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Déplacement","0.5","2026-05-27","hrs: '0' -> '0.5'"
+"2026-05-27 10 h 50","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Fix ","","2026-05-27",""
