@@ -781,13 +781,17 @@ function showResult(item) {
   } else {
     // Build item states if not already set (merge inclus=checked + exclus=unchecked)
     if (!item._itemStates) {
+      const extractPrice = s => { const m = String(s).match(/\$\s*([\d.]+)/); return m ? parseFloat(m[1]) : 0; };
+      const cleanName = s => String(s).replace(/\s*[-–]\s*\$[\d.]+/, '').replace(/\s*\(?\$[\d.]+\)?/, '').trim();
       const parseItem = (i, on) => {
-        if (typeof i === 'string') return {nom: i, montant: 0, on};
-        return {
-          nom: i.nom || i.name || i.description || i.item || i.produit || JSON.stringify(i),
-          montant: parseFloat(i.montant || i.prix || i.price || i.amount || i.total || 0),
-          on
-        };
+        if (typeof i === 'string') {
+          const montant = extractPrice(i);
+          return {nom: montant ? cleanName(i) : i, montant, on};
+        }
+        let nom = i.nom || i.name || i.description || i.item || i.produit || JSON.stringify(i);
+        let montant = parseFloat(i.montant || i.prix || i.price || i.amount || i.total || 0);
+        if (!montant) { montant = extractPrice(nom); if (montant) nom = cleanName(nom); }
+        return {nom, montant, on};
       };
       item._itemStates = [
         ...(r.itemsInclus||[]).map(i => parseItem(i, true)),
