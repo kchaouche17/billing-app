@@ -78,7 +78,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .b-error{background:var(--ch-red-bg);color:var(--ch-red)}
 
 /* MAIN */
-.main{display:flex;flex-direction:column;overflow:hidden}
+.main{display:flex;flex-direction:column;overflow:auto}
 .kpi-strip{background:white;border-bottom:1px solid var(--border);display:grid;grid-template-columns:repeat(6,1fr);box-shadow:var(--shadow)}
 .kpi{padding:14px 18px;border-right:1px solid var(--border);position:relative}
 .kpi:last-child{border-right:none}
@@ -94,7 +94,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .kpi.k-red2 .kpi-val{color:#c2410c}.kpi.k-red2 .kpi-bar{background:#c2410c}
 
 /* CONTENT */
-.content{flex:1;display:grid;grid-template-columns:400px 1fr;overflow:hidden}
+.content{flex:1;display:grid;grid-template-columns:400px 1fr;overflow:auto}
 .panel{overflow-y:auto;padding:20px;background:var(--bg);border-right:1px solid var(--border)}
 .panel-r{overflow-y:auto;background:white;display:flex;flex-direction:column}
 .panel-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
@@ -152,6 +152,21 @@ tbody tr:hover td{background:var(--bg)}
 .act-icon{font-size:14px;flex-shrink:0}
 .act-client{font-size:10px;color:var(--text-lt);margin-top:2px;font-family:var(--mono)}
 .spinner{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:white;animation:spin 0.7s linear infinite}
+.items-list{margin-bottom:6px}
+.item-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:var(--radius-sm);margin-bottom:4px;transition:all 0.15s;border:1px solid transparent}
+.item-row.item-on{background:var(--green-bg);border-color:rgba(0,189,165,0.2)}
+.item-row.item-off{background:var(--bg);opacity:0.55}
+.item-label{display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0}
+.item-checkbox{width:15px;height:15px;cursor:pointer;accent-color:var(--green);flex-shrink:0}
+.item-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-amt{font-family:var(--mono);font-size:12px;font-weight:500;flex-shrink:0;margin-left:8px}
+.item-on .item-amt{color:var(--green)}
+.item-off .item-amt{color:var(--text-lt);text-decoration:line-through}
+.confirm-bar{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
+.btn-confirm{flex:1;padding:9px;background:var(--green);color:white;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-confirm:hover{background:#00a693}
+.btn-reject{padding:9px 14px;background:var(--ch-red-bg);color:var(--ch-red);border:1px solid rgba(175,30,45,0.3);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;cursor:pointer;transition:all 0.15s}
+.btn-reject:hover{background:#fde8ea}
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
 .toast{background:white;border-radius:var(--radius);box-shadow:var(--shadow-md);padding:11px 16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:240px;border:1px solid var(--border);animation:toastIn 0.2s ease}
@@ -419,7 +434,7 @@ async function syncFromCSV() {
       const res = await ghFetch(`${clientId}/logs/invoices-log.csv`);
       if (res.ok) {
         const data = await res.json();
-        const csv  = atob(data.content.replace(/\n/g, ''));
+        const csv  = new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')),c=>c.charCodeAt(0)));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('Date') && !l.startsWith('date'));
         for (const line of lines) {
           const [no,client,periode,dateEmission,heures,taux,sousTotal,tps,tvq,total,fichier] = parseCSVLine(line);
@@ -452,7 +467,7 @@ async function syncFromCSV() {
       const res = await ghFetch(`${clientId}/logs/expenses-log.csv`);
       if (res.ok) {
         const data = await res.json();
-        const csv  = atob(data.content.replace(/\n/g, ''));
+        const csv  = new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')),c=>c.charCodeAt(0)));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('date'));
         for (const line of lines) {
           const [date,fournisseur,description,categorie,ligneTP80,ligneT2125,avant,tps,tvq,total,tauxDed,deductible] = parseCSVLine(line);
@@ -522,21 +537,42 @@ dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over
 
 function handleFiles(files) {
   const clientId = document.getElementById('clientSelect').value;
+  let added = 0, dupes = 0;
   Array.from(files).forEach(file => {
+    if (queue.find(i => i.name === file.name)) { dupes++; return; }
     const id = Date.now() + Math.random();
     const item = { id, file, name:file.name, type:docType, client:clientId, status:'pending', result:null, base64:null, mediaType:null, source:'manual' };
     queue.push(item);
+    added++;
     toBase64(file).then(({ base64, mediaType }) => { item.base64 = base64; item.mediaType = mediaType; renderQueue(); });
   });
+  if (added) toast(`${added} fichier${added>1?'s':''} ajouté${added>1?'s':''}`, '📎', 'blue');
+  if (dupes) toast(`${dupes} doublon${dupes>1?'s':''} ignoré${dupes>1?'s':''}`, '⚠️', 'amber');
   renderQueue();
   if (!selectedId && queue.length) selectItem(queue[0].id);
 }
 
 function toBase64(file) {
   return new Promise(res => {
-    const r = new FileReader();
-    r.onload = e => res({ base64: e.target.result.split(',')[1], mediaType: file.type || 'image/jpeg' });
-    r.readAsDataURL(file);
+    if (!file.type.startsWith('image/')) {
+      const r = new FileReader();
+      r.onload = e => res({ base64: e.target.result.split(',')[1], mediaType: file.type || 'application/pdf' });
+      r.readAsDataURL(file);
+      return;
+    }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { const s = MAX / Math.max(w, h); w = Math.round(w*s); h = Math.round(h*s); }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      const data = c.toDataURL('image/jpeg', 0.82);
+      res({ base64: data.split(',')[1], mediaType: 'image/jpeg' });
+    };
+    img.src = url;
   });
 }
 
@@ -719,6 +755,11 @@ function showResult(item) {
     ? `<div class="doc-preview"><img src="data:${item.mediaType};base64,${item.base64}" /><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome?'pill-income':'pill-expense'}">${isIncome?'💰 Revenu':'🧾 Dépense'}</span></div></div>`
     : `<div class="doc-preview"><div class="doc-preview-pdf">📄</div><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome?'pill-income':'pill-expense'}">${isIncome?'💰 Revenu':'🧾 Dépense'}</span></div></div>`;
   const cards = document.getElementById('resultCards');
+  const fromGH = item.source === 'github-csv';
+  const confirmBar = fromGH ? '' : `<div class="confirm-bar">
+    <button class="btn-confirm" onclick="confirmEntry(${item.id})">✅ Ajouter au registre</button>
+    <button class="btn-reject" onclick="rejectEntry(${item.id})">✕ Rejeter</button>
+  </div>`;
   if (isIncome) {
     cards.innerHTML = `<div class="result-card">
       <div class="card-hdr"><div><div class="card-vendor">${r.client||'—'}</div><div class="card-date">${r.date||'—'}${r.noFacture?' · '+r.noFacture:''}</div></div><span class="pill pill-income">💰 Revenu</span></div>
@@ -735,22 +776,79 @@ function showResult(item) {
       </div>
       <div class="card-total ct-green"><div class="ct-lbl">Net dans tes poches</div><div class="ct-val">${fmt(r.netPoches)}</div></div>
       ${r.notes?`<div class="card-note">⚠️ ${r.notes}</div>`:''}
+      ${confirmBar}
     </div>`;
   } else {
-    const excl = (r.itemsExclus&&r.itemsExclus.length) ? `<div class="excl-box"><div class="excl-title">🚫 Items exclus</div>${r.itemsExclus.map(i=>`<div class="excl-item"><span>${i.nom}</span><span>${fmt(i.montant)}</span></div>`).join('')}</div>` : '';
-    const incl = (r.itemsInclus&&r.itemsInclus.length) ? r.itemsInclus.map(i=>`<div class="dr"><span class="dr-lbl">✅ ${i.nom}</span><span class="dr-val v-blue">${fmt(i.montant)}</span></div>`).join('') : '';
+    // Build item states if not already set (merge inclus=checked + exclus=unchecked)
+    if (!item._itemStates) {
+      item._itemStates = [
+        ...(r.itemsInclus||[]).map(i => ({nom:i.nom, montant:i.montant||0, on:true})),
+        ...(r.itemsExclus||[]).map(i => ({nom:i.nom, montant:i.montant||0, on:false}))
+      ];
+    }
+    const hasItems = item._itemStates.length > 0;
+    const itemsHtml = hasItems ? item._itemStates.map((it, idx) => `
+      <div class="item-row ${it.on?'item-on':'item-off'}" id="irow-${item.id}-${idx}">
+        <label class="item-label">
+          <input type="checkbox" class="item-checkbox" ${it.on?'checked':''} onchange="toggleItem(${item.id},${idx},this.checked)">
+          <span class="item-name">${it.nom}</span>
+        </label>
+        <span class="item-amt">${fmt(it.montant)}</span>
+      </div>`).join('') : '';
+    const {subtotal, deductible, tps, tvq} = calcItemTotals(item);
     cards.innerHTML = `<div class="result-card">
       <div class="card-hdr"><div><div class="card-vendor">${r.fournisseur||'—'}</div><div class="card-date">${r.date||'—'} · ${r.categorie||'—'}</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">TP-80 ${r.ligneTP80||'—'}</div><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">T2125 ${r.ligneT2125||'—'}</div></div></div>
-      <div class="card-body">${excl}${incl}
-        <div class="dr"><span class="dr-lbl">Avant taxes</span><span class="dr-val">${fmt(r.montantAvantTaxes)}</span></div>
-        <div class="dr"><span class="dr-lbl">TPS payée</span><span class="dr-val">${fmt(r.tpsPaye)}</span></div>
-        <div class="dr"><span class="dr-lbl">TVQ payée</span><span class="dr-val">${fmt(r.tvqPaye)}</span></div>
+      <div class="card-body">
+        ${hasItems ? `<div style="font-size:10px;font-weight:700;color:var(--text-lt);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Sélection des items</div>
+        <div class="items-list" id="ilist-${item.id}">${itemsHtml}</div>
+        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">` : ''}
+        <div class="dr"><span class="dr-lbl">Avant taxes</span><span class="dr-val" id="isubtotal-${item.id}">${fmt(subtotal)}</span></div>
+        <div class="dr"><span class="dr-lbl">TPS payée</span><span class="dr-val" id="itps-${item.id}">${fmt(tps)}</span></div>
+        <div class="dr"><span class="dr-lbl">TVQ payée</span><span class="dr-val" id="itvq-${item.id}">${fmt(tvq)}</span></div>
         <div class="dr"><span class="dr-lbl">Déductibilité</span><span class="dr-val v-blue" style="font-weight:700">${r.tauxDeductibilite||100}%</span></div>
+        ${hasItems ? '</div>' : ''}
       </div>
-      <div class="card-total ct-blue"><div class="ct-lbl">Montant déductible</div><div class="ct-val">${fmt(r.montantDeductible)}</div></div>
+      <div class="card-total ct-blue" id="ideductible-${item.id}"><div class="ct-lbl">Montant déductible</div><div class="ct-val">${fmt(deductible)}</div></div>
       ${r.notes?`<div class="card-note">⚠️ ${r.notes}</div>`:''}
+      ${confirmBar}
     </div>`;
   }
+}
+
+function calcItemTotals(item) {
+  const r = item.result;
+  const taux = (r.tauxDeductibilite||100) / 100;
+  if (!item._itemStates || !item._itemStates.length) {
+    return {
+      subtotal: r.montantAvantTaxes||0,
+      tps: r.tpsPaye||0,
+      tvq: r.tvqPaye||0,
+      deductible: r.montantDeductible||0
+    };
+  }
+  const subtotal = item._itemStates.filter(i => i.on).reduce((s,i) => s+(i.montant||0), 0);
+  const origSubtotal = (r.montantAvantTaxes||0) || item._itemStates.reduce((s,i) => s+(i.montant||0), 0);
+  const ratio = origSubtotal > 0 ? subtotal / origSubtotal : 1;
+  return {
+    subtotal,
+    tps: Math.round((r.tpsPaye||0) * ratio * 100) / 100,
+    tvq: Math.round((r.tvqPaye||0) * ratio * 100) / 100,
+    deductible: Math.round(subtotal * taux * 100) / 100
+  };
+}
+
+function toggleItem(itemId, idx, on) {
+  const item = queue.find(i => i.id == itemId);
+  if (!item || !item._itemStates) return;
+  item._itemStates[idx].on = on;
+  const row = document.getElementById(`irow-${itemId}-${idx}`);
+  if (row) row.className = `item-row ${on?'item-on':'item-off'}`;
+  const {subtotal, deductible, tps, tvq} = calcItemTotals(item);
+  const q = id => document.getElementById(id);
+  if (q(`isubtotal-${itemId}`)) q(`isubtotal-${itemId}`).textContent = fmt(subtotal);
+  if (q(`itps-${itemId}`)) q(`itps-${itemId}`).textContent = fmt(tps);
+  if (q(`itvq-${itemId}`)) q(`itvq-${itemId}`).textContent = fmt(tvq);
+  if (q(`ideductible-${itemId}`)) q(`ideductible-${itemId}`).innerHTML = `<div class="ct-lbl">Montant déductible</div><div class="ct-val">${fmt(deductible)}</div>`;
 }
 
 // ═══════════════════════════════════════════════
@@ -761,7 +859,8 @@ function addToLedger(r) { ledger.push(r); renderLedger(); renderClientTabs(); }
 function renderLedger() {
   const tbody = document.getElementById('ledgerBody');
   if (!ledger.length) { tbody.innerHTML = '<tr><td colspan="9" class="no-data">Aucune entrée</td></tr>'; return; }
-  tbody.innerHTML = ledger.map((r, i) => {
+  const sorted = [...ledger].map((r,i)=>({r,i})).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||''));
+  tbody.innerHTML = sorted.map(({r, i}) => {
     const isI = r._docType === 'income';
     const client = r._client==='bisson-expert' ? 'Bisson' : r._client==='soudures-rivard' ? 'S. Rivard' : '—';
     const src = r._source==='github-csv' ? '<span class="badge pill-github">GitHub</span>' : '<span class="badge b-pending">Manuel</span>';
@@ -784,7 +883,7 @@ function renderClientTabs() {
   ['bisson','rivard'].forEach(tab => {
     const clientId = tab==='bisson' ? 'bisson-expert' : 'soudures-rivard';
     const tbody = document.getElementById(`${tab}Body`);
-    const entries = ledger.filter(r => r._client===clientId && r._docType==='expense');
+    const entries = ledger.filter(r => r._client===clientId && r._docType==='expense').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
     if (!entries.length) { tbody.innerHTML = `<tr><td colspan="5" class="no-data">Aucune entrée</td></tr>`; return; }
     tbody.innerHTML = entries.map(r => `<tr>
       <td class="td-mono td-muted">${r.date||'—'}</td>
@@ -802,6 +901,16 @@ function renderClientTabs() {
 function confirmEntry(itemId) {
   const item = queue.find(i => i.id == itemId);
   if (!item || !item.result) return;
+  if (item._itemStates && item._itemStates.length) {
+    const {subtotal, tps, tvq, deductible} = calcItemTotals(item);
+    item.result.montantAvantTaxes = subtotal;
+    item.result.tpsPaye = tps;
+    item.result.tvqPaye = tvq;
+    item.result.totalPaye = Math.round((subtotal + tps + tvq) * 100) / 100;
+    item.result.montantDeductible = deductible;
+    item.result.itemsInclus = item._itemStates.filter(i => i.on).map(i => i.nom);
+    item.result.itemsExclus = item._itemStates.filter(i => !i.on).map(i => i.nom);
+  }
   addToLedger(item.result);
   updateKPIs();
   addActivity('✅', `Confirmé: ${item.name}`, item.client==='bisson-expert'?'Bisson Expert':'Soudures Rivard');
@@ -971,7 +1080,7 @@ function fmt(n) {
 }
 
 function toast(msg, icon='✅', type='green') {
-  const colors = { green:'var(--green)', amber:'var(--amber)', red:'var(--ch-red)' };
+  const colors = { green:'var(--green)', amber:'var(--amber)', red:'var(--ch-red)', blue:'var(--ch-blue)' };
   const t = document.createElement('div'); t.className = 'toast';
   t.style.borderLeft = `4px solid ${colors[type]}`;
   t.innerHTML = `<span style="font-size:16px">${icon}</span><span>${msg}</span>`;
