@@ -152,6 +152,21 @@ tbody tr:hover td{background:var(--bg)}
 .act-icon{font-size:14px;flex-shrink:0}
 .act-client{font-size:10px;color:var(--text-lt);margin-top:2px;font-family:var(--mono)}
 .spinner{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);border-top-color:white;animation:spin 0.7s linear infinite}
+.items-list{margin-bottom:6px}
+.item-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:var(--radius-sm);margin-bottom:4px;transition:all 0.15s;border:1px solid transparent}
+.item-row.item-on{background:var(--green-bg);border-color:rgba(0,189,165,0.2)}
+.item-row.item-off{background:var(--bg);opacity:0.55}
+.item-label{display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0}
+.item-checkbox{width:15px;height:15px;cursor:pointer;accent-color:var(--green);flex-shrink:0}
+.item-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-amt{font-family:var(--mono);font-size:12px;font-weight:500;flex-shrink:0;margin-left:8px}
+.item-on .item-amt{color:var(--green)}
+.item-off .item-amt{color:var(--text-lt);text-decoration:line-through}
+.confirm-bar{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
+.btn-confirm{flex:1;padding:9px;background:var(--green);color:white;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s}
+.btn-confirm:hover{background:#00a693}
+.btn-reject{padding:9px 14px;background:var(--ch-red-bg);color:var(--ch-red);border:1px solid rgba(175,30,45,0.3);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;cursor:pointer;transition:all 0.15s}
+.btn-reject:hover{background:#fde8ea}
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
 .toast{background:white;border-radius:var(--radius);box-shadow:var(--shadow-md);padding:11px 16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:240px;border:1px solid var(--border);animation:toastIn 0.2s ease}
@@ -719,6 +734,11 @@ function showResult(item) {
     ? `<div class="doc-preview"><img src="data:${item.mediaType};base64,${item.base64}" /><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome?'pill-income':'pill-expense'}">${isIncome?'💰 Revenu':'🧾 Dépense'}</span></div></div>`
     : `<div class="doc-preview"><div class="doc-preview-pdf">📄</div><div class="doc-preview-foot"><span>${item.name}</span><span class="pill ${isIncome?'pill-income':'pill-expense'}">${isIncome?'💰 Revenu':'🧾 Dépense'}</span></div></div>`;
   const cards = document.getElementById('resultCards');
+  const fromGH = item.source === 'github-csv';
+  const confirmBar = fromGH ? '' : `<div class="confirm-bar">
+    <button class="btn-confirm" onclick="confirmEntry(${item.id})">✅ Ajouter au registre</button>
+    <button class="btn-reject" onclick="rejectEntry(${item.id})">✕ Rejeter</button>
+  </div>`;
   if (isIncome) {
     cards.innerHTML = `<div class="result-card">
       <div class="card-hdr"><div><div class="card-vendor">${r.client||'—'}</div><div class="card-date">${r.date||'—'}${r.noFacture?' · '+r.noFacture:''}</div></div><span class="pill pill-income">💰 Revenu</span></div>
@@ -735,22 +755,79 @@ function showResult(item) {
       </div>
       <div class="card-total ct-green"><div class="ct-lbl">Net dans tes poches</div><div class="ct-val">${fmt(r.netPoches)}</div></div>
       ${r.notes?`<div class="card-note">⚠️ ${r.notes}</div>`:''}
+      ${confirmBar}
     </div>`;
   } else {
-    const excl = (r.itemsExclus&&r.itemsExclus.length) ? `<div class="excl-box"><div class="excl-title">🚫 Items exclus</div>${r.itemsExclus.map(i=>`<div class="excl-item"><span>${i.nom}</span><span>${fmt(i.montant)}</span></div>`).join('')}</div>` : '';
-    const incl = (r.itemsInclus&&r.itemsInclus.length) ? r.itemsInclus.map(i=>`<div class="dr"><span class="dr-lbl">✅ ${i.nom}</span><span class="dr-val v-blue">${fmt(i.montant)}</span></div>`).join('') : '';
+    // Build item states if not already set (merge inclus=checked + exclus=unchecked)
+    if (!item._itemStates) {
+      item._itemStates = [
+        ...(r.itemsInclus||[]).map(i => ({nom:i.nom, montant:i.montant||0, on:true})),
+        ...(r.itemsExclus||[]).map(i => ({nom:i.nom, montant:i.montant||0, on:false}))
+      ];
+    }
+    const hasItems = item._itemStates.length > 0;
+    const itemsHtml = hasItems ? item._itemStates.map((it, idx) => `
+      <div class="item-row ${it.on?'item-on':'item-off'}" id="irow-${item.id}-${idx}">
+        <label class="item-label">
+          <input type="checkbox" class="item-checkbox" ${it.on?'checked':''} onchange="toggleItem(${item.id},${idx},this.checked)">
+          <span class="item-name">${it.nom}</span>
+        </label>
+        <span class="item-amt">${fmt(it.montant)}</span>
+      </div>`).join('') : '';
+    const {subtotal, deductible, tps, tvq} = calcItemTotals(item);
     cards.innerHTML = `<div class="result-card">
       <div class="card-hdr"><div><div class="card-vendor">${r.fournisseur||'—'}</div><div class="card-date">${r.date||'—'} · ${r.categorie||'—'}</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">TP-80 ${r.ligneTP80||'—'}</div><div style="font-size:10px;color:var(--text-lt);font-family:var(--mono)">T2125 ${r.ligneT2125||'—'}</div></div></div>
-      <div class="card-body">${excl}${incl}
-        <div class="dr"><span class="dr-lbl">Avant taxes</span><span class="dr-val">${fmt(r.montantAvantTaxes)}</span></div>
-        <div class="dr"><span class="dr-lbl">TPS payée</span><span class="dr-val">${fmt(r.tpsPaye)}</span></div>
-        <div class="dr"><span class="dr-lbl">TVQ payée</span><span class="dr-val">${fmt(r.tvqPaye)}</span></div>
+      <div class="card-body">
+        ${hasItems ? `<div style="font-size:10px;font-weight:700;color:var(--text-lt);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Sélection des items</div>
+        <div class="items-list" id="ilist-${item.id}">${itemsHtml}</div>
+        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">` : ''}
+        <div class="dr"><span class="dr-lbl">Avant taxes</span><span class="dr-val" id="isubtotal-${item.id}">${fmt(subtotal)}</span></div>
+        <div class="dr"><span class="dr-lbl">TPS payée</span><span class="dr-val" id="itps-${item.id}">${fmt(tps)}</span></div>
+        <div class="dr"><span class="dr-lbl">TVQ payée</span><span class="dr-val" id="itvq-${item.id}">${fmt(tvq)}</span></div>
         <div class="dr"><span class="dr-lbl">Déductibilité</span><span class="dr-val v-blue" style="font-weight:700">${r.tauxDeductibilite||100}%</span></div>
+        ${hasItems ? '</div>' : ''}
       </div>
-      <div class="card-total ct-blue"><div class="ct-lbl">Montant déductible</div><div class="ct-val">${fmt(r.montantDeductible)}</div></div>
+      <div class="card-total ct-blue" id="ideductible-${item.id}"><div class="ct-lbl">Montant déductible</div><div class="ct-val">${fmt(deductible)}</div></div>
       ${r.notes?`<div class="card-note">⚠️ ${r.notes}</div>`:''}
+      ${confirmBar}
     </div>`;
   }
+}
+
+function calcItemTotals(item) {
+  const r = item.result;
+  const taux = (r.tauxDeductibilite||100) / 100;
+  if (!item._itemStates || !item._itemStates.length) {
+    return {
+      subtotal: r.montantAvantTaxes||0,
+      tps: r.tpsPaye||0,
+      tvq: r.tvqPaye||0,
+      deductible: r.montantDeductible||0
+    };
+  }
+  const subtotal = item._itemStates.filter(i => i.on).reduce((s,i) => s+(i.montant||0), 0);
+  const origSubtotal = (r.montantAvantTaxes||0) || item._itemStates.reduce((s,i) => s+(i.montant||0), 0);
+  const ratio = origSubtotal > 0 ? subtotal / origSubtotal : 1;
+  return {
+    subtotal,
+    tps: Math.round((r.tpsPaye||0) * ratio * 100) / 100,
+    tvq: Math.round((r.tvqPaye||0) * ratio * 100) / 100,
+    deductible: Math.round(subtotal * taux * 100) / 100
+  };
+}
+
+function toggleItem(itemId, idx, on) {
+  const item = queue.find(i => i.id == itemId);
+  if (!item || !item._itemStates) return;
+  item._itemStates[idx].on = on;
+  const row = document.getElementById(`irow-${itemId}-${idx}`);
+  if (row) row.className = `item-row ${on?'item-on':'item-off'}`;
+  const {subtotal, deductible, tps, tvq} = calcItemTotals(item);
+  const q = id => document.getElementById(id);
+  if (q(`isubtotal-${itemId}`)) q(`isubtotal-${itemId}`).textContent = fmt(subtotal);
+  if (q(`itps-${itemId}`)) q(`itps-${itemId}`).textContent = fmt(tps);
+  if (q(`itvq-${itemId}`)) q(`itvq-${itemId}`).textContent = fmt(tvq);
+  if (q(`ideductible-${itemId}`)) q(`ideductible-${itemId}`).innerHTML = `<div class="ct-lbl">Montant déductible</div><div class="ct-val">${fmt(deductible)}</div>`;
 }
 
 // ═══════════════════════════════════════════════
@@ -802,6 +879,16 @@ function renderClientTabs() {
 function confirmEntry(itemId) {
   const item = queue.find(i => i.id == itemId);
   if (!item || !item.result) return;
+  if (item._itemStates && item._itemStates.length) {
+    const {subtotal, tps, tvq, deductible} = calcItemTotals(item);
+    item.result.montantAvantTaxes = subtotal;
+    item.result.tpsPaye = tps;
+    item.result.tvqPaye = tvq;
+    item.result.totalPaye = Math.round((subtotal + tps + tvq) * 100) / 100;
+    item.result.montantDeductible = deductible;
+    item.result.itemsInclus = item._itemStates.filter(i => i.on).map(i => i.description);
+    item.result.itemsExclus = item._itemStates.filter(i => !i.on).map(i => i.description);
+  }
   addToLedger(item.result);
   updateKPIs();
   addActivity('✅', `Confirmé: ${item.name}`, item.client==='bisson-expert'?'Bisson Expert':'Soudures Rivard');
