@@ -514,7 +514,8 @@ async function appendToCSVLog(clientId, logFile, row) {
   try {
     const res = await ghFetch(path);
     let content = ''; let sha = null;
-    if (res.ok) { const d = await res.json(); sha = d.sha; content = atob(d.content.replace(/\n/g,'')); }
+    if (res.ok) { const d = await res.json(); sha = d.sha; content = new TextDecoder('utf-8').decode(Uint8Array.from(atob(d.content.replace(/
+/g,'')),c=>c.charCodeAt(0))); }
     content += row + '\n';
     const body = { message: `Log: ${logFile}`, content: btoa(unescape(encodeURIComponent(content))) };
     if (sha) body.sha = sha;

@@ -33,5 +33,7 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-05-25,Anthropic PBC (ZDU65LI5-0034),Prepaid extra usage Mai 2026,AI/API,5490,8810,20.0,1.00,2.00,23.00,100,20.0
 2026-03-17,Tim Hortons,Timbits réunion équipe (cmd 9655),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-05-26,Anthropic PBC (ZDU65LI5-0035),Prepaid extra usage Mai 2026,AI/API,5490,8810,25.0,1.25,2.49,28.74,100,25.0
-
 2026-04-14,Tim Hortons,Timbits réunion équipe (Tim Bisson 3),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
+2026-04-21,Tim Hortons,Timbits réunion équipe,Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
+2026-05-05,Tim Hortons,Timbits réunion équipe,Repas d'affaires (50%),5900,8523,3.29,0.0,0.0,3.29,50,1.65
+2026-05-19,Tim Hortons,Timbits réunion équipe,Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.77
