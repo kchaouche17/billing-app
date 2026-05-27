@@ -908,8 +908,8 @@ function confirmEntry(itemId) {
     item.result.tvqPaye = tvq;
     item.result.totalPaye = Math.round((subtotal + tps + tvq) * 100) / 100;
     item.result.montantDeductible = deductible;
-    item.result.itemsInclus = item._itemStates.filter(i => i.on).map(i => i.description);
-    item.result.itemsExclus = item._itemStates.filter(i => !i.on).map(i => i.description);
+    item.result.itemsInclus = item._itemStates.filter(i => i.on).map(i => i.nom);
+    item.result.itemsExclus = item._itemStates.filter(i => !i.on).map(i => i.nom);
   }
   addToLedger(item.result);
   updateKPIs();
