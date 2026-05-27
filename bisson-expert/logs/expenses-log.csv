@@ -34,3 +34,7 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-04-30,Esso Charles Mirabel,Essence ordinaire 12.762L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
 2026-05-01,Esso Couche-Tard l'Eglise,Essence ordinaire 16.677L,Essence/carburant,5010,9281,32.0,1.39,2.78,32.0,80,25.6
 2026-05-12,Postes Canada,XP/Xpresspost envoi d'affaires,Livraison/courrier,5010,9270,16.87,0.83,1.66,19.36,100,16.87
+2026-05-20,Anthropic PBC (ZDU65LI5-0032),Prepaid extra usage Mai 2026,AI/API,5490,8810,30.0,1.50,2.99,34.49,100,30.0
+2026-05-21,Anthropic PBC (ZDU65LI5-0033),Prepaid extra usage Mai 2026,AI/API,5490,8810,30.0,1.50,2.99,34.49,100,30.0
+2026-05-25,Anthropic PBC (ZDU65LI5-0034),Prepaid extra usage Mai 2026,AI/API,5490,8810,20.0,1.00,2.00,23.00,100,20.0
+2026-05-26,Anthropic PBC (ZDU65LI5-0035),Prepaid extra usage Mai 2026,AI/API,5490,8810,25.0,1.25,2.49,28.74,100,25.0
