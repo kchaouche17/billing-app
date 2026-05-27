@@ -78,7 +78,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .b-error{background:var(--ch-red-bg);color:var(--ch-red)}
 
 /* MAIN */
-.main{display:flex;flex-direction:column;overflow:hidden}
+.main{display:flex;flex-direction:column;overflow:auto}
 .kpi-strip{background:white;border-bottom:1px solid var(--border);display:grid;grid-template-columns:repeat(6,1fr);box-shadow:var(--shadow)}
 .kpi{padding:14px 18px;border-right:1px solid var(--border);position:relative}
 .kpi:last-child{border-right:none}
@@ -94,7 +94,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .kpi.k-red2 .kpi-val{color:#c2410c}.kpi.k-red2 .kpi-bar{background:#c2410c}
 
 /* CONTENT */
-.content{flex:1;display:grid;grid-template-columns:400px 1fr;overflow:hidden}
+.content{flex:1;display:grid;grid-template-columns:400px 1fr;overflow:auto}
 .panel{overflow-y:auto;padding:20px;background:var(--bg);border-right:1px solid var(--border)}
 .panel-r{overflow-y:auto;background:white;display:flex;flex-direction:column}
 .panel-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
@@ -434,7 +434,7 @@ async function syncFromCSV() {
       const res = await ghFetch(`${clientId}/logs/invoices-log.csv`);
       if (res.ok) {
         const data = await res.json();
-        const csv  = atob(data.content.replace(/\n/g, ''));
+        const csv  = new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')),c=>c.charCodeAt(0)));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('Date') && !l.startsWith('date'));
         for (const line of lines) {
           const [no,client,periode,dateEmission,heures,taux,sousTotal,tps,tvq,total,fichier] = parseCSVLine(line);
@@ -467,7 +467,7 @@ async function syncFromCSV() {
       const res = await ghFetch(`${clientId}/logs/expenses-log.csv`);
       if (res.ok) {
         const data = await res.json();
-        const csv  = atob(data.content.replace(/\n/g, ''));
+        const csv  = new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')),c=>c.charCodeAt(0)));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('date'));
         for (const line of lines) {
           const [date,fournisseur,description,categorie,ligneTP80,ligneT2125,avant,tps,tvq,total,tauxDed,deductible] = parseCSVLine(line);
@@ -537,21 +537,42 @@ dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over
 
 function handleFiles(files) {
   const clientId = document.getElementById('clientSelect').value;
+  let added = 0, dupes = 0;
   Array.from(files).forEach(file => {
+    if (queue.find(i => i.name === file.name)) { dupes++; return; }
     const id = Date.now() + Math.random();
     const item = { id, file, name:file.name, type:docType, client:clientId, status:'pending', result:null, base64:null, mediaType:null, source:'manual' };
     queue.push(item);
+    added++;
     toBase64(file).then(({ base64, mediaType }) => { item.base64 = base64; item.mediaType = mediaType; renderQueue(); });
   });
+  if (added) toast(`${added} fichier${added>1?'s':''} ajouté${added>1?'s':''}`, '📎', 'blue');
+  if (dupes) toast(`${dupes} doublon${dupes>1?'s':''} ignoré${dupes>1?'s':''}`, '⚠️', 'amber');
   renderQueue();
   if (!selectedId && queue.length) selectItem(queue[0].id);
 }
 
 function toBase64(file) {
   return new Promise(res => {
-    const r = new FileReader();
-    r.onload = e => res({ base64: e.target.result.split(',')[1], mediaType: file.type || 'image/jpeg' });
-    r.readAsDataURL(file);
+    if (!file.type.startsWith('image/')) {
+      const r = new FileReader();
+      r.onload = e => res({ base64: e.target.result.split(',')[1], mediaType: file.type || 'application/pdf' });
+      r.readAsDataURL(file);
+      return;
+    }
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { const s = MAX / Math.max(w, h); w = Math.round(w*s); h = Math.round(h*s); }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      const data = c.toDataURL('image/jpeg', 0.82);
+      res({ base64: data.split(',')[1], mediaType: 'image/jpeg' });
+    };
+    img.src = url;
   });
 }
 
@@ -838,7 +859,8 @@ function addToLedger(r) { ledger.push(r); renderLedger(); renderClientTabs(); }
 function renderLedger() {
   const tbody = document.getElementById('ledgerBody');
   if (!ledger.length) { tbody.innerHTML = '<tr><td colspan="9" class="no-data">Aucune entrée</td></tr>'; return; }
-  tbody.innerHTML = ledger.map((r, i) => {
+  const sorted = [...ledger].map((r,i)=>({r,i})).sort((a,b)=>(b.r.date||'').localeCompare(a.r.date||''));
+  tbody.innerHTML = sorted.map(({r, i}) => {
     const isI = r._docType === 'income';
     const client = r._client==='bisson-expert' ? 'Bisson' : r._client==='soudures-rivard' ? 'S. Rivard' : '—';
     const src = r._source==='github-csv' ? '<span class="badge pill-github">GitHub</span>' : '<span class="badge b-pending">Manuel</span>';
@@ -861,7 +883,7 @@ function renderClientTabs() {
   ['bisson','rivard'].forEach(tab => {
     const clientId = tab==='bisson' ? 'bisson-expert' : 'soudures-rivard';
     const tbody = document.getElementById(`${tab}Body`);
-    const entries = ledger.filter(r => r._client===clientId && r._docType==='expense');
+    const entries = ledger.filter(r => r._client===clientId && r._docType==='expense').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
     if (!entries.length) { tbody.innerHTML = `<tr><td colspan="5" class="no-data">Aucune entrée</td></tr>`; return; }
     tbody.innerHTML = entries.map(r => `<tr>
       <td class="td-mono td-muted">${r.date||'—'}</td>
@@ -1058,7 +1080,7 @@ function fmt(n) {
 }
 
 function toast(msg, icon='✅', type='green') {
-  const colors = { green:'var(--green)', amber:'var(--amber)', red:'var(--ch-red)' };
+  const colors = { green:'var(--green)', amber:'var(--amber)', red:'var(--ch-red)', blue:'var(--ch-blue)' };
   const t = document.createElement('div'); t.className = 'toast';
   t.style.borderLeft = `4px solid ${colors[type]}`;
   t.innerHTML = `<span style="font-size:16px">${icon}</span><span>${msg}</span>`;
