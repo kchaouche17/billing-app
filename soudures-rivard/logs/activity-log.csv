@@ -123,3 +123,5 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-28 12 h 04","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Ajuster Document Gestion de Projets","1.5","2026-05-28","hrs: '1' -> '1.5'"
 "2026-05-28 12 h 56","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Ajuster Document Gestion de Projets","2.5","2026-05-28","hrs: '2' -> '2.5'"
 "2026-05-28 13 h 35","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Ajuster Document Gestion de Projets","3.5","2026-05-28","hrs: '3' -> '3.5'"
+"2026-05-29 10 h 45","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Ajouter la fonctionnalité d'envoie automatique du projet de Réunion","","2026-05-29",""
+"2026-05-29 10 h 45","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Ajouter la fonctionnalité d'envoie automatique du projet de Réunion","2.5","2026-05-29","hrs: '2' -> '2.5'"
