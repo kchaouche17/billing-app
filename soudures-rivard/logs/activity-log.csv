@@ -130,3 +130,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-05-29 10 h 46","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Changer fonctionnalité de départ du processus de traitement de commande Mueller","","2026-05-29",""
 "2026-05-29 10 h 46","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Changer fonctionnalité de départ du processus de traitement de commande Mueller","2","2026-05-29","hrs: '' -> '2'"
 "2026-05-29 10 h 46","Soudures Rivard","Facture 3","16–31 Mai. 2026","MODIFICATION","Ajouter la fonctionnalité d'envoie automatique du projet de Réunion","2.5","2026-05-28","date: '2026-05-02' -> '2026-05-28'"
+"2026-05-29 10 h 47","Soudures Rivard","Facture 3","16–31 Mai. 2026","AJOUT","Set up test pour envoie de courriel automatique apres création du Rapport Journa","1.5","2026-05-29",""
