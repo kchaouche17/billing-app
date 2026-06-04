@@ -155,3 +155,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-04 11 h 25","Soudures Rivard","Facture 4","1–15 Juin. 2026","SUPPRESSION","Ajustement logique des 3 premiers scripts + Sage","7","2026-06-02",""
 "2026-06-04 11 h 26","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Développement de la solution d'envoi automatique du rapport de la journée.","","2026-06-02","date: '' -> '2026-06-02'"
 "2026-06-04 11 h 26","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Développement de la solution d'envoi automatique du rapport de la journée.","3","2026-06-02","hrs: '' -> '3'"
+"2026-06-04 11 h 27","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Finission premier jet pour Gestionnaire de projet","12","2026-06-03","hrs: '1' -> '12'"
