@@ -138,3 +138,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-02 11 h 31","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Déplacement","0.5","2026-06-02",""
 "2026-06-02 11 h 32","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Ajustement script 02","","2026-06-02",""
 "2026-06-02 11 h 32","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Ajustement script 02","0.5","2026-06-02","hrs: '0' -> '0.5'"
+"2026-06-04 11 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Ajustement logique des 3 premiers scripts","","2026-06-04",""
