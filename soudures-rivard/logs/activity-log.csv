@@ -171,3 +171,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-04 16 h 01","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Fix bugs processus de commane Mueller. Double SOs and cancellation treatment.","1.75","2026-06-04","hrs: '1.7' -> '1.75'"
 "2026-06-05 17 h 45","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Fix bugs rapport matin ","","2026-06-05",""
 "2026-06-05 17 h 45","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Fix bugs rapport matin ","5","2026-06-05","hrs: '' -> '5'"
+"2026-06-05 17 h 45","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Fix bugs proessus de commandes Mueller ","","2026-06-05",""
