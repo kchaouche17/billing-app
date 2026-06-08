@@ -798,6 +798,10 @@ function showResult(item) {
         ...(r.itemsInclus||[]).map(i => parseItem(i, true)),
         ...(r.itemsExclus||[]).map(i => parseItem(i, false))
       ];
+      const totalMontant = item._itemStates.reduce((s,i) => s + (i.montant||0), 0);
+      if (totalMontant === 0 && item._itemStates.length === 1 && r.montantAvantTaxes) {
+        item._itemStates[0].montant = r.montantAvantTaxes;
+      }
     }
     const hasItems = item._itemStates.length > 0;
     const itemsHtml = hasItems ? item._itemStates.map((it, idx) => `
