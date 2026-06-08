@@ -471,7 +471,7 @@ async function syncFromCSV() {
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('date'));
         for (const line of lines) {
           const [date,fournisseur,description,categorie,ligneTP80,ligneT2125,avant,tps,tvq,total,tauxDed,deductible] = parseCSVLine(line);
-          const key = `${clientId}_exp_${(date||'').trim()}_${(fournisseur||'').trim().substring(0,20)}`;
+          const key = `${clientId}_exp_${(date||'').trim()}_${(fournisseur||'').trim()}_${(avant||'').trim()}`;
           if (ledger.find(r => r._key === key)) continue;
           addToLedger({
             _key:key, _docType:'expense', _client:clientId, _source:'github-csv', _fileName:'',
