@@ -509,13 +509,23 @@ async function uploadToGitHub(base64, filename, clientId, folder) {
   return false;
 }
 
+function csvEscape(v) {
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+}
+
+function expenseCsvRow(r) {
+  return [r.date, r.fournisseur, r.description, r.categorie, r.ligneTP80, r.ligneT2125,
+    r.montantAvantTaxes, r.tpsPaye, r.tvqPaye, r.totalPaye, r.tauxDeductibilite, r.montantDeductible]
+    .map(csvEscape).join(',');
+}
+
 async function appendToCSVLog(clientId, logFile, row) {
   const path = `${clientId}/logs/${logFile}`;
   try {
     const res = await ghFetch(path);
     let content = ''; let sha = null;
-    if (res.ok) { const d = await res.json(); sha = d.sha; content = new TextDecoder('utf-8').decode(Uint8Array.from(atob(d.content.replace(/
-/g,'')),c=>c.charCodeAt(0))); }
+    if (res.ok) { const d = await res.json(); sha = d.sha; content = new TextDecoder('utf-8').decode(Uint8Array.from(atob(d.content.replace(/\n/g,'')),c=>c.charCodeAt(0))); }
     content += row + '\n';
     const body = { message: `Log: ${logFile}`, content: btoa(unescape(encodeURIComponent(content))) };
     if (sha) body.sha = sha;
@@ -670,11 +680,6 @@ async function analyzeItem(item) {
       const folder = item.type==='income' ? 'invoices' : 'expenses';
       const filename = `${json.date||new Date().toISOString().split('T')[0]}_${item.name.replace(/[^a-zA-Z0-9.-]/g,'_')}`;
       await uploadToGitHub(item.base64, filename, item.client, folder);
-      const logFile = item.type==='income' ? 'invoices-log.csv' : 'expenses-log.csv';
-      const csvRow = item.type==='income'
-        ? `${json.date},${json.client||''},${json.noFacture||''},${json.montantNet||0},${json.totalReserve||0},${json.netPoches||0}`
-        : `${json.date},${json.fournisseur||''},${json.categorie||''},${json.montantAvantTaxes||0},${json.montantDeductible||0}`;
-      await appendToCSVLog(item.client, logFile, csvRow);
       await appendToCSVLog(item.client, 'activity-log.csv', `${new Date().toISOString()},ADDED,${item.name},${item.client}`);
     }
     // Don't add to ledger yet — wait for user confirmation
@@ -915,7 +920,7 @@ function renderClientTabs() {
 // ═══════════════════════════════════════════════
 // CONFIRM / REJECT
 // ═══════════════════════════════════════════════
-function confirmEntry(itemId) {
+async function confirmEntry(itemId) {
   const item = queue.find(i => i.id == itemId);
   if (!item || !item.result) return;
   if (item._itemStates && item._itemStates.length) {
@@ -929,6 +934,9 @@ function confirmEntry(itemId) {
     item.result.itemsExclus = item._itemStates.filter(i => !i.on).map(i => i.nom);
   }
   addToLedger(item.result);
+  if (item.result._docType === 'expense') {
+    await appendToCSVLog(item.client, 'expenses-log.csv', expenseCsvRow(item.result));
+  }
   updateKPIs();
   addActivity('✅', `Confirmé: ${item.name}`, item.client==='bisson-expert'?'Bisson Expert':'Soudures Rivard');
   toast(`${item.name} ajouté au registre`, '✅', 'green');
