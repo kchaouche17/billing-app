@@ -16,3 +16,4 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-02-04,OpenAI (GCY3IDMR-0002),ChatGPT Plus Fév-Mar 2026 (USD),AI/API,5490,8810,27.42,1.37,2.73,31.52,100,27.42
 2026-04-03,OpenAI (GCY3IDMR-0004),ChatGPT Plus Avr-Mai 2026 (USD),AI/API,5490,8810,27.7,1.39,2.78,31.87,100,27.7
 2026-05-27,Anthropic, PBC,AI/API,30,30
+2026-05-27,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
