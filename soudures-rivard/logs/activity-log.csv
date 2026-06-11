@@ -191,3 +191,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-10 08 h 41","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Set up Test - Rapport Réunion","","2026-06-10",""
 "2026-06-10 08 h 41","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Set up Test - Rapport Réunion","1","2026-06-09","date: '' -> '2026-06-09'"
 "2026-06-11 09 h 43","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Cutover ","","2026-06-11",""
+"2026-06-11 09 h 43","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Cutover Projet Mueller en amont.","","2026-06-11","desc: 'Cutover Projet Mueller en amont' -> 'Cutover Projet M"
