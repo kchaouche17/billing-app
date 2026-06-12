@@ -217,3 +217,5 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-12 13 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","BO process mapping","","2026-06-12",""
 "2026-06-12 13 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","BO process mapping","1","2026-06-12","hrs: '' -> '1'"
 "2026-06-12 13 h 21","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Rencontre avec Olivier pour ","","2026-06-12",""
+"2026-06-12 13 h 21","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Rencontre avec Olivier pour détails BO","","2026-06-12","desc: 'Rencontre avec Olivier pour détails BO ' -> 'Rencontr"
+"2026-06-12 13 h 21","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Rencontre avec Olivier pour détails BO","0.5","2026-06-12","hrs: '0' -> '0.5'"
