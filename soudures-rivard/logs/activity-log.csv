@@ -213,3 +213,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-12 13 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Tests finaux importation Sage - Fonctionnel","","2026-06-12",""
 "2026-06-12 13 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Tests finaux importation Sage - Fonctionnel","1.5","2026-06-12","hrs: '1' -> '1.5'"
 "2026-06-12 13 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Tests finaux importation Sage - Fonctionnel","1.5","2026-06-11","date: '2026-06-01' -> '2026-06-11'"
+"2026-06-12 13 h 20","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Ajustements Mueller - Ligne Jaune dans Conway Colonne - Format unit sellig price","2","2026-06-11","hrs: '' -> '2'"
