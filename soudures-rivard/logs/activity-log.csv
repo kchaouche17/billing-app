@@ -222,3 +222,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-12 13 h 22","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","BO process mapping","1.75","2026-06-12","hrs: '1.7' -> '1.75'"
 "2026-06-15 14 h 50","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Fix bugs processus Mueller amont - ","","2026-06-15",""
 "2026-06-15 14 h 50","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Fix bugs processus Mueller amont - Commande en double, mais ","","2026-06-15","desc: 'Fix bugs processus Mueller amont - Commande en double"
+"2026-06-15 14 h 50","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Fix bugs processus Mueller amont - Commande en double, mais pris juste 1 des due","","2026-06-15","desc: 'Fix bugs processus Mueller amont - Commande en double"
