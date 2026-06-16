@@ -235,3 +235,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-15 22 h 46","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Tests processus Mueller en amont","2.5","2026-06-15","hrs: '2' -> '2.5'"
 "2026-06-15 22 h 47","Soudures Rivard","Facture 4","1–15 Juin. 2026","AJOUT","Finission configuration rapport Gestionnaire de projet","","2026-06-15",""
 "2026-06-15 22 h 47","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Finission configuration rapport Gestionnaire de projet","","2026-06-15","hrs: '1' -> ''"
+"2026-06-15 22 h 47","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Finission configuration rapport Gestionnaire de projet","0.5","2026-06-15","hrs: '0' -> '0.5'"
