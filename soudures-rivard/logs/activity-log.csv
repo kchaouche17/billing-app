@@ -237,3 +237,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-15 22 h 47","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Finission configuration rapport Gestionnaire de projet","","2026-06-15","hrs: '1' -> ''"
 "2026-06-15 22 h 47","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Finission configuration rapport Gestionnaire de projet","0.5","2026-06-15","hrs: '0' -> '0.5'"
 "2026-06-15 22 h 49","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Ajout d'un pop-up de validation des lignes à importer dans sage","1.5","2026-06-15","hrs: '1' -> '1.5'"
+"2026-06-15 23 h 44","Soudures Rivard","Facture 4","1–15 Juin. 2026","MODIFICATION","Tests processus Mueller en aval","2.5","2026-06-15","desc: 'Tests processus Mueller en ava' -> 'Tests processus M"
