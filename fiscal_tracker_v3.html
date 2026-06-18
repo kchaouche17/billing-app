@@ -437,7 +437,14 @@ async function syncFromCSV() {
         const csv  = new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.content.replace(/\n/g,'')),c=>c.charCodeAt(0)));
         const lines = csv.split('\n').filter(l => l.trim() && !l.startsWith('No') && !l.startsWith('Date') && !l.startsWith('date'));
         for (const line of lines) {
-          const [no,client,periode,dateEmission,heures,taux,sousTotal,tps,tvq,total,fichier] = parseCSVLine(line);
+          const cols = parseCSVLine(line);
+          // Tolérant aux anciens formats: le nom du fichier PDF est toujours la
+          // dernière colonne; les factures sans taxes n'ont parfois que 8 colonnes.
+          const [no,client,periode,dateEmission,heures,taux,sousTotal] = cols;
+          const fichier = cols[cols.length-1];
+          const tps = cols.length >= 11 ? cols[7] : '0';
+          const tvq = cols.length >= 11 ? cols[8] : '0';
+          const total = cols.length >= 11 ? cols[9] : sousTotal;
           const key = `${clientId}_inv_${(no||'').trim()}`;
           if (ledger.find(r => r._key === key)) continue;
           const net = parseMoney(sousTotal);
