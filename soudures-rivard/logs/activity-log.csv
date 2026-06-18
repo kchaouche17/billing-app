@@ -242,3 +242,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-15 23 h 45","Soudures Rivard","Facture 4","1–15 Juin. 2026","FACTURE GÉNÉRÉE","Soudures Rivard - 06-15-2026 - Invoice 4.pdf","62.5","15 juin 2026","7185.9400000000005"
 "2026-06-17 09 h 10","Soudures Rivard","Facture 5","16–30 Juin. 2026","AJOUT","Déplacement","","2026-06-17",""
 "2026-06-17 09 h 10","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Déplacement","0.5","2026-06-17","hrs: '0' -> '0.5'"
+"2026-06-18 10 h 50","Soudures Rivard","Facture 5","16–30 Juin. 2026","AJOUT","Cut over ","","2026-06-18",""
