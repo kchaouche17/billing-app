@@ -193,7 +193,7 @@ table.inv-table tr:nth-child(even) td{background:#fafaf8}
 <div class="toast" id="toast"></div>
 
 <script>
-const ME={name:"Karim Chaouche",email:"kchaouche17@gmail.com",title:"Consultant indépendant"};
+const ME={name:"Karim Chaouche",email:"kchaouche17@gmail.com",title:"Consultant indépendant",tps:"710782038 RT0001",tvq:"4006960401 TQ0001"};
 const CLIENTS={
   bisson:{name:"Bisson Expert",addr:"5450 rue Ramsay",city:"Saint-Hubert, QC",postal:"J3Y 2S4",phone:"(514) 967-3698",email:"Payables@bissonexpert.com",contact:"France"},
   rivard:{name:"Soudures Rivard",addr:"14580, Rue Joseph-Marc Vermette",city:"Mirabel, QC",postal:"J7J 1X2",phone:"450-437-8666",email:"comptabilite@souduresrivard.com",contact:"Kim"}
@@ -519,6 +519,7 @@ function renderPreview(){
         <div>Sous-total : <strong>${tax.subtotal.toLocaleString("fr-CA",{minimumFractionDigits:2})} $</strong></div>
         <div>TPS (5%) : <strong>${tax.tps.toLocaleString("fr-CA",{minimumFractionDigits:2})} $</strong></div>
         <div>TVQ (9.975%) : <strong>${tax.tvq.toLocaleString("fr-CA",{minimumFractionDigits:2})} $</strong></div>
+        <div style="margin-top:6px;font-size:10px;color:#888">No. TPS : ${ME.tps} &nbsp;&middot;&nbsp; No. TVQ : ${ME.tvq}</div>
       </div>`:""}
       <div class="inv-footer-row">
         <div class="inv-footer-note">Payable à la réception par virement Interac au <strong>${ME.email}</strong>.<br>C\'est un plaisir de faire affaire avec ${client.name}. Merci!</div>
@@ -612,7 +613,9 @@ function generatePDFBlob(){
     doc.text(`Sous-total : ${taxInfo.subtotal.toLocaleString("fr-CA",{minimumFractionDigits:2})} $`,PW-PAD-4,y+10,{align:"right"});
     doc.text(`TPS (5%) : ${taxInfo.tps.toLocaleString("fr-CA",{minimumFractionDigits:2})} $`,PW-PAD-4,y+22,{align:"right"});
     doc.text(`TVQ (9.975%) : ${taxInfo.tvq.toLocaleString("fr-CA",{minimumFractionDigits:2})} $`,PW-PAD-4,y+34,{align:"right"});
-    y+=44;
+    doc.setTextColor(...MUTED);doc.setFontSize(7);
+    doc.text(`No. TPS : ${ME.tps}   No. TVQ : ${ME.tvq}`,PW-PAD-4,y+46,{align:"right"});
+    y+=56;
   }
   doc.setFont("helvetica","normal");doc.setTextColor(...MID);doc.setFontSize(10);doc.text(multiplierLabel,PAD+6,y+16);
   doc.setFillColor(...BLUE);doc.rect(PW-PAD-totalColW,y,totalColW,32,"F");
