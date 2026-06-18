@@ -246,3 +246,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-18 10 h 50","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Cut over - Import dans sage","","2026-06-18","desc: 'Cut over - Import dans sage ' -> 'Cut over - Import d"
 "2026-06-18 10 h 50","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Cut over - Import dans sage","3","2026-06-18","hrs: '' -> '3'"
 "2026-06-18 10 h 51","Soudures Rivard","Facture 5","16–30 Juin. 2026","AJOUT","Ajustements Rapport Gestionnaire de projet","","2026-06-18",""
+"2026-06-18 10 h 51","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Ajustements Rapport Gestionnaire de projet","2","2026-06-18","hrs: '' -> '2'"
