@@ -451,7 +451,7 @@ async function syncFromCSV() {
           const reserve = net * (0.42+0.064+0.0426+0.0118);
           const dateFromFile = (fichier||'').match(/(\d{2}-\d{2}-\d{4})/);
           let dateStr = dateFromFile
-            ? `${dateFromFile[1].substring(6)}-${dateFromFile[1].substring(3,5)}-${dateFromFile[1].substring(0,2)}`
+            ? `${dateFromFile[1].substring(6)}-${dateFromFile[1].substring(0,2)}-${dateFromFile[1].substring(3,5)}`
             : (dateEmission||'').trim();
           addToLedger({
             _key:key, _docType:'income', _client:clientId, _source:'github-csv',
