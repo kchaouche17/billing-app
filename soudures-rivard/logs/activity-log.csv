@@ -255,3 +255,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-18 13 h 26","Soudures Rivard","Facture 4","1–15 Juin. 2026","FACTURE GÉNÉRÉE","Soudures Rivard - 06-15-2026 - Invoice 4.pdf","62.5","18 juin 2026","7185.9400000000005"
 "2026-06-22 09 h 39","Soudures Rivard","Facture 5","16–30 Juin. 2026","AJOUT","","","2026-06-22",""
 "2026-06-22 09 h 39","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","","","2026-06-22","desc: 'C' -> ''"
+"2026-06-22 09 h 39","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Finissions script de ","","2026-06-22","desc: 'Finissions script de' -> 'Finissions script de '"
