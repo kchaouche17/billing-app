@@ -46,3 +46,17 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-05-29,Anthropic PBC (ZDU65LI5-0039),Prepaid extra usage,AI/API,5490,8810,30.0,1.50,2.99,34.49,100,30.0
 2026-05-29,Anthropic PBC (ZDU65LI5-0040),Prepaid extra usage,AI/API,5490,8810,20.0,1.00,2.00,23.00,100,20.0
 2026-06-07,Anthropic PBC (ZDU65LI5-0056),Prepaid extra usage,AI/API,5490,8810,63.0,3.15,6.28,72.43,100,63.0
+2026-05-19,Petro-Canada Notre-Dame O,Essence ordinaire 12.221L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
+2026-05-25,Petro-Canada Notre-Dame O,Essence ordinaire 12.976L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
+2026-05-29,Esso Charles Mirabel,Essence ordinaire 16.875L,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
+2026-06-01,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
+2026-06-07,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,40.0,1.74,3.47,40.0,80,32.0
+2026-06-09,Tim Hortons,Timbits réunion équipe (cmd 9795),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
+2026-06-10,Esso Charles Mirabel,Essence ordinaire 16.583L,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
+2026-06-10,Tim Hortons,Timbits réunion équipe (cmd 9063),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
+2026-06-10,Anthropic PBC (2428-6285-3638),Prepaid extra usage,AI/API,5490,8810,63.0,3.15,6.28,72.43,100,63.0
+2026-06-12,Mohawk Gas Kahnawake,Essence régulière 19.787L,Essence/carburant,5010,9281,35.0,1.52,3.04,35.0,80,28.0
+2026-06-12,Anthropic PBC (2683-7616-8661),Prepaid extra usage,AI/API,5490,8810,63.0,3.15,6.28,72.43,100,63.0
+2026-06-17,Petroles Belisle - Saint-Janvier,Essence sans-plomb 17.87 litres,Essence/carburant,5010,9281,30.0,1.30,2.61,30.0,80,24.0
+2026-06-18,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
+2026-06-23,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
