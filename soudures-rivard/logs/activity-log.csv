@@ -291,3 +291,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-06-30 09 h 19","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Ajout de la comparaison des données du packing slip avec celles du csv et des PO","4","2026-06-30","hrs: '' -> '4'"
 "2026-06-30 09 h 19","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Ajout de la comparaison des données du packing slip avec celles du csv et des PO","4","2026-06-26","date: '2026-06-02' -> '2026-06-26'"
 "2026-06-30 09 h 19","Soudures Rivard","Facture 5","16–30 Juin. 2026","AJOUT","Modification du processus de création ","","2026-06-30",""
+"2026-06-30 09 h 19","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Modification du processus de création du rapport du gestionnaire de ","","2026-06-30","desc: 'Modification du processus de création du rapport du g"
