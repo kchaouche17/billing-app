@@ -344,3 +344,5 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 2026-07-06T17:48:00.788Z,ADDED,Receipt-2766-5207-3456.pdf,soudures-rivard
 2026-07-06T17:48:12.230Z,ADDED,Receipt-2932-9289-8214.pdf,soudures-rivard
 2026-07-06T17:48:22.584Z,ADDED,Receipt-2225-5175-9399.pdf,soudures-rivard
+"2026-07-06 16 h 08","Soudures Rivard","Facture 5","16–30 Juin. 2026","AJOUT","Communicatons internes","","2026-06-16",""
+"2026-07-06 16 h 08","Soudures Rivard","Facture 5","16–30 Juin. 2026","MODIFICATION","Communicatons internes","0.25","2026-06-16","hrs: '' -> '0.25'"
