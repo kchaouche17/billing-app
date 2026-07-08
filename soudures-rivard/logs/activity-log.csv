@@ -355,3 +355,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-07-08 11 h 29","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Bugs Étiquettes et Croisement 3 documents","","2026-07-08","desc: 'Bugs Étiquettes et Croisement 3 documents ' -> 'Bugs "
 "2026-07-08 11 h 29","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Bugs Étiquettes et Croisement 3 documents","1","2026-07-08","hrs: '' -> '1'"
 "2026-07-08 11 h 29","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Bugs Étiquettes et Croisement 3 documents","1.5","2026-07-08","hrs: '1' -> '1.5'"
+"2026-07-08 14 h 19","Soudures Rivard","Facture 6","1–15 Juil. 2026","AJOUT","Finission premier jet BOL automatique","","2026-07-08",""
