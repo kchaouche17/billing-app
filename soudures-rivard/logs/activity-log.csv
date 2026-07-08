@@ -351,3 +351,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-07-06 16 h 08","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Communications internes","0.25","2026-07-06","hrs: '' -> '0.25'"
 "2026-07-08 09 h 21","Soudures Rivard","Facture 6","1–15 Juil. 2026","AJOUT","Déplacement","","2026-07-08",""
 "2026-07-08 09 h 21","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Déplacement","0.5","2026-07-08","hrs: '0' -> '0.5'"
+"2026-07-08 11 h 29","Soudures Rivard","Facture 6","1–15 Juil. 2026","AJOUT","Bugs Étiquettes et ","","2026-07-08",""
