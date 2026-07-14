@@ -23,3 +23,22 @@ repart de zéro**.
 | `Commission_Rep` affichant `--` en mode multi-reps | Réglé |
 | Écart entre les cartes KPI et les totaux des tableaux | Réglé |
 | Corrections de qualité de donnée dans CRM Dynamics (projets 2025) | Réglé |
+
+## Correctif documenté — colonne Power Query introuvable (2026-07-14)
+
+**Symptôme :** au rafraîchissement, `Expression.Error : ... la colonne
+« BonusSalesPersonMarginPercentage » de la table [wasn't found]` (Mashup ErrorCode 10224).
+
+**Cause :** l'étape Power Query **« Changed Type »** (`Table.TransformColumnTypes`) de la
+requête `Fact_Maestro depense projet` typait `{"BonusSalesPersonMarginPercentage",
+Percentage.Type}`, mais cette colonne **n'existe pas dans le CSV `v3`** de Julien. Seule
+`BonusSalesPersonMarginAmount` est livrée. On ne peut pas typer une colonne absente → plantage.
+
+**Correctif appliqué :** retiré la paire `{"BonusSalesPersonMarginPercentage",
+Percentage.Type}, ` de la liste du `Table.TransformColumnTypes`. Refresh OK.
+
+**À retenir :** quand le backend change le schéma du CSV (renommage / suppression de
+colonne), l'étape *Changed Type* garde l'ancien nom en dur et plante. Vérifier la liste de
+typage après chaque nouvelle version du CSV. Si un vrai % de marge est requis plus tard :
+soit mesure DAX à partir de `BonusSalesPersonMarginAmount`, soit demander à Julien de
+livrer la colonne au backend — **jamais** en colonne calculée dans la Fact.

@@ -39,6 +39,7 @@ réapparaît ou qu'un nouveau dashboard du même type doit être bâti.
 | 06 | [Pièges confirmés — ne jamais refaire](docs/06-pieges-confirmes.md) | Erreurs qui ont coûté du temps |
 | 07 | [Mesures DAX existantes](docs/07-mesures-dax.md) | Inventaire des mesures et colonnes calculées |
 | 08 | [Méthode de travail](docs/08-methode-travail.md) | Règles fermes de développement |
+| 09 | [État de référence — dashboard Reps](docs/09-etat-reference-dashboard-reps.md) | Baseline de validation (capture 2026-07-14) |
 
 ## Statut du projet
 
