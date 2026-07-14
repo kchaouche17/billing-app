@@ -410,11 +410,29 @@ Le bug était **invisible** jusqu'ici parce que tous les projets affichés avaie
 Incohérence interne aussi : le tableau **affiche** un écart en points mais **calcule** le
 boni sur un écart relatif.
 
-**Fix :** retirer le `/ MargeC` dans `Boni_Surint_Total` → revenir à `MargeR - MargeC`.
-**À vérifier ensuite :** que `Boni_Surint_Projet` et `Taux_Boni_Surint` **dans le fichier**
-ne soient pas corrompus de la même façon (les versions de référence, elles, sont en points).
+**Fix :** retirer le `/ MargeC` → revenir à `MargeR - MargeC`. ⚠️ **Le bug était dans LES
+DEUX mesures** `Boni_Surint_Total` **et** `Boni_Surint_Projet` (le tableau projet
+surpayait encore après la 1re correction).
 
-**Statut :** correction communiquée à Karim, en cours d'application.
+**Validation DAX Studio (DEFINE MEASURE, ancien vs corrigé côte à côte) — écarts en points :**
+
+| Projet | Écart points | Boni buggé (/MargeC) | Boni corrigé (points) | Handoff |
+|---|---|---|---|---|
+| 1069-25 | +3,47 % | 940,54 $ | **650,15 $** | ~650 $ ✅ |
+| 1004-25 | +2,50 % | 280,73 $ | **209,74 $** | ~209 $ ✅ |
+| 1065-25 | +3,44 % | 1 493,63 $ | **1 018,39 $** | ~950 $ (marge réelle a bougé) |
+| 0986-25 | −28,8 % | 0 $ | 0 $ | 0 $ ✅ |
+
+Le corrigé retombe sur les valeurs validées quand la donnée n'a pas bougé (1069-25, 1004-25).
+**Méthode de détection :** `Taux_effectif = Boni ÷ Ventes` retombait sur le taux de courbe
+d'un écart **~3× trop grand** (ex. 1,8924 % = taux du +9 %, alors que l'écart réel est +3,47 %),
+signature du `/ MargeC`.
+
+**Statut :**
+- ✅ `Boni_Surint_Total` — corrigé (points), total passé 64,41 K$ → 61,61 K$.
+- ⏳ `Boni_Surint_Projet` — validé en DAX Studio, à appliquer dans Power BI Desktop.
+- ⏳ `Taux_Boni_Surint` (si présent dans le modèle) — à vérifier : alimente probablement
+  la colonne « % Bonus (Surintendant) » du tableau, susceptible du même `/ MargeC`.
 
 **Validation visuelle après fix :** le tableau projet affiche correctement les écarts et
 bonis — plafond à **1,94 %** pour les écarts > +10 %, **0 %** pour le projet `0886-24`
