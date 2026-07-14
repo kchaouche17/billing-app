@@ -10,6 +10,9 @@
 | **Changer de colonne de date en cours de route** | A coûté ~3 jours. `WorkCompletedOrEndDate` est LA date de référence. `WorkCompletedOn` est corrompu par les SAV de Jérémy. |
 | **Locale `fr-CA`** | Met le `$` à droite → envelopper dans une mesure `SUM()` explicite, format Devise `$` à gauche. |
 | **Card v2** | Section « Valeur » non expansible → affichage abrégé `K$` non désactivable. Limitation connue. |
+| **`QuoteStyle=QuoteStyle.None` sur un CSV avec texte libre** | Une virgule dans un champ (adresse, nom client) décale les colonnes → `Failed to move the data reader to the next row` sur une ligne au-delà de l'aperçu. Utiliser `QuoteStyle=QuoteStyle.Csv`. |
+| **Retirer une colonne du `Changed Type` pour faire taire une erreur** | Ça débloque le refresh mais **casse les mesures/visuels** qui en dépendent en aval. Vérifier ce qui utilise la colonne avant de la retirer. |
+| **Confondre cumul commission et « ventes cumulées »** | Commission = cumul **trimestriel** (reset). « Ventes cumulées » = **rolling 12 mois** (peut baisser quand une vieille vente sort de la fenêtre — ce n'est pas une vente négative). |
 
 ## Enjeux réglés (solutions non documentées)
 
