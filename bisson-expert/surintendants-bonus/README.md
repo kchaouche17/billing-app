@@ -365,8 +365,20 @@ colonnes cœur du boni ont survécu au v3** (`total_facture_sans_taxe`, `marge`,
    `'Fact_Maestro depense projet'[WorkCompletedOrEndDate] >= DATE(aaaa, mm, jj)`.
    → Date de démarrage du programme **À CONFIRMER par Karim**.
 
-**Statut :** cause identifiée. Nettoyage des références orphelines en cours (les cartes
-KPI sont revenues après retrait du filtre de page). Reste : visuels tableaux/HTML.
+**Décision d'architecture (14 juillet 2026) — Option A retenue par Karim :**
+On **garde la connexion DirectQuery au modèle sémantique partagé** (le même que le
+dashboard reps, maintenu par Julien) — pas de bascule en Import, pas de reconstruction
+de la couche données. Motifs : une seule source de vérité, et re-télécharger/reconnecter
+le modèle ne **restaure pas** les colonnes supprimées de toute façon (elles n'existent
+plus en v3). Le fichier `Sommaire Bonification Surintendants.pbix` est un **rapport mince**
+en DirectQuery/live sur ce modèle. Un **backup** du fichier a été fait avant intervention.
+
+**Statut :** cause identifiée, Option A retenue. Nettoyage des références orphelines en
+cours, **une par une** :
+- ✅ `IsPostBonusReferenceDate` — filtre « sur cette page » retiré → cartes KPI revenues.
+- ⏳ `is_probably_incomplete` — filtre « sur toutes les pages » à retirer.
+- ⏳ `heures_budget_main_doeuvre` — référence de visuel à retirer.
+- ⏳ Reste : visuels tableaux / HTML encore en erreur.
 
 ---
 
