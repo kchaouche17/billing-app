@@ -366,19 +366,38 @@ colonnes cœur du boni ont survécu au v3** (`total_facture_sans_taxe`, `marge`,
    → Date de démarrage du programme **À CONFIRMER par Karim**.
 
 **Décision d'architecture (14 juillet 2026) — Option A retenue par Karim :**
-On **garde la connexion DirectQuery au modèle sémantique partagé** (le même que le
-dashboard reps, maintenu par Julien) — pas de bascule en Import, pas de reconstruction
-de la couche données. Motifs : une seule source de vérité, et re-télécharger/reconnecter
-le modèle ne **restaure pas** les colonnes supprimées de toute façon (elles n'existent
-plus en v3). Le fichier `Sommaire Bonification Surintendants.pbix` est un **rapport mince**
-en DirectQuery/live sur ce modèle. Un **backup** du fichier a été fait avant intervention.
+On **garde la connexion DirectQuery au modèle sémantique partagé** — pas de bascule en
+Import, pas de reconstruction de la couche données. Le fichier
+`Sommaire Bonification Surintendants.pbix` est un **rapport mince** en DirectQuery/live sur
+ce modèle. Un **backup** du fichier a été fait avant intervention.
 
-**Statut :** cause identifiée, Option A retenue. Nettoyage des références orphelines en
-cours, **une par une** :
-- ✅ `IsPostBonusReferenceDate` — filtre « sur cette page » retiré → cartes KPI revenues.
-- ⏳ `is_probably_incomplete` — filtre « sur toutes les pages » à retirer.
-- ⏳ `heures_budget_main_doeuvre` — référence de visuel à retirer.
-- ⏳ Reste : visuels tableaux / HTML encore en erreur.
+**Source de vérité confirmée :** modèle sémantique **« Données seulement »** (propriétaire
+**Julien Bergeron**), et non « Job Cost – Sommaire Bonification Reps - V2 » (qui est un
+autre modèle du même espace de travail). La chaîne de connexion se lit
+`DirectQuery à AS – Modèle sémantique Power BI;Données seulement`. Le fait
+`Fact_Maestro depense projet` est présent et identique dans tous les modèles (tous
+alimentés par le backend de Julien).
+
+**✅ LARGEMENT RÉSOLU (14 juillet 2026) — par re-synchronisation de la connexion.**
+Correction : mon hypothèse « reconnecter ne ramènera pas les colonnes » était **fausse**.
+La cause réelle était des **métadonnées DirectQuery périmées en cache local** (le `.pbix`
+gardait l'ancien schéma). **Fix appliqué :** `Transformer les données → Paramètres de la
+source de données → Changer la source… → re-sélectionner le modèle « Données seulement » →
+Se connecter`. Le re-sync a nettoyé les références périmées : la majorité des visuels se
+rendent à nouveau. **Restants :** quelques visuels (le tableau du bas + ceux du côté droit)
+gardent une référence cassée **au niveau du visuel** (filtre ou champ) que le re-sync
+n'atteint pas → à nettoyer un par un sur chaque visuel concerné.
+
+**Validation visuelle après fix :** le tableau projet affiche correctement les écarts et
+bonis — plafond à **1,94 %** pour les écarts > +10 %, **0 %** pour le projet `0886-24`
+(écart −13,17 %, règle du plancher −7 %). Cohérent avec la logique validée (§4).
+
+**À retenir pour la prochaine fois :** quand Julien republie/actualise le modèle
+sémantique et que des visuels tombent en « colonne introuvable » (erreur OLE DB/ODBC),
+le premier réflexe est **re-synchroniser la connexion** (Changer la source → re-sélection
+du même modèle), PAS supprimer des filtres. Le retrait du filtre de page
+`IsPostBonusReferenceDate` avant le re-sync était donc **inutile** — à réévaluer si ce
+filtre servait une vraie logique métier (exclusion des projets pré-programme).
 
 ---
 
