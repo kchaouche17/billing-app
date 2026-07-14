@@ -297,10 +297,52 @@ var DATA = (function(){
 coller le nouveau script M contenant ce fix → Fermer et appliquer.
 **La mesure DAX ne change pas.**
 
+### 🐛 Bug ouvert #2 — Colonne `IsPostBonusReferenceDate` introuvable (14 juillet 2026)
+
+**Symptôme :** plusieurs visuels affichent *« Désolé, erreur lors de la récupération
+des données pour cet élément visuel »*. **Différent du Bug #1** (qui, lui, affiche le
+layout mais vide).
+
+**Erreur exacte :**
+```
+QueryUserError — Erreur OLE DB ou ODBC: Query (18, 46)
+La colonne 'IsPostBonusReferenceDate' de la table 'Fact_Maestro depense projet'
+est introuvable ou ne peut pas être utilisée dans cette expression.
+```
+
+**Cause :** une ou plusieurs mesures filtrent sur `Fact_Maestro depense projet[IsPostBonusReferenceDate]`,
+mais **la colonne n'existe plus** (renommée ou supprimée). Cette colonne **n'est pas
+dans le modèle documenté au §3** → ajoutée après coup. Probablement retirée lors d'un
+`Fermer et appliquer` de Power Query pendant les travaux sur la source des **6–7 juillet 2026**
+(voir logs de facturation : « Intégration WorkedDays de Julien », « Ajustements et Tests Power BI »).
+
+**Diagnostic (DAX Studio) — localiser les mesures fautives :**
+```dax
+EVALUATE
+FILTER( INFO.VIEW.MEASURES(), SEARCH( "IsPostBonusReferenceDate", [Expression], 1, 0 ) > 0 )
+```
+Confirmer que la colonne a disparu :
+```dax
+EVALUATE
+FILTER( INFO.VIEW.COLUMNS(), SEARCH( "PostBonus", [Column], 1, 0 ) > 0 )
+```
+
+**Options de fix :**
+- **A — Recréer la colonne en Power Query (M)** — ⚠️ jamais en colonne calculée DAX (§8, crash).
+- **B — Retirer la dépendance (recommandé)** — remplacer le filtre
+  `[IsPostBonusReferenceDate] = TRUE()` par une condition de date explicite :
+  `'Fact_Maestro depense projet'[WorkCompletedOrEndDate] >= DATE(aaaa, mm, jj)`.
+  → Nécessite de connaître **la date de référence du programme de boni** (À CONFIRMER par Karim).
+
+**Statut :** en cours de diagnostic. Rôle présumé de la colonne : exclure les projets
+antérieurs au démarrage du nouveau programme de boni (À CONFIRMER).
+
 ---
 
 ## 7. À faire (backlog)
 
+0. **[BLOQUANT] Réparer la référence `IsPostBonusReferenceDate`** (Bug #2) —
+   les visuels plantent tant que ce n'est pas réglé.
 1. **[PRIORITÉ] Appliquer le fix `.replace(/""/g, '"')`** dans `HTML_Template` →
    débloque l'affichage des données.
 2. **Visuel « tier reward »** — UI de progression style jeu mobile : paliers de boni
