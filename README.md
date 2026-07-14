@@ -21,6 +21,9 @@ billing-app/
 │       ├── invoices-log.csv
 │       ├── expenses-log.csv
 │       └── activity-log.csv
+├── bisson-compensation-dashboard/  ← Doc de référence : dashboard Power BI de rémunération
+│   ├── README.md
+│   └── docs/
 └── personal/
     ├── income/
     ├── expenses/
