@@ -386,7 +386,35 @@ source de données → Changer la source… → re-sélectionner le modèle « D
 Se connecter`. Le re-sync a nettoyé les références périmées : la majorité des visuels se
 rendent à nouveau. **Restants :** quelques visuels (le tableau du bas + ceux du côté droit)
 gardent une référence cassée **au niveau du visuel** (filtre ou champ) que le re-sync
-n'atteint pas → à nettoyer un par un sur chaque visuel concerné.
+n'atteint pas → à nettoyer un par un sur chaque visuel concerné (bouton **« Corriger »**
+natif de Power BI = retrait automatique du filtre cassé du visuel).
+
+### 🐛 Bug ouvert #3 — `Boni_Surint_Total` corrompu : `/ MargeC` au lieu de points de % (14 juillet 2026)
+
+**Symptôme :** en inspectant les mesures en prod, la version de `Boni_Surint_Total`
+**réellement dans le `.pbix`** calcule l'écart en **relatif** :
+```dax
+VAR EcartBrut = IF( NOT ISBLANK( MargeC ) && MargeC <> 0, ( MargeR - MargeC ) / MargeC, BLANK() )
+```
+alors que **toute la logique validée** (handoff §4, mesures de référence, écart affiché
+`Ecart_Cible_Surint_$`, validations manuelles) utilise les **points de %** :
+```dax
+VAR EcartBrut = IF( NOT ISBLANK( MargeC ) && MargeC <> 0, MargeR - MargeC, BLANK() )
+```
+
+**Impact :** le `/ MargeC` **gonfle l'écart** → surpaie les projets à écart modéré.
+Exemple validé **1065-25** (MargeR 40,10 %, MargeC 37,00 %) : points → écart +3,10 %,
+boni ≈ 950 $ (montant validé) ; relatif → écart +8,38 %, boni ≈ 1 452 $ (**+53 %**).
+Le bug était **invisible** jusqu'ici parce que tous les projets affichés avaient des
+écarts extrêmes (> +10 % ou < −7 %) → plafond/plancher identiques dans les deux versions.
+Incohérence interne aussi : le tableau **affiche** un écart en points mais **calcule** le
+boni sur un écart relatif.
+
+**Fix :** retirer le `/ MargeC` dans `Boni_Surint_Total` → revenir à `MargeR - MargeC`.
+**À vérifier ensuite :** que `Boni_Surint_Projet` et `Taux_Boni_Surint` **dans le fichier**
+ne soient pas corrompus de la même façon (les versions de référence, elles, sont en points).
+
+**Statut :** correction communiquée à Karim, en cours d'application.
 
 **Validation visuelle après fix :** le tableau projet affiche correctement les écarts et
 bonis — plafond à **1,94 %** pour les écarts > +10 %, **0 %** pour le projet `0886-24`
