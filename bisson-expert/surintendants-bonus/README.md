@@ -11,6 +11,8 @@
 
 - **Entreprise :** Bisson Expert en Fondation
 - **Utilisateur :** Karim Chaouche (kchaouche)
+- **Fichier Power BI :** `Sommaire Bonification Surintendants.pbix`
+- **Dossier OneDrive :** `...IT Backlog\Projects\New Bonus Structure\`
 - **Outils :** Power BI Desktop + Power BI Service, DAX Studio, Power Query (M)
 - **Objectif :** Dashboard Power BI de suivi de la bonification des **surintendants**
   (chargés de projet), affiché sur un **écran dédié** en salle. Style visuel inspiré
