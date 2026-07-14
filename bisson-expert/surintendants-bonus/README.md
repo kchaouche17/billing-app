@@ -327,15 +327,46 @@ EVALUATE
 FILTER( INFO.VIEW.COLUMNS(), SEARCH( "PostBonus", [Column], 1, 0 ) > 0 )
 ```
 
-**Options de fix :**
-- **A — Recréer la colonne en Power Query (M)** — ⚠️ jamais en colonne calculée DAX (§8, crash).
-- **B — Retirer la dépendance (recommandé)** — remplacer le filtre
-  `[IsPostBonusReferenceDate] = TRUE()` par une condition de date explicite :
-  `'Fact_Maestro depense projet'[WorkCompletedOrEndDate] >= DATE(aaaa, mm, jj)`.
-  → Nécessite de connaître **la date de référence du programme de boni** (À CONFIRMER par Karim).
+**CAUSE RACINE CONFIRMÉE (14 juillet 2026) — dérive de schéma de la source :**
+`Fact_Maestro depense projet` est en **DirectQuery**, alimentée par le backend C# de
+**Julien** (source `maestroProjectSaleSummaries_v3.csv` / Azure Blob). Le **6–7 juillet**,
+un **nouveau schéma `v3`** a **supprimé/renommé plusieurs colonnes**. Ce n'est PAS un
+filtre isolé : c'est une dérive de schéma côté source.
 
-**Statut :** en cours de diagnostic. Rôle présumé de la colonne : exclure les projets
-antérieurs au démarrage du nouveau programme de boni (À CONFIRMER).
+> **Cross-référence :** le dashboard **reps** a subi la même classe de bug le même jour.
+> Voir branche `claude/bisson-compensation-dashboard-xiu8mz`,
+> `docs/06-pieges-confirmes.md` → « Correctif documenté — colonne Power Query introuvable
+> (2026-07-14) » : la colonne `BonusSalesPersonMarginPercentage` a disparu du CSV `v3`.
+> Principe retenu : **à chaque nouvelle version du CSV, une référence en dur casse.**
+
+**Colonnes disparues qui cassaient les visuels surintendants** (toutes des références
+**orphelines dans la couche RAPPORT** — filtres/champs, PAS des mesures, d'où les
+requêtes de dépendance vides) :
+
+| Colonne disparue | Où elle était référencée |
+|---|---|
+| `IsPostBonusReferenceDate` | Filtre « sur cette page », `= True` |
+| `is_probably_incomplete` | Filtre « sur toutes les pages », `= False ou True` |
+| `heures_budget_main_doeuvre` | Champ/filtre de visuel |
+| *(possiblement d'autres au fil du nettoyage)* | Visuels tableau / matrice |
+
+**✅ Impact sur le boni : NUL.** Aucune de ces colonnes n'appartient à la logique validée
+(§4/§5). Le doc `02-modele-donnees.md` de l'autre branche confirme que **toutes les
+colonnes cœur du boni ont survécu au v3** (`total_facture_sans_taxe`, `marge`,
+`BudgetExcelWeightedMargin`, `ProjectBudgetMaestroMargin`, `WorkCompletedOrEndDate`,
+`IsProjectCompleted`, `ActiveProjectManagerDynamicsId`, `code_projet`).
+
+**Résolution :**
+1. **Retirer les cartes de filtre orphelines** (niveau visuel / page / rapport) qui
+   pointent vers les colonnes disparues. Sans risque pour le calcul du boni.
+2. **Retirer les champs disparus** des visuels tableau/matrice qui les affichaient encore.
+3. **Réimplémenter l'exclusion « post-date de référence »** (rôle de `IsPostBonusReferenceDate`)
+   via un filtre de date sur la colonne survivante :
+   `'Fact_Maestro depense projet'[WorkCompletedOrEndDate] >= DATE(aaaa, mm, jj)`.
+   → Date de démarrage du programme **À CONFIRMER par Karim**.
+
+**Statut :** cause identifiée. Nettoyage des références orphelines en cours (les cartes
+KPI sont revenues après retrait du filtre de page). Reste : visuels tableaux/HTML.
 
 ---
 
