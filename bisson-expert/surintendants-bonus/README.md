@@ -365,11 +365,31 @@ colonnes cœur du boni ont survécu au v3** (`total_facture_sans_taxe`, `marge`,
    `'Fact_Maestro depense projet'[WorkCompletedOrEndDate] >= DATE(aaaa, mm, jj)`.
    → Date de démarrage du programme **À CONFIRMER par Karim**.
 
-**Décision d'architecture (14 juillet 2026) — Option A retenue par Karim :**
-On **garde la connexion DirectQuery au modèle sémantique partagé** — pas de bascule en
-Import, pas de reconstruction de la couche données. Le fichier
-`Sommaire Bonification Surintendants.pbix` est un **rapport mince** en DirectQuery/live sur
-ce modèle. Un **backup** du fichier a été fait avant intervention.
+**Décision d'architecture (14 juillet 2026) — Option A retenue par Karim :** ~~garder DirectQuery~~
+**➡️ RENVERSÉE le 15 juillet 2026 (voir ci-dessous).** On avait d'abord gardé la connexion
+DirectQuery au modèle sémantique partagé (rapport mince, backup fait). Mais les limites
+DirectQuery ont causé une **cascade de plantages** (voir Bugs #2 à #5). Décision revue.
+
+> ### 🔄 DÉCISION RENVERSÉE (15 juillet 2026) — migration vers **Import**
+>
+> **Pourquoi :** tous les contournements (MAX sur booléen, plafond 1 M lignes, colonnes v3
+> disparues qui font planter les mesures) existent **uniquement à cause du DirectQuery**.
+> Le dashboard **reps** est en **Import** et les mêmes formules « fonctionnent à merveille ».
+> Karim confirme : ce fichier a été fait par **copier-coller du dashboard reps**, mais copier
+> un rapport branché sur un modèle sémantique publié crée une **connexion live/DirectQuery**,
+> pas une copie des données → d'où le piège.
+>
+> **Pas de bouton « changer le type de connexion »** (mode de stockage verrouillé pour une
+> connexion DirectQuery-vers-modèle-sémantique). Chemin retenu :
+> 1. Partir du **`.pbix` reps** (déjà en Import : CSV chargé, `Fact_Maestro depense projet`,
+>    `Dim_Charges de projet`, `Dim_Date`, relations — tout).
+> 2. **Enregistrer sous** → « Sommaire Bonification Surintendants (Import) ».
+> 3. Porter la **couche surintendant** : mesures (coller le DAX **corrigé**, voir §5 + Bugs
+>    #3/#5), table `Bonification_Surintendants` (DATATABLE), `HTML_Template` (M), puis
+>    copier-coller les visuels surintendant (re-liaison auto, mêmes noms de tables/colonnes).
+>
+> **Bénéfice :** plus aucun contournement DirectQuery — veille, boni, HTML marchent nativement.
+> **Statut (15 juil.) :** Karim fait le « Enregistrer sous » à partir du reps. Portage en cours.
 
 **Source de vérité confirmée :** modèle sémantique **« Données seulement »** (propriétaire
 **Julien Bergeron**), et non « Job Cost – Sommaire Bonification Reps - V2 » (qui est un
@@ -444,6 +464,56 @@ le premier réflexe est **re-synchroniser la connexion** (Changer la source → 
 du même modèle), PAS supprimer des filtres. Le retrait du filtre de page
 `IsPostBonusReferenceDate` avant le re-sync était donc **inutile** — à réévaluer si ce
 filtre servait une vraie logique métier (exclusion des projets pré-programme).
+
+### 🐛 Bug #4 — Total du tableau / carte gonflé : `Boni_Surint_Projet` utilisé au niveau agrégé (15 juillet 2026)
+
+**Symptôme :** la carte « Bonus Total » et la **ligne Total** du tableau affichent
+**11 733,28 $**, alors que la vraie somme des projets = **~3 486 $** (= `Boni_Surint_Total`,
+= Moyenne/Médiane).
+
+**Cause :** ces éléments utilisent `Boni_Surint_Projet` (mesure **par projet**). Au niveau
+total, elle prend `MAX(marge) − MAX(cible)` sur tous les projets → un écart bidon → plafond
+1,936 % × **ventes totales**. `1,936 % × 606 043 $ (facturation) = 11 733,28 $`. C'est le
+**piège §8** (« total d'un tableau… utiliser une carte avec `Boni_Surint_Total` »).
+
+**Validation :** `Boni_Surint_Total` = `SUMX(VALUES(code_projet), [Boni_Surint_Projet])`
+= **5 436,90 $ = 5 436,90 $** (DAX Studio) → la mesure Total est **correcte**.
+
+**Règle :** **Total / carte KPI → `Boni_Surint_Total`. Ligne par projet → `Boni_Surint_Projet`.
+Jamais `Boni_Surint_Projet` pour un total.** Pour un tableau où on veut les deux, mesure
+d'affichage :
+```dax
+Boni_Surint_Affichage =
+IF( HASONEVALUE( 'Fact_Maestro depense projet'[code_projet] ),
+    [Boni_Surint_Projet], [Boni_Surint_Total] )
+```
+
+### 🐛 Bug #5 — `Veille_Flag` plante en DirectQuery (15 juillet 2026)
+
+Le tableau « Veille Marge » plantait. Trois causes, toutes **propres au DirectQuery** :
+1. **`WorkCompletedOn`** — colonne **corrompue** (SAV de Jérémy, doc reps `06`) **et**
+   supprimée en v3 → référence introuvable → plantage. (4ᵉ colonne v3 disparue, après
+   `IsPostBonusReferenceDate`, `is_probably_incomplete`, `heures_budget_main_doeuvre`.)
+2. **`MAX()` sur `IsProjectCompleted`** (booléen) → *« MAX ne peut pas fonctionner avec des
+   valeurs de type Boolean »* (piège documenté doc reps `06`).
+3. **`COUNTROWS(FILTER(...))`** en remplacement → **plafond DirectQuery de 1 000 000 lignes**
+   dépassé (ne se replie pas).
+
+**Décision de Karim :** la veille est **simplifiée** ET le rapport migre en Import (voir
+décision renversée ci-dessus). Version simple, DirectQuery-safe, retenue :
+```dax
+Veille_Flag =
+VAR MargeReelle  = MAX( 'Fact_Maestro depense projet'[marge] )
+VAR MargeMaestro = MAX( 'Fact_Maestro depense projet'[ProjectBudgetMaestroMargin] )
+VAR Ecart        = ABS( MargeReelle - MargeMaestro )
+VAR TotalFacture = SUM( 'Fact_Maestro depense projet'[total_facture_sans_taxe] )
+RETURN
+IF( ISBLANK(MargeMaestro) || MargeMaestro=0 || TotalFacture=0 || ISBLANK(TotalFacture), 0,
+    IF( MargeReelle > 0.70 || MargeReelle < 0.25 || Ecart >= 0.25, 1, 0 ) )
+```
+> **Leçon générale :** ce fichier étant en DirectQuery-vers-modèle-sémantique, **toute**
+> mesure un peu lourde (booléens, scans, gros CALCULATE) frappe un mur que l'Import n'a pas.
+> C'est le déclencheur de la migration vers Import.
 
 ---
 
