@@ -371,3 +371,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-07-16 09 h 33","Soudures Rivard","Facture 6","1–15 Juil. 2026","AJOUT","Bug de facturation avec mise à jour de version de Sage sur ordinateur à Olivier","","2026-07-15",""
 "2026-07-16 09 h 33","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Bug de facturation avec mise à jour de version de Sage sur ordinateur à Olivier","3.5","2026-07-15","hrs: '3' -> '3.5'"
 "2026-07-16 09 h 34","Soudures Rivard","Facture 6","1–15 Juil. 2026","MODIFICATION","Bug de facturation avec mise à jour de version de Sage sur ordinateur à Olivier","4","2026-07-15","hrs: '3.5' -> '4'"
+"2026-07-16 09 h 34","Soudures Rivard","Facture 6","1–15 Juil. 2026","FACTURE GÉNÉRÉE","Soudures Rivard - 07-15-2026 - Invoice 6.pdf","23","16 juillet 2026","2644.43"
