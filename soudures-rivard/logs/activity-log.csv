@@ -377,3 +377,4 @@ Horodatage,Client,Facture,Période,Action,Description,Heures,Date tâche,Détail
 "2026-07-20 15 h 56","Soudures Rivard","Facture 7","16–31 Juil. 2026","MODIFICATION","Fix bug nouvelle version Sage pour facturation","2","2026-07-20","hrs: '' -> '2'"
 "2026-07-22 12 h 22","Soudures Rivard","Facture 7","16–31 Juil. 2026","AJOUT","Ajustements macro ","","2026-07-22",""
 "2026-07-22 12 h 22","Soudures Rivard","Facture 7","16–31 Juil. 2026","MODIFICATION","Ajustements macro Input Material + Tests","","2026-07-22","desc: 'Ajustements macro Input Material + Test' -> 'Ajusteme"
+"2026-07-22 12 h 22","Soudures Rivard","Facture 7","16–31 Juil. 2026","MODIFICATION","Ajustements macro Input Material + Tests","1","2026-07-22","hrs: '' -> '1'"
