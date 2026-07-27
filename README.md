@@ -10,6 +10,7 @@ billing-app/
 ├── bisson-expert/
 │   ├── invoices/
 │   ├── expenses/
+│   ├── organisation-onedrive/  ← Plan de réorganisation OneDrive
 │   └── logs/
 │       ├── invoices-log.csv
 │       ├── expenses-log.csv
