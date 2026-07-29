@@ -1,5 +1,5 @@
 maestro_id,nom_famille,prenom,nas,date_naissance,courriel,statut,notes
-# Phase 1 - Source de verite des noms. Exporter depuis maestro* (RH/Paie).
+# Phase 2 - Source de verite des noms. Exporter depuis maestro* (RH/Paie).
 # maestro_id     = numero d'employe Maestro (identifiant stable, obligatoire)
 # nom_famille    = nom de famille tel qu'il doit apparaitre partout
 # prenom         = prenom tel qu'il doit apparaitre partout

@@ -63,15 +63,19 @@ On matche sur une **clé secondaire présente dans les deux systèmes**, par ord
 ## 4. Séquence d'exécution (l'ordre compte)
 
 ```
-Phase 1  Extraction Maestro          → gabarit 01
-Phase 2  Extraction UKG + crosswalk  → gabarit 02   ← pivot du projet
-Phase 3  Créer le champ « Maestro ID » dans UKG
-Phase 4  Importer le Maestro ID dans UKG            → gabarit 03
-Phase 5  Écraser les noms dans UKG (pilote puis lot) → gabarit 04
-Phase 6  Validation, réconciliation, dashboards
+Phase 1  Exploration & profilage des données (choisir la clé de match)
+Phase 2  Extraction Maestro          → gabarit 01
+Phase 3  Extraction UKG + crosswalk  → gabarit 02   ← pivot du projet
+Phase 4  Créer / valider le champ « Maestro ID » dans UKG
+Phase 5  Importer le Maestro ID dans UKG            → gabarit 03
+Phase 6  Écraser les noms dans UKG (pilote puis lot) → gabarit 04
+Phase 7  Validation, réconciliation, dashboards
 ```
 
-**Pourquoi charger le Maestro ID (Phase 4) AVANT d'écraser les noms (Phase 5) ?**
+> **> 100 employés** → le matching manuel « à l'œil » n'est pas viable. On matche
+> automatiquement sur une clé secondaire, **choisie à la Phase 1** après profilage.
+
+**Pourquoi charger le Maestro ID (Phase 5) AVANT d'écraser les noms (Phase 6) ?**
 Pour que le lien permanent Maestro↔UKG existe même si l'import des noms échoue
 partiellement. Une fois le Maestro ID en place dans UKG, on ne dépend plus jamais
 du nom pour rejouer un import.
@@ -80,7 +84,29 @@ du nom pour rejouer un import.
 
 ## 5. Détail par phase
 
-### Phase 1 — Extraction Maestro (gabarit 01)
+### Phase 1 — Exploration & profilage des données
+
+Objectif : **découvrir** (pas deviner) quelle clé permet de matcher Maestro et UKG,
+avant de figer quoi que ce soit. À faire ensemble, Karim + Claude.
+
+- 1.1 **Inventaire des champs** : lister les colonnes disponibles à l'export côté
+  Maestro (fiche employé) et côté UKG (Employee Information / Demographics).
+- 1.2 **Clés candidates** : pour chacune (NAS, date de naissance, courriel, numéro
+  d'employé existant), mesurer dans **chaque** système :
+  - **complétude** = % de fiches où la valeur est renseignée ;
+  - **unicité** = la valeur identifie-t-elle une seule personne (pas de collisions).
+- 1.3 **Coïncidence d'identifiants** : vérifier si le numéro d'employé UKG égale déjà
+  le Maestro ID (parfois le cas → matching trivial).
+- 1.4 **Choix de la stratégie** : une clé unique et propre des deux côtés ; sinon une
+  **clé composite** (ex. date de naissance + nom de famille) ; sinon nom normalisé +
+  revue manuelle des restes.
+- 1.5 Profiter de cette phase pour trancher **Q1** (nom légal vs affichage) et **Q9**
+  (le champ « Maestro ID » existe-t-il déjà dans UKG, et avec quel paramétrage).
+
+**Sortie :** décision de matching documentée (met à jour Q2 dans `questions-ouvertes.md`).
+**Validation :** on a au moins une clé (ou combinaison) fiable pour > 100 employés.
+
+### Phase 2 — Extraction Maestro (gabarit 01)
 
 **Où :** module Ressources humaines / Paie de maestro\*.
 **Quoi extraire :** numéro d'employé (Maestro ID), nom, prénom, + clé(s) secondaire(s)
@@ -90,7 +116,7 @@ maestro\*. Attention à l'**encodage** (voir section Risques — accents frança
 
 → Remplir `gabarits/01_maestro_export_employes.csv`.
 
-### Phase 2 — Extraction UKG + crosswalk (gabarit 02)
+### Phase 3 — Extraction UKG + crosswalk (gabarit 02)
 
 1. **Exporter la liste actuelle des employés UKG** : UKG Employee ID, nom actuel,
    + les mêmes clés secondaires. (Dans UKG Ready : *My Team > Employee Information*,
@@ -102,7 +128,7 @@ maestro\*. Attention à l'**encodage** (voir section Risques — accents frança
 
 → Remplir `gabarits/02_crosswalk_maestro_ukg.csv`.
 
-### Phase 3 — Créer le champ personnalisé « Maestro ID » dans UKG
+### Phase 4 — Créer / valider le champ personnalisé « Maestro ID » dans UKG
 
 Dans UKG Ready (les chemins varient selon la version / les droits admin) :
 
@@ -117,7 +143,7 @@ Dans UKG Ready (les chemins varient selon la version / les droits admin) :
 
 > Sans ce champ créé au préalable, l'import de Phase 4 n'a pas de colonne cible.
 
-### Phase 4 — Importer le Maestro ID dans UKG (gabarit 03)
+### Phase 5 — Importer le Maestro ID dans UKG (gabarit 03)
 
 - UKG Ready : **Company Settings → Global Setup → Imports** (outil d'import).
 - Fichier **clé = UKG Employee ID**, valeur = `maestro_id`.
@@ -125,7 +151,7 @@ Dans UKG Ready (les chemins varient selon la version / les droits admin) :
 
 → Remplir `gabarits/03_ukg_import_maestro_id.csv`.
 
-### Phase 5 — Écraser les noms dans UKG (gabarit 04)
+### Phase 6 — Écraser les noms dans UKG (gabarit 04)
 
 - Même outil d'import UKG, **clé = UKG Employee ID**, valeurs = `prenom`, `nom_famille`.
 - **Faire d'abord un lot pilote de 5 à 10 employés**, valider visuellement, puis lancer
@@ -134,7 +160,7 @@ Dans UKG Ready (les chemins varient selon la version / les droits admin) :
 
 → Remplir `gabarits/04_ukg_import_noms.csv`.
 
-### Phase 6 — Validation & réconciliation
+### Phase 7 — Validation & réconciliation
 
 - Compter : nb d'employés Maestro = nb de liens dans le crosswalk = nb de fiches UKG mises à jour.
 - Contrôle par sondage : 10 fiches UKG au hasard, nom + Maestro ID conformes à Maestro.
