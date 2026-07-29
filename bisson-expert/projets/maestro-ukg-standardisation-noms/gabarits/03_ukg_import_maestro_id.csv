@@ -1,0 +1,7 @@
+ukg_employee_id,maestro_id
+# Phase 4 - Charger le Maestro ID dans le champ personnalise UKG.
+# A generer depuis le crosswalk (gabarit 02), lignes matchees seulement.
+# Cle d'import UKG = ukg_employee_id. Cible = champ personnalise "Maestro ID".
+# Lancer APRES avoir cree le champ (Phase 3) et AVANT l'ecrasement des noms (Phase 5).
+,1001
+,1002

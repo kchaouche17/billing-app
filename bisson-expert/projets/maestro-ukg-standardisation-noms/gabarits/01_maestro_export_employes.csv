@@ -1,0 +1,12 @@
+maestro_id,nom_famille,prenom,nas,date_naissance,courriel,statut,notes
+# Phase 1 - Source de verite des noms. Exporter depuis maestro* (RH/Paie).
+# maestro_id     = numero d'employe Maestro (identifiant stable, obligatoire)
+# nom_famille    = nom de famille tel qu'il doit apparaitre partout
+# prenom         = prenom tel qu'il doit apparaitre partout
+# nas            = cle secondaire de matching #1 (la plus fiable)
+# date_naissance = cle secondaire #2 (format AAAA-MM-JJ)
+# courriel       = cle secondaire #3
+# statut         = actif / inactif (pour filtrer si besoin)
+# Encodage: exporter en UTF-8 pour preserver les accents (voir Risque R2).
+1001,Tremblay,Jean-Francois,,1985-03-12,,actif,exemple - remplacer
+1002,Cote,Marie-Eve,,1990-11-02,,actif,exemple - remplacer

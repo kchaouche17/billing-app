@@ -1,0 +1,13 @@
+maestro_id,maestro_nom_complet,ukg_employee_id,ukg_nom_complet_actuel,cle_de_match,methode_match,statut_match,doublon_ukg,notes
+# Phase 2 - PIVOT DU PROJET. Une ligne par employe Maestro.
+# maestro_id            = depuis gabarit 01
+# maestro_nom_complet   = nom cible (Maestro)
+# ukg_employee_id       = numero d'employe UKG (cle de tous les imports UKG) - A REMPLIR
+# ukg_nom_complet_actuel= nom actuel dans UKG (avant ecrasement, sert de rollback)
+# cle_de_match          = valeur ayant permis le match (NAS / DOB / courriel / nom_normalise)
+# methode_match         = nas / date_naissance / courriel / numero_commun / nom_normalise
+# statut_match          = auto / manuel / non_resolu
+# doublon_ukg           = oui/non - marquer si 2 fiches UKG pointent vers le meme employe
+# notes                 = tout cas particulier a arbitrer
+1001,Jean-Francois Tremblay,,,,,non_resolu,non,exemple - remplacer
+1002,Marie-Eve Cote,,,,,non_resolu,non,exemple - remplacer
