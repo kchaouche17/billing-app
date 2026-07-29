@@ -2,7 +2,7 @@
 
 **Client :** Bisson Expert
 **Consultant :** Karim Chaouche
-**Statut :** Phase 1 — Exploration terminée (décisions de match arrêtées)
+**Statut :** Phase 3 (crosswalk 107/114) faite ; Phase 6 (import noms) bloquée sur le format d'en-têtes UKG — voir [`journal-avancement.md`](./journal-avancement.md)
 **Dernière mise à jour :** 2026-07-29
 
 ---
