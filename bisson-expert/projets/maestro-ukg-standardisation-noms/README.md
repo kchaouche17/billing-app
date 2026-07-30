@@ -2,8 +2,8 @@
 
 **Client :** Bisson Expert
 **Consultant :** Karim Chaouche
-**Statut :** Phase 3 (crosswalk 107/114) faite ; Phase 6 (import noms) bloquée sur le format d'en-têtes UKG — voir [`journal-avancement.md`](./journal-avancement.md)
-**Dernière mise à jour :** 2026-07-29
+**Statut :** Noms des 107 importés ; format d'import résolu. **Crosswalk à refaire sur 429** (filtre UKG caché découvert) — voir [`journal-avancement.md`](./journal-avancement.md)
+**Dernière mise à jour :** 2026-07-30
 
 ---
 
