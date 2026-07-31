@@ -4,7 +4,7 @@ Suivi vivant de l'exécution. **Aucune donnée employé réelle ici** (pas de NA
 uniquement méthode, décisions et compteurs. Les fichiers de travail (Maestro, UKG, crosswalk,
 import) restent **en local chez Karim, hors dépôt**.
 
-Sessions : **2026-07-29**, **2026-07-30**
+Sessions : **2026-07-29**, **2026-07-30**, **2026-07-31**
 
 ---
 
@@ -15,11 +15,11 @@ Sessions : **2026-07-29**, **2026-07-30**
 | 0 — Cadrage | ✅ Fait | Décisions arrêtées (voir README §2). |
 | 1 — Exploration | ✅ Fait | Clé = NAS ; Maestro ID → `External Id` ; périmètre actifs+inactifs. |
 | 2 — Extraction Maestro | ✅ Fait | ~552 lignes (Numéro, Nom, Prénom, NAS, État). |
-| 3 — Crosswalk | 🟠 **À REFAIRE sur 429** | Fait sur un sous-ensemble **filtré (114)** ; UKG en a en réalité **429** (filtre caché). |
+| 3 — Crosswalk | ✅ Fait (sur 429) | Refait sur les **429** : **422 appariés** (NAS), **7 exclus** (anciens employés, 0 h/12 mois). |
 | 4 — Valider `External Id` | ✅ Fait | Champ **vide** partout → libre (Q10 réglée). Format d'écriture résolu (voir notes). |
-| 5 — Import Maestro ID | 🟡 Partiel | Mécanique résolue ; à refaire proprement sur les 429 avec la colonne `ID Maestro`. |
-| 6 — Écraser les noms | 🟡 Partiel | **107 noms importés** (sous-ensemble filtré). ~322 restants une fois le crosswalk refait. |
-| 7 — Validation / dashboards | ⬜ À faire | |
+| 5 — Import Maestro ID | 🟡 Reporté | Mécanique résolue (`New External Id` = `ID Maestro`) ; à faire sur les 422 quand souhaité. |
+| 6 — Écraser les noms | ✅ Fait | **422 noms mis à jour, 0 erreur** (ciblage `Employee Id`). Rollback conservé. |
+| 7 — Validation / dashboards | 🟡 Partiel | Noms validés (pilote + sondage). Branchement dashboards par Maestro ID **en attente de la Phase 5**. |
 
 ---
 
@@ -93,12 +93,16 @@ qui étaient « à changer » : accents/casse corrigés).
 
 ---
 
-## ▶️ Reprendre à la prochaine session
-1. **Ré-exporter UKG complet (429, filtre enlevé)** : `Employee Id`, `First Name`, `Last Name`,
-   `Social Insurance Number`.
-2. **Refaire le crosswalk** sur les 429 (NAS_norm + XLOOKUP → `ID Maestro`).
-3. **Import noms** (colonnes `Employee Id`, `First Name`, `Last Name`) sur les nouveaux appariés
-   — les 107 déjà faits sont OK.
-4. **Import `New External Id` = `ID Maestro`** (pas `Employee Id`) pour poser le lien, en gérant
-   FOURNIER/PAQUETTE et les exceptions sans match.
-5. Toujours passer par le **Test** avant « Importer ».
+## ✅ Fait le 2026-07-31 — crosswalk 429 + écrasement des noms
+1. UKG ré-exporté complet (**429**, filtre retiré).
+2. Crosswalk refait (NAS_norm + XLOOKUP → `ID Maestro`) : **422 appariés**, **7 exclus**
+   (anciens employés `Terminated`, 0 h/12 mois — annotés `Exclu — ancien employé`).
+3. Snapshot rollback des `First Name`/`Last Name` UKG pris avant import.
+4. **Import des noms** (`Employee Id`, `First Name`, `Last Name`) : pilote validé (accents OK),
+   puis lot complet → **422 mises à jour, 0 erreur**. Sondage 10–15 fiches : conformes.
+
+## ▶️ Reprendre à la prochaine session (Phase 5 reportée)
+1. **Import `New External Id` = `ID Maestro`** (pas `Employee Id`) sur les 422, pour poser le lien
+   Maestro↔UKG, en gérant FOURNIER/PAQUETTE et les exceptions sans match.
+2. **Phase 7 — Dashboards** : brancher la jointure sur le Maestro ID une fois l'`External Id` chargé.
+3. Toujours passer par le **Test** (dry-run) avant « Importer ».

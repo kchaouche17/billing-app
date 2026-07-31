@@ -2,8 +2,29 @@
 
 **Client :** Bisson Expert
 **Consultant :** Karim Chaouche
-**Statut :** Noms des 107 importés ; format d'import résolu. **Crosswalk à refaire sur 429** (filtre UKG caché découvert) — voir [`journal-avancement.md`](./journal-avancement.md)
-**Dernière mise à jour :** 2026-07-30
+**Statut :** ✅ **Noms standardisés sur les 422 employés appariés** (crosswalk refait sur les 429 ; 7 anciens employés exclus). Import du Maestro ID (`External Id`, Phase 5) **reporté**. — détail dans [`journal-avancement.md`](./journal-avancement.md)
+**Dernière mise à jour :** 2026-07-31
+
+---
+
+## 0. Bilan d'exécution (2026-07-31)
+
+Standardisation des noms **complétée** sur le périmètre actif.
+
+| Élément | Résultat |
+|---|---|
+| Population UKG (filtre caché retiré) | **429** employés |
+| Appariés au crosswalk (NAS) | **422** |
+| **Noms écrasés dans UKG** | **422 mises à jour, 0 erreur** (ciblage par `Employee Id`) |
+| Exclus | **7** — anciens employés `Terminated`, **0 h sur 12 mois** (dont 2 sans NAS dans UKG) → annotés `Exclu — ancien employé` dans le crosswalk |
+| Rollback | Snapshot des `First Name`/`Last Name` UKG **avant import** conservé en local |
+| Validation | Pilote (5–10 lignes, accents OK) + sondage aléatoire 10–15 fiches : tous conformes |
+
+**Reste à faire (reporté, non bloquant) :**
+- **Phase 5 — Import du Maestro ID dans `External Id`** : mécanique déjà résolue (colonne `New External Id` = `ID Maestro`, gérer les exceptions FOURNIER/PAQUETTE). C'est ce qui apportera la **clé de dédoublonnage** des dashboards.
+- **Phase 7 — Branchement dashboards** sur le Maestro ID : dépend de la Phase 5.
+
+> Note : sans la Phase 5, les noms sont uniformisés (affichage cohérent) mais la jointure Maestro↔UKG des dashboards repose encore sur le nom, pas sur un identifiant stable.
 
 ---
 
