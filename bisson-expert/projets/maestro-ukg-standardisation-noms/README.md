@@ -1,0 +1,229 @@
+# Standardisation des noms d'employés — Maestro ↔ UKG Ready
+
+**Client :** Bisson Expert
+**Consultant :** Karim Chaouche
+**Statut :** ✅ **Noms standardisés sur les 422 employés appariés** (crosswalk refait sur les 429 ; 7 anciens employés exclus). Import du Maestro ID (`External Id`, Phase 5) **reporté**. — détail dans [`journal-avancement.md`](./journal-avancement.md)
+**Dernière mise à jour :** 2026-07-31
+
+---
+
+## 0. Bilan d'exécution (2026-07-31)
+
+Standardisation des noms **complétée** sur le périmètre actif.
+
+| Élément | Résultat |
+|---|---|
+| Population UKG (filtre caché retiré) | **429** employés |
+| Appariés au crosswalk (NAS) | **422** |
+| **Noms écrasés dans UKG** | **422 mises à jour, 0 erreur** (ciblage par `Employee Id`) |
+| Exclus | **7** — anciens employés `Terminated`, **0 h sur 12 mois** (dont 2 sans NAS dans UKG) → annotés `Exclu — ancien employé` dans le crosswalk |
+| Rollback | Snapshot des `First Name`/`Last Name` UKG **avant import** conservé en local |
+| Validation | Pilote (5–10 lignes, accents OK) + sondage aléatoire 10–15 fiches : tous conformes |
+
+**Reste à faire (reporté, non bloquant) :**
+- **Phase 5 — Import du Maestro ID dans `External Id`** : mécanique déjà résolue (colonne `New External Id` = `ID Maestro`, gérer les exceptions FOURNIER/PAQUETTE). C'est ce qui apportera la **clé de dédoublonnage** des dashboards.
+- **Phase 7 — Branchement dashboards** sur le Maestro ID : dépend de la Phase 5.
+
+> Note : sans la Phase 5, les noms sont uniformisés (affichage cohérent) mais la jointure Maestro↔UKG des dashboards repose encore sur le nom, pas sur un identifiant stable.
+
+---
+
+## 1. Besoin réel
+
+Au-delà de « écraser les noms dans UKG », le besoin de fond est :
+
+> **Pouvoir relier de façon fiable un employé entre Maestro et UKG Ready, pour que les
+> données des deux systèmes se joignent proprement dans les dashboards, sans doublons
+> ni faux positifs.**
+
+L'uniformisation des noms est *un moyen* d'y arriver ; la **clé de correspondance
+stable (Maestro ID)** en est le vrai livrable durable. Les noms peuvent rechanger
+demain (mariage, correction d'orthographe, surnom) — un identifiant numérique, non.
+
+## 2. Décisions déjà arrêtées (par le client)
+
+| # | Décision | Détail |
+|---|----------|--------|
+| D1 | **Source de vérité des noms** | Maestro. On écrase les noms UKG avec ceux de Maestro. |
+| D2 | **Où loger le Maestro ID dans UKG** | Le champ **natif `ID externe`** (vide), pas un champ personnalisé. À confirmer qu'aucune intégration ne l'utilise (Q10). |
+| D3 | **Finalité** | Dédoublonner et mieux matcher les données dans les dashboards. |
+| D4 | **Clé de match** | Le **NAS**, présent des deux côtés. Matching fait **localement par Karim**, jamais partagé. Secours : nom normalisé + revue manuelle. (Phase 1) |
+| D5 | **Périmètre** | Actifs **+** inactifs, ~300 à 800 employés. |
+
+## 3. Insight critique — la clé de correspondance
+
+On **ne peut pas** écraser les noms UKG en ciblant les employés par leur nom :
+c'est justement le champ qui diffère et qui change. Chaque import UKG doit cibler
+par un **identifiant stable que UKG connaît déjà** : le **UKG Employee ID**
+(champ `ID de l'employé` dans UKG).
+
+Il faut donc, avant tout import, construire une **table de correspondance** :
+
+```
+Maestro ID  ──►  UKG Employee ID
+```
+
+Cette table est le pivot du projet. Elle sert à :
+1. Charger le bon Maestro ID sur la bonne fiche UKG.
+2. Écraser le bon nom sur la bonne fiche UKG.
+3. **Révéler les doublons** : si un même employé pointe vers 2 fiches UKG, ou si
+   2 employés Maestro pointent vers la même fiche UKG, on a trouvé une anomalie à corriger.
+
+### Clé de match retenue (Phase 1)
+
+Après profilage des deux systèmes, la clé retenue est le **NAS** :
+
+- **Présent et rempli pour tous** dans Maestro ; **champ présent** dans UKG (`Numéro
+  d'assurance sociale`) — complétude côté UKG à confirmer à l'extraction (Q11).
+- Clé unique par personne → correspondance fiable pour ~300 à 800 employés.
+- 🔒 **Le matching sur NAS se fait localement, dans le fichier de Karim. Aucune valeur
+  de NAS n'est partagée, ni committée dans le dépôt.**
+
+**Secours** pour les rares cas non appariés : **nom normalisé** (sans accents,
+minuscules, espaces réduits) + **revue manuelle** dans le crosswalk.
+
+Clés **écartées** : courriel (absent de Maestro), date de naissance (trous dans Maestro).
+
+> ⚠️ Les cas non résolus automatiquement sont réglés **à la main** dans le crosswalk.
+> C'est normal et attendu sur un premier passage.
+
+## 4. Séquence d'exécution (l'ordre compte)
+
+```
+Phase 1  Exploration & profilage des données (choisir la clé de match)
+Phase 2  Extraction Maestro          → gabarit 01
+Phase 3  Extraction UKG + crosswalk  → gabarit 02   ← pivot du projet
+Phase 4  Valider le champ « ID externe » dans UKG (libre + reportable)
+Phase 5  Importer le Maestro ID dans « ID externe »  → gabarit 03
+Phase 6  Écraser les noms dans UKG (pilote puis lot) → gabarit 04
+Phase 7  Validation, réconciliation, dashboards
+```
+
+> **> 100 employés** → le matching manuel « à l'œil » n'est pas viable. On matche
+> automatiquement sur une clé secondaire, **choisie à la Phase 1** après profilage.
+
+**Pourquoi charger le Maestro ID (Phase 5) AVANT d'écraser les noms (Phase 6) ?**
+Pour que le lien permanent Maestro↔UKG existe même si l'import des noms échoue
+partiellement. Une fois le Maestro ID en place dans UKG, on ne dépend plus jamais
+du nom pour rejouer un import.
+
+---
+
+## 5. Détail par phase
+
+### Phase 1 — Exploration & profilage des données
+
+Objectif : **découvrir** (pas deviner) quelle clé permet de matcher Maestro et UKG,
+avant de figer quoi que ce soit. À faire ensemble, Karim + Claude.
+
+- 1.1 **Inventaire des champs** : lister les colonnes disponibles à l'export côté
+  Maestro (fiche employé) et côté UKG (Employee Information / Demographics).
+- 1.2 **Clés candidates** : pour chacune (NAS, date de naissance, courriel, numéro
+  d'employé existant), mesurer dans **chaque** système :
+  - **complétude** = % de fiches où la valeur est renseignée ;
+  - **unicité** = la valeur identifie-t-elle une seule personne (pas de collisions).
+- 1.3 **Coïncidence d'identifiants** : vérifier si le numéro d'employé UKG égale déjà
+  le Maestro ID (parfois le cas → matching trivial).
+- 1.4 **Choix de la stratégie** : une clé unique et propre des deux côtés ; sinon une
+  **clé composite** (ex. date de naissance + nom de famille) ; sinon nom normalisé +
+  revue manuelle des restes.
+- 1.5 Profiter de cette phase pour trancher **Q1** (nom légal vs affichage) et **Q9**
+  (le champ « Maestro ID » existe-t-il déjà dans UKG, et avec quel paramétrage).
+
+**Sortie :** décision de matching documentée (met à jour Q2 dans `questions-ouvertes.md`).
+**Validation :** on a au moins une clé (ou combinaison) fiable pour > 100 employés.
+
+### Phase 2 — Extraction Maestro (gabarit 01)
+
+**Où :** module Ressources humaines / Paie de maestro\*.
+**Quoi extraire :** numéro d'employé (Maestro ID), nom, prénom, + clé(s) secondaire(s)
+disponibles (NAS, date de naissance, courriel) pour le matching.
+**Comment :** export Excel/CSV depuis l'écran de liste des employés, ou via un rapport
+maestro\*. Attention à l'**encodage** (voir section Risques — accents français).
+
+→ Remplir `gabarits/01_maestro_export_employes.csv`.
+
+### Phase 3 — Extraction UKG + crosswalk (gabarit 02)
+
+1. **Exporter la liste actuelle des employés UKG** : `ID de l'employé`, nom actuel,
+   + le **NAS** (clé de match). (Dans UKG Ready : *Employee Information*, ou un
+   rapport « Employee Details », exportable en Excel.) **Vérifier ici la complétude
+   du NAS côté UKG (Q11).**
+2. **Sauvegarder cet export** — c'est ton point de restauration (rollback) des noms.
+3. **Construire le crosswalk** : joindre Maestro et UKG **sur le NAS** (localement,
+   valeurs jamais partagées), résoudre les cas ambigus à la main, marquer chaque ligne
+   (`statut_match` = auto / manuel / non_resolu / doublon).
+
+→ Remplir `gabarits/02_crosswalk_maestro_ukg.csv`.
+
+### Phase 4 — Valider le champ « ID externe » dans UKG
+
+On n'a **pas besoin de créer un champ perso** : UKG a un champ natif **`ID externe`**,
+conçu pour lier une fiche à l'identifiant d'un système externe. Sur la fiche observée,
+il est **vide**.
+
+- **Confirmer que `ID externe` est libre** — qu'aucune intégration UKG existante ne
+  l'utilise déjà (Q10). C'est le seul vrai point de validation de cette phase.
+- Confirmer qu'il est **reportable** (dispo dans les exports et Power BI) — c'est le cas
+  par défaut pour ce champ natif.
+
+> Si jamais `ID externe` s'avérait déjà utilisé, on bascule sur un champ personnalisé
+> « Maestro ID » (texte, reportable) — plan B.
+
+### Phase 5 — Importer le Maestro ID dans « ID externe » (gabarit 03)
+
+- UKG Ready : **Company Settings → Global Setup → Imports** (outil d'import).
+- Fichier **clé = `ID de l'employé`**, valeur = `maestro_id`.
+- Mapper la colonne vers le champ **`ID externe`**, valider, puis committer.
+
+→ Remplir `gabarits/03_ukg_import_maestro_id.csv`.
+
+### Phase 6 — Écraser les noms dans UKG (gabarit 04)
+
+- Même outil d'import UKG, **clé = `ID de l'employé`**, valeurs = `prenom`, `nom_famille`.
+- **Faire d'abord un lot pilote de 5 à 10 employés** (dont un nom accentué), valider
+  visuellement, puis lancer le reste.
+- ⚠️ **Cible = nom principal `Prénom`/`Nom`** (ce que lisent les dashboards). UKG a aussi
+  un `Prénom légal` séparé. Confirmer d'abord que les noms Maestro sont les noms légaux
+  (Q1) — voir Risques (R1).
+
+→ Remplir `gabarits/04_ukg_import_noms.csv`.
+
+### Phase 7 — Validation & réconciliation
+
+- Compter : nb d'employés Maestro = nb de liens dans le crosswalk = nb de fiches UKG mises à jour.
+- Contrôle par sondage : 10 fiches UKG au hasard, nom + Maestro ID conformes à Maestro.
+- **Dashboards** : utiliser désormais le **Maestro ID comme clé de jointure** entre la
+  source UKG et la source Maestro (au lieu du nom). Dans un modèle Power BI, le Maestro ID
+  devient la clé de la dimension « Employé » partagée — c'est ce qui élimine les doublons.
+- Documenter les doublons UKG trouvés en Phase 2 et le plan pour les fusionner/désactiver.
+
+---
+
+## 6. Risques et mitigations
+
+| # | Risque | Impact | Mitigation |
+|---|--------|--------|------------|
+| **R1** | **Nom légal vs nom d'affichage.** UKG a un `Prénom`/`Nom` (affichage) et un `Prénom légal` séparé. Maestro fait la **paie CCQ** → ses noms sont *probablement* les noms légaux, donc les pousser dans le nom principal est cohérent — **à confirmer** (Q1). | Moyen | On cible le **nom principal** (dashboards). Karim confirme que Maestro = noms légaux avant l'écrasement. Sinon, réévaluer. |
+| **R2** | **Accents / encodage** (é, è, ç, ï…). Maestro/Sybase exporte souvent en Windows-1252 ; UKG attend souvent UTF-8. | Moyen | Fixer l'encodage à l'export, valider un nom accentué dans le lot pilote avant le lot complet. |
+| **R3** | **NAS incomplet côté UKG** (le NAS existe dans UKG mais pourrait ne pas être rempli partout). | Moyen | Vérifier la complétude à l'extraction (Q11). Pour les fiches sans NAS : matching par nom normalisé + revue manuelle ; c'est ponctuel (une fois le Maestro ID chargé, plus jamais requis). |
+| **R4** | **Écrasement irréversible des noms UKG.** | Moyen | Export UKG complet **avant** tout import (Phase 2, étape 2) = rollback. |
+| **R5** | **Doublons dans UKG** (la raison d'être du projet). Une personne = 2 fiches UKG. | Moyen | Le crosswalk les révèle. Décider : fusionner, désactiver l'ancienne, ou router les données historiques. |
+| **R6** | **Droits / accès** aux outils d'import UKG. | Faible | Résolu : Karim a le rôle admin UKG pour lancer les imports. |
+
+## 7. Questions ouvertes
+
+Voir [`questions-ouvertes.md`](./questions-ouvertes.md).
+
+## 8. Contenu du dossier
+
+```
+maestro-ukg-standardisation-noms/
+├── README.md                         ← ce document (méthode + plan)
+├── questions-ouvertes.md             ← décisions à confirmer avant d'exécuter
+└── gabarits/
+    ├── 01_maestro_export_employes.csv    ← extraction Maestro (source de vérité)
+    ├── 02_crosswalk_maestro_ukg.csv      ← table de correspondance (pivot)
+    ├── 03_ukg_import_maestro_id.csv      ← import du Maestro ID dans UKG
+    └── 04_ukg_import_noms.csv            ← import d'écrasement des noms UKG
+```

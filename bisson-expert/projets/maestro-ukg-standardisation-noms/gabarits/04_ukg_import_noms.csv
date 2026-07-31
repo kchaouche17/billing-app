@@ -1,0 +1,8 @@
+ukg_employee_id,prenom,nom_famille
+# Phase 6 - Ecraser les noms UKG avec les noms Maestro.
+# A generer depuis le crosswalk (gabarit 02), lignes matchees seulement.
+# Cle d'import UKG = ukg_employee_id. Valeurs ecrasees = prenom, nom_famille.
+# FAIRE UN LOT PILOTE de 5-10 employes d'abord, valider, puis le reste.
+# Confirmer d'abord QUEL champ nom on ecrase: nom legal vs nom d'affichage (Risque R1).
+,Jean-Francois,Tremblay
+,Marie-Eve,Cote

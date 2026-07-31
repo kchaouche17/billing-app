@@ -1,0 +1,7 @@
+ukg_employee_id,maestro_id
+# Phase 5 - Charger le Maestro ID dans le champ natif "ID externe" de UKG.
+# A generer depuis le crosswalk (gabarit 02), lignes matchees seulement.
+# Cle d'import UKG = ukg_employee_id (= "ID de l'employe"). Cible = champ "ID externe".
+# Lancer APRES avoir valide que "ID externe" est libre (Phase 4) et AVANT l'ecrasement des noms (Phase 6).
+,1001
+,1002
