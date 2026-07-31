@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonus Avis Google — Bisson Expert</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Lexend+Mega:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ch-red:#AF1E2D;--ch-red-lt:#C8233A;--ch-red-bg:#FDF2F3;
+  --ch-blue:#192168;--ch-blue-bg:#F0F2FF;
+  --bg:#F5F8FA;--surface:#FFFFFF;--border:#E5E8EB;--border-dk:#CBD0D8;
+  --text:#1A1F36;--text-md:#516F90;--text-lt:#8DA2B8;
+  --green:#00BDA5;--green-bg:#E5F8F6;--amber:#F5A623;--amber-bg:#FEF6E7;
+  --gold:#F5A623;
+  --radius:8px;--radius-sm:5px;
+  --shadow:0 1px 4px rgba(25,33,104,0.08),0 0 0 1px rgba(25,33,104,0.04);
+  --shadow-md:0 4px 16px rgba(25,33,104,0.12);
+  --font:'Lexend',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--disp:'Lexend Mega','Lexend',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--ch-blue);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(25,33,104,0.3)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:34px;height:34px;background:var(--ch-red);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:14px;color:#fff;border:2px solid rgba(255,255,255,0.2)}
+.logo-text{font-weight:600;font-size:15px;color:#fff}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.55);font-family:var(--mono);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.period-box{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:4px 8px}
+.period-box label{font-size:10px;color:rgba(255,255,255,0.6);font-family:var(--mono)}
+.period-box input{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:3px;color:#fff;font-family:var(--mono);font-size:11px;padding:3px 5px;color-scheme:dark}
+.btn{font-family:var(--font);font-size:12px;font-weight:500;padding:7px 14px;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px}
+.btn-white{background:#fff;color:var(--ch-blue)}.btn-white:hover{background:#f0f2ff}
+.btn-outline{background:transparent;color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.25)}.btn-outline:hover{background:rgba(255,255,255,0.1);color:#fff}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 56px)}
+
+/* SIDEBAR */
+.sidebar{background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sb-section{padding:18px 20px;border-bottom:1px solid var(--border)}
+.sb-label{font-size:10px;font-weight:700;color:var(--text-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:11px;color:var(--text-md);margin-bottom:4px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:1.5px solid var(--border-dk);color:var(--text);font-family:var(--font);font-size:13px;padding:8px 10px;border-radius:var(--radius-sm);outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ch-blue)}
+.field textarea{resize:vertical;min-height:44px;font-size:12px}
+.field .with-unit{position:relative}
+.field .with-unit .unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text-lt);font-family:var(--mono);pointer-events:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:10px;color:var(--text-lt);margin-top:4px;line-height:1.4}
+.stars-input{display:flex;gap:4px;font-size:22px;cursor:pointer;user-select:none}
+.stars-input .s{color:var(--border-dk);transition:color 0.1s}
+.stars-input .s.on{color:var(--gold)}
+.analyze-btn{width:100%;padding:10px;background:var(--ch-red);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.analyze-btn:hover{background:var(--ch-red-lt);box-shadow:0 4px 12px rgba(175,30,45,0.3)}
+.drop-zone{border:2px dashed var(--border-dk);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);position:relative}
+.drop-zone:hover,.drop-zone.over{border-color:var(--ch-red);background:var(--ch-red-bg)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.drop-icon{font-size:20px;margin-bottom:4px;display:block}
+.drop-label{font-size:12px;font-weight:500;color:var(--text)}
+.drop-sub{font-size:10px;color:var(--text-lt);font-family:var(--mono);margin-top:2px}
+.link-btn{background:none;border:none;color:var(--ch-blue);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline}
+.link-btn:hover{color:var(--ch-red)}
+
+/* MAIN */
+.main{display:flex;flex-direction:column;overflow:auto}
+.kpi-strip{background:#fff;border-bottom:1px solid var(--border);display:grid;grid-template-columns:repeat(6,1fr);box-shadow:var(--shadow)}
+.kpi{padding:14px 18px;border-right:1px solid var(--border);position:relative}
+.kpi:last-child{border-right:none}
+.kpi-lbl{font-size:10px;font-weight:700;color:var(--text-lt);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-val{font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:-0.02em;line-height:1}
+.kpi-sub{font-size:10px;color:var(--text-lt);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-bar{height:3px;position:absolute;bottom:0;left:0;right:0}
+.kpi.k-green .kpi-val{color:var(--green)}.kpi.k-green .kpi-bar{background:var(--green)}
+.kpi.k-red .kpi-val{color:var(--ch-red)}.kpi.k-red .kpi-bar{background:var(--ch-red)}
+.kpi.k-amber .kpi-val{color:var(--amber)}.kpi.k-amber .kpi-bar{background:var(--amber)}
+.kpi.k-blue .kpi-val{color:var(--ch-blue)}.kpi.k-blue .kpi-bar{background:var(--ch-blue)}
+.kpi.k-gold .kpi-val{color:var(--gold)}.kpi.k-gold .kpi-bar{background:var(--gold)}
+
+/* CONTENT GRID */
+.content{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.card.span2{grid-column:1 / -1}
+.card-hdr{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.card-title{font-size:13px;font-weight:600}
+.card-sub{font-size:11px;color:var(--text-lt);font-family:var(--mono)}
+.card-body{padding:16px 18px}
+
+/* LEADERBOARD */
+.lb-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lb-row:last-child{border:none}
+.lb-rank{width:22px;height:22px;border-radius:50%;background:var(--bg);color:var(--text-md);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lb-row:nth-child(1) .lb-rank{background:var(--gold);color:#fff}
+.lb-name{flex:1;min-width:0}
+.lb-nm{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-meta{font-size:10px;color:var(--text-lt);margin-top:1px}
+.lb-track{flex:1.4;height:8px;background:var(--bg);border-radius:6px;overflow:hidden;max-width:180px}
+.lb-fill{height:100%;background:linear-gradient(90deg,var(--ch-blue),var(--green));border-radius:6px}
+.lb-amt{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--green);width:90px;text-align:right;flex-shrink:0}
+
+/* BARS (charts) */
+.bars{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar-fill{width:100%;max-width:46px;background:var(--ch-blue);border-radius:5px 5px 0 0;transition:height 0.3s;min-height:2px;position:relative}
+.bar-fill .bv{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10px;font-weight:600;font-family:var(--mono);color:var(--text-md)}
+.bar-lbl{font-size:10px;color:var(--text-lt);text-align:center;white-space:nowrap}
+
+/* RATING DIST */
+.rd-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rd-star{font-size:11px;font-family:var(--mono);color:var(--text-md);width:34px;display:flex;align-items:center;gap:2px}
+.rd-star .st{color:var(--gold)}
+.rd-track{flex:1;height:14px;background:var(--bg);border-radius:4px;overflow:hidden}
+.rd-fill{height:100%;background:var(--gold);border-radius:4px;min-width:2px}
+.rd-cnt{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text-md);width:30px;text-align:right}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{text-align:left;font-size:10px;font-weight:700;color:var(--text-lt);text-transform:uppercase;letter-spacing:0.05em;padding:8px 10px;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff}
+tbody td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:hover{background:var(--bg)}
+.t-stars{color:var(--gold);font-size:12px;letter-spacing:1px;white-space:nowrap}
+.t-stars .off{color:var(--border-dk)}
+.t-emp{display:inline-block;background:var(--ch-blue-bg);color:var(--ch-blue);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.t-emp.none{background:var(--bg);color:var(--text-lt);font-weight:400}
+.t-bonus{font-family:var(--mono);font-weight:600;color:var(--green);text-align:right;white-space:nowrap}
+.t-bonus.zero{color:var(--text-lt);font-weight:400}
+.t-date{font-family:var(--mono);color:var(--text-md);white-space:nowrap}
+.t-txt{color:var(--text-md);max-width:340px}
+.t-del{background:none;border:none;color:var(--text-lt);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;line-height:1}
+.t-del:hover{background:var(--ch-red-bg);color:var(--ch-red)}
+.table-wrap{max-height:460px;overflow-y:auto}
+.badge-src{font-size:9px;font-family:var(--mono);color:var(--text-lt);text-transform:uppercase}
+
+.empty{padding:40px 20px;text-align:center;color:var(--text-lt);font-size:13px}
+.empty .ei{font-size:32px;display:block;margin-bottom:10px;opacity:0.5}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px}
+.pill.ok{background:var(--green-bg);color:var(--green)}
+.pill.wait{background:var(--amber-bg);color:var(--amber)}
+.foot{padding:10px 24px;font-size:10px;color:var(--text-lt);font-family:var(--mono);text-align:center;border-top:1px solid var(--border);background:#fff}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">BE</div>
+    <div>
+      <div class="logo-text">Bonus — Avis Google</div>
+      <div class="logo-sub">Bisson Expert · Prime sur les avis</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="period-box">
+      <label>Du</label><input type="date" id="periodFrom">
+      <label>Au</label><input type="date" id="periodTo">
+      <button class="link-btn" id="periodReset" style="color:rgba(255,255,255,.7)">Tout</button>
+    </div>
+    <button class="btn btn-outline" id="exportBtn">⬇ Export CSV</button>
+    <button class="btn btn-white" id="printBtn">🖨 Imprimer</button>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <!-- BONUS RULES -->
+    <div class="sb-section">
+      <div class="sb-label">Règle de bonus <span class="pill ok" id="ruleStatus">auto</span></div>
+      <div class="field">
+        <label>Montant de base par avis admissible</label>
+        <div class="with-unit"><input type="number" id="rBase" min="0" step="1" value="10"><span class="unit">$ / avis</span></div>
+      </div>
+      <div class="field">
+        <label>Note minimale admissible</label>
+        <select id="rMin">
+          <option value="1">1★ et plus (tous)</option>
+          <option value="3">3★ et plus</option>
+          <option value="4" selected>4★ et plus</option>
+          <option value="5">5★ seulement</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Bonification pour un 5★</label>
+        <div class="with-unit"><input type="number" id="rFive" min="0" step="1" value="5"><span class="unit">$ extra</span></div>
+        <div class="hint">S'ajoute au montant de base quand l'avis est 5★.</div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Palier équipe</label>
+          <div class="with-unit"><input type="number" id="rThreshold" min="0" step="1" value="10"><span class="unit">avis</span></div>
+        </div>
+        <div class="field">
+          <label>Prime d'équipe</label>
+          <div class="with-unit"><input type="number" id="rPool" min="0" step="1" value="200"><span class="unit">$</span></div>
+        </div>
+      </div>
+      <div class="hint">Si le nombre d'avis admissibles sur la période atteint le palier, la prime d'équipe est débloquée et répartie également entre les employés ayant contribué.</div>
+    </div>
+
+    <!-- ADD REVIEW -->
+    <div class="sb-section">
+      <div class="sb-label">Ajouter un avis</div>
+      <div class="row2">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="fDate">
+        </div>
+        <div class="field">
+          <label>Note</label>
+          <div class="stars-input" id="fStars" data-val="5">
+            <span class="s on" data-v="1">★</span><span class="s on" data-v="2">★</span><span class="s on" data-v="3">★</span><span class="s on" data-v="4">★</span><span class="s on" data-v="5">★</span>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Auteur de l'avis</label>
+        <input type="text" id="fAuthor" placeholder="Nom du client">
+      </div>
+      <div class="field">
+        <label>Employé attribué</label>
+        <input type="text" id="fEmp" list="empList" placeholder="Employé mentionné / attribué">
+        <datalist id="empList"></datalist>
+      </div>
+      <div class="field">
+        <label>Extrait de l'avis <span style="color:var(--text-lt)">(optionnel)</span></label>
+        <textarea id="fText" placeholder="Texte de l'avis…"></textarea>
+      </div>
+      <button class="analyze-btn" id="addBtn">＋ Ajouter l'avis</button>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="sb-section">
+      <div class="sb-label">Import CSV</div>
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".csv,text/csv">
+        <span class="drop-icon">📄</span>
+        <span class="drop-label">Déposer un export CSV</span>
+        <span class="drop-sub">date, auteur, note, employé, texte</span>
+      </div>
+      <div class="hint">Colonnes reconnues (souples) : <b>date</b>, <b>auteur/nom</b>, <b>note/rating/étoiles</b>, <b>employé</b>, <b>texte/avis</b>.</div>
+      <div style="margin-top:10px;display:flex;gap:12px">
+        <button class="link-btn" id="sampleBtn">Charger un exemple</button>
+        <button class="link-btn" id="clearBtn" style="color:var(--ch-red)">Tout effacer</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="kpi-strip" id="kpiStrip"></div>
+    <div class="content" id="content">
+      <!-- LEADERBOARD -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Classement des employés</span><span class="card-sub" id="lbSub"></span></div>
+        <div class="card-body" id="leaderboard"></div>
+      </div>
+      <!-- RATING DIST -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Répartition des notes</span><span class="card-sub" id="rdSub"></span></div>
+        <div class="card-body" id="ratingDist"></div>
+      </div>
+      <!-- TREND -->
+      <div class="card span2">
+        <div class="card-hdr"><span class="card-title">Avis & bonus par mois</span><span class="card-sub">nombre d'avis admissibles</span></div>
+        <div class="card-body"><div class="bars" id="trend"></div></div>
+      </div>
+      <!-- TABLE -->
+      <div class="card span2">
+        <div class="card-hdr"><span class="card-title">Détail des avis</span><span class="card-sub" id="tblSub"></span></div>
+        <div class="table-wrap" id="tableWrap"></div>
+      </div>
+    </div>
+    <div class="foot" id="foot">Données enregistrées localement dans ce navigateur (localStorage). Aucune donnée n'est envoyée en ligne.</div>
+  </main>
+</div>
+
+<script>
+/* ============ STATE ============ */
+var STORE_KEY = 'bisson_gbp_bonus_v1';
+var state = {
+  reviews: [],
+  rules: { base:10, minRating:4, five:5, threshold:10, pool:200 },
+  period: { from:'', to:'' }
+};
+
+function uid(){ return 'r'+(Date.now().toString(36))+Math.floor(performance.now()*1000%100000).toString(36); }
+function load(){
+  try{
+    var raw = localStorage.getItem(STORE_KEY);
+    if(raw){ var s = JSON.parse(raw); state.reviews = s.reviews||[]; state.rules = Object.assign(state.rules, s.rules||{}); state.period = Object.assign(state.period, s.period||{}); }
+  }catch(e){ console.warn('load failed', e); }
+}
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){ console.warn('save failed', e); } }
+
+/* ============ HELPERS ============ */
+function money(n){ return (Math.round(n*100)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2})+' $'; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function starsHtml(r){ var h=''; for(var i=1;i<=5;i++){ h += i<=r?'★':'<span class="off">★</span>'; } return h; }
+function inPeriod(d){
+  if(state.period.from && d < state.period.from) return false;
+  if(state.period.to && d > state.period.to) return false;
+  return true;
+}
+function monthKey(d){ return (d||'').slice(0,7); }
+function monthLabel(k){
+  var m=['jan','fév','mar','avr','mai','juin','juil','aoû','sep','oct','nov','déc'];
+  var p=k.split('-'); if(p.length<2) return k; return m[parseInt(p[1],10)-1]+' '+p[0].slice(2);
+}
+
+/* ============ BONUS ENGINE ============ */
+// Individual bonus for one review (before team pool)
+function reviewBonus(rev){
+  var r = state.rules;
+  if(rev.rating < r.minRating) return 0;
+  var b = Number(r.base)||0;
+  if(rev.rating >= 5) b += Number(r.five)||0;
+  return b;
+}
+// Compute everything for the reviews within the active period
+function compute(){
+  var rows = state.reviews.filter(function(x){ return inPeriod(x.date); })
+                          .sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  var eligible = rows.filter(function(x){ return x.rating >= state.rules.minRating; });
+  var indivTotal = 0, sumRating = 0;
+  var byEmp = {}; // name -> {count, eligible, indiv}
+  rows.forEach(function(x){
+    sumRating += Number(x.rating)||0;
+    var nm = (x.employee||'').trim() || '— Non attribué';
+    if(!byEmp[nm]) byEmp[nm] = { name:nm, count:0, eligible:0, indiv:0 };
+    byEmp[nm].count++;
+    var bo = reviewBonus(x);
+    x._bonus = bo;
+    byEmp[nm].indiv += bo;
+    indivTotal += bo;
+    if(x.rating >= state.rules.minRating) byEmp[nm].eligible++;
+  });
+  // team pool
+  var poolUnlocked = state.rules.threshold>0 && eligible.length >= state.rules.threshold;
+  var poolAmt = poolUnlocked ? (Number(state.rules.pool)||0) : 0;
+  // contributors = named employees with >=1 eligible review
+  var contributors = Object.keys(byEmp).filter(function(k){ return k!=='— Non attribué' && byEmp[k].eligible>0; });
+  var poolEach = contributors.length ? poolAmt/contributors.length : 0;
+  contributors.forEach(function(k){ byEmp[k].pool = poolEach; });
+  Object.keys(byEmp).forEach(function(k){ byEmp[k].pool = byEmp[k].pool||0; byEmp[k].total = byEmp[k].indiv + byEmp[k].pool; });
+
+  var emps = Object.keys(byEmp).map(function(k){ return byEmp[k]; })
+                  .sort(function(a,b){ return b.total-a.total; });
+
+  return {
+    rows: rows, eligible: eligible, count: rows.length,
+    avg: rows.length ? sumRating/rows.length : 0,
+    indivTotal: indivTotal, poolUnlocked: poolUnlocked, poolAmt: poolUnlocked?poolAmt:0,
+    grandTotal: indivTotal + (poolUnlocked?poolAmt:0),
+    emps: emps, namedEmps: emps.filter(function(e){return e.name!=='— Non attribué';}),
+    threshold: state.rules.threshold
+  };
+}
+
+/* ============ RENDER ============ */
+function render(){
+  var c = compute();
+
+  // KPIs
+  var toGo = Math.max(0, c.threshold - c.eligible.length);
+  var poolKpi = c.poolUnlocked
+    ? '<div class="kpi-sub">✓ palier atteint</div>'
+    : '<div class="kpi-sub">'+toGo+' avis avant palier</div>';
+  var top = c.namedEmps[0];
+  var kpis = [
+    { lbl:'Avis (période)', val:c.count, sub:c.eligible.length+' admissibles', cls:'k-blue' },
+    { lbl:'Note moyenne', val:c.avg?c.avg.toFixed(2)+'★':'—', sub:'sur '+c.count+' avis', cls:'k-gold' },
+    { lbl:'Bonus individuel', val:money(c.indivTotal), sub:'primes par avis', cls:'k-green' },
+    { lbl:'Prime d\'équipe', val:money(c.poolAmt), sub:'', cls:'k-amber', rawSub:poolKpi },
+    { lbl:'Bonus total', val:money(c.grandTotal), sub:'à verser', cls:'k-red' },
+    { lbl:'Top employé', val:top?top.name.split(' ')[0]:'—', sub:top?money(top.total):'aucun', cls:'k-blue' }
+  ];
+  document.getElementById('kpiStrip').innerHTML = kpis.map(function(k){
+    return '<div class="kpi '+k.cls+'"><div class="kpi-lbl">'+k.lbl+'</div><div class="kpi-val">'+k.val+'</div>'+(k.rawSub||'<div class="kpi-sub">'+k.sub+'</div>')+'<div class="kpi-bar"></div></div>';
+  }).join('');
+
+  // Leaderboard
+  var lb = document.getElementById('leaderboard');
+  document.getElementById('lbSub').textContent = c.namedEmps.length+' employé(s)';
+  if(!c.emps.length){ lb.innerHTML = emptyBlock('👥','Aucun avis sur la période'); }
+  else {
+    var max = Math.max.apply(null, c.emps.map(function(e){return e.total;}).concat([1]));
+    lb.innerHTML = c.emps.map(function(e,i){
+      var pct = max? Math.max(2,(e.total/max*100)) : 0;
+      var poolTag = e.pool>0? ' · +'+money(e.pool)+' équipe' : '';
+      return '<div class="lb-row"><div class="lb-rank">'+(i+1)+'</div>'
+        +'<div class="lb-name"><div class="lb-nm">'+esc(e.name)+'</div><div class="lb-meta">'+e.count+' avis · '+e.eligible+' admissibles'+poolTag+'</div></div>'
+        +'<div class="lb-track"><div class="lb-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="lb-amt">'+money(e.total)+'</div></div>';
+    }).join('');
+  }
+
+  // Rating distribution
+  var rd = document.getElementById('ratingDist');
+  var dist = [0,0,0,0,0];
+  c.rows.forEach(function(x){ if(x.rating>=1&&x.rating<=5) dist[x.rating-1]++; });
+  document.getElementById('rdSub').textContent = c.count+' avis';
+  if(!c.count){ rd.innerHTML = emptyBlock('⭐','Aucune note'); }
+  else {
+    var mx = Math.max.apply(null, dist.concat([1]));
+    rd.innerHTML = [5,4,3,2,1].map(function(s){
+      var n = dist[s-1]; var pct = mx? (n/mx*100):0;
+      return '<div class="rd-row"><div class="rd-star">'+s+'<span class="st">★</span></div>'
+        +'<div class="rd-track"><div class="rd-fill" style="width:'+pct+'%"></div></div>'
+        +'<div class="rd-cnt">'+n+'</div></div>';
+    }).join('');
+  }
+
+  // Trend (by month, eligible count)
+  var tr = document.getElementById('trend');
+  var months = {};
+  c.rows.forEach(function(x){ var k=monthKey(x.date); if(!k)return; if(!months[k]) months[k]={c:0,b:0}; if(x.rating>=state.rules.minRating){ months[k].c++; } months[k].b += (x._bonus||0); });
+  var keys = Object.keys(months).sort();
+  if(!keys.length){ tr.innerHTML = emptyBlock('📈','Aucune donnée à afficher'); }
+  else {
+    var mmax = Math.max.apply(null, keys.map(function(k){return months[k].c;}).concat([1]));
+    tr.innerHTML = keys.map(function(k){
+      var h = Math.max(2,(months[k].c/mmax*130));
+      return '<div class="bar-col"><div class="bar-fill" style="height:'+h+'px"><span class="bv">'+months[k].c+'</span></div><div class="bar-lbl">'+monthLabel(k)+'</div></div>';
+    }).join('');
+  }
+
+  // Table
+  var tw = document.getElementById('tableWrap');
+  document.getElementById('tblSub').textContent = c.count+' avis';
+  if(!c.rows.length){ tw.innerHTML = emptyBlock('📝','Aucun avis — ajoute-en un ou importe un CSV'); }
+  else {
+    tw.innerHTML = '<table><thead><tr><th>Date</th><th>Auteur</th><th>Note</th><th>Employé</th><th>Avis</th><th style="text-align:right">Bonus</th><th></th></tr></thead><tbody>'
+      + c.rows.map(function(x){
+        var emp = (x.employee||'').trim();
+        var elig = x.rating >= state.rules.minRating;
+        return '<tr>'
+          +'<td class="t-date">'+esc(x.date||'—')+'</td>'
+          +'<td>'+esc(x.author||'—')+(x.source?' <span class="badge-src">·'+esc(x.source)+'</span>':'')+'</td>'
+          +'<td class="t-stars">'+starsHtml(x.rating)+'</td>'
+          +'<td>'+(emp?'<span class="t-emp">'+esc(emp)+'</span>':'<span class="t-emp none">non attribué</span>')+'</td>'
+          +'<td class="t-txt">'+esc((x.text||'').slice(0,120))+((x.text||'').length>120?'…':'')+'</td>'
+          +'<td class="t-bonus'+(x._bonus>0?'':' zero')+'">'+(x._bonus>0?money(x._bonus):(elig?'—':'inadm.'))+'</td>'
+          +'<td><button class="t-del" data-id="'+x.id+'" title="Supprimer">✕</button></td>'
+          +'</tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  // datalist of employees
+  var names = {};
+  state.reviews.forEach(function(x){ var n=(x.employee||'').trim(); if(n) names[n]=1; });
+  document.getElementById('empList').innerHTML = Object.keys(names).sort().map(function(n){return '<option value="'+esc(n)+'">';}).join('');
+
+  document.getElementById('foot').textContent = state.reviews.length+' avis au total · données locales (localStorage) · '+new Date().toLocaleDateString('fr-CA');
+}
+function emptyBlock(icon,msg){ return '<div class="empty"><span class="ei">'+icon+'</span>'+msg+'</div>'; }
+
+/* ============ EVENTS ============ */
+function bindRules(){
+  var map = { rBase:'base', rMin:'minRating', rFive:'five', rThreshold:'threshold', rPool:'pool' };
+  Object.keys(map).forEach(function(id){
+    var el = document.getElementById(id);
+    el.value = state.rules[map[id]];
+    el.addEventListener('input', function(){ state.rules[map[id]] = Number(el.value)||0; save(); render(); });
+  });
+}
+function bindStars(){
+  var box = document.getElementById('fStars');
+  box.querySelectorAll('.s').forEach(function(s){
+    s.addEventListener('click', function(){
+      var v = Number(s.getAttribute('data-v')); box.setAttribute('data-val', v);
+      box.querySelectorAll('.s').forEach(function(o){ o.classList.toggle('on', Number(o.getAttribute('data-v'))<=v); });
+    });
+  });
+}
+function addReview(){
+  var date = document.getElementById('fDate').value;
+  var rating = Number(document.getElementById('fStars').getAttribute('data-val'))||5;
+  var author = document.getElementById('fAuthor').value.trim();
+  var emp = document.getElementById('fEmp').value.trim();
+  var text = document.getElementById('fText').value.trim();
+  if(!date){ date = new Date().toISOString().slice(0,10); }
+  state.reviews.push({ id:uid(), date:date, rating:rating, author:author, employee:emp, text:text, source:'manuel' });
+  document.getElementById('fAuthor').value=''; document.getElementById('fText').value=''; document.getElementById('fEmp').value='';
+  save(); render();
+}
+function delReview(id){ state.reviews = state.reviews.filter(function(x){return x.id!==id;}); save(); render(); }
+
+/* ---- CSV parse (simple RFC4180-ish) ---- */
+function parseCSV(text){
+  var rows=[], row=[], field='', i=0, inQ=false, ch;
+  text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  while(i<text.length){
+    ch=text[i];
+    if(inQ){
+      if(ch==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else inQ=false; }
+      else field+=ch;
+    } else {
+      if(ch==='"') inQ=true;
+      else if(ch===','){ row.push(field); field=''; }
+      else if(ch==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else field+=ch;
+    }
+    i++;
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(function(r){ return r.some(function(c){return c!=='';}); });
+}
+function normStr(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); }
+function parseRating(v){
+  if(v==null) return 0;
+  var s=String(v).trim();
+  var stars=(s.match(/★|⭐/g)||[]).length; if(stars) return Math.min(5,stars);
+  var n=parseFloat(s.replace(',','.')); if(!isNaN(n)) return Math.max(1,Math.min(5,Math.round(n)));
+  return 0;
+}
+function parseDate(v){
+  var s=String(v||'').trim(); if(!s) return '';
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  var m=s.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(m){
+    var y=m[3].length===2?'20'+m[3]:m[3];
+    var a=parseInt(m[1],10), b=parseInt(m[2],10), day, mon;
+    // Disambiguate: if a value >12 it must be the day. Default to DD/MM (Québec) otherwise.
+    if(a>12){ day=a; mon=b; } else if(b>12){ mon=a; day=b; } else { day=a; mon=b; }
+    return y+'-'+('0'+mon).slice(-2)+'-'+('0'+day).slice(-2);
+  }
+  var d=new Date(s); if(!isNaN(d)) return d.toISOString().slice(0,10);
+  return s;
+}
+function importCSV(text){
+  var rows=parseCSV(text); if(rows.length<1){ alert('CSV vide'); return; }
+  var header=rows[0].map(normStr);
+  function findCol(cands){ for(var j=0;j<header.length;j++){ for(var k=0;k<cands.length;k++){ if(header[j].indexOf(cands[k])!==-1) return j; } } return -1; }
+  var ci={
+    date: findCol(['date','créé','cree','publi','jour']),
+    author: findCol(['auteur','author','nom','client','reviewer','name']),
+    rating: findCol(['note','rating','etoile','star','score']),
+    emp: findCol(['employe','employee','attribu','technicien','vendeur','staff','equipe','représentant','representant']),
+    text: findCol(['texte','avis','review','comment','commentaire','contenu','text'])
+  };
+  // If no header match at all, assume order: date,author,rating,emp,text
+  var hasHeader = Object.keys(ci).some(function(k){return ci[k]!==-1;});
+  var startRow = hasHeader?1:0;
+  var added=0;
+  for(var r=startRow;r<rows.length;r++){
+    var row=rows[r];
+    var get=function(idx,pos){ var i=idx!==-1?idx:pos; return i<row.length?row[i]:''; };
+    var rating=parseRating(get(ci.rating,2));
+    var date=parseDate(get(ci.date,0));
+    var author=String(get(ci.author,1)||'').trim();
+    var emp=String(get(ci.emp,3)||'').trim();
+    var text=String(get(ci.text,4)||'').trim();
+    if(!rating && !author && !date) continue;
+    state.reviews.push({ id:uid(), date:date, rating:rating||5, author:author, employee:emp, text:text, source:'csv' });
+    added++;
+  }
+  save(); render();
+  alert(added+' avis importé(s).');
+}
+
+/* ---- export ---- */
+function exportCSV(){
+  var c=compute();
+  var head=['Date','Auteur','Note','Employé','Bonus individuel','Texte'];
+  var lines=[head.join(',')];
+  c.rows.forEach(function(x){
+    var f=[x.date, x.author, x.rating, x.employee, (x._bonus||0), (x.text||'').replace(/\n/g,' ')];
+    lines.push(f.map(function(v){ v=String(v==null?'':v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(','));
+  });
+  lines.push('');
+  lines.push('Résumé');
+  c.emps.forEach(function(e){ lines.push([e.name, e.count+' avis', 'Total '+e.total.toFixed(2)+'$'].map(function(v){return /[",\n]/.test(v)?'"'+v+'"':v;}).join(',')); });
+  lines.push(['','','TOTAL', c.grandTotal.toFixed(2)+'$'].join(','));
+  var blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='bonus-avis-google-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+
+/* ---- sample data ---- */
+function loadSample(){
+  var emps=['Jérémy','Julien','Vincent','Mathieu','Linda'];
+  var authors=['Marc Tremblay','Sophie Gagnon','Luc Bélanger','Nathalie Roy','Pierre Côté','Julie Fortin','Éric Lavoie','Caroline Dubé','Martin Girard','Isabelle Ouellet','André Bouchard','Mélanie Pelletier'];
+  var texts=['Excellent service, équipe professionnelle.','Travail bien fait, je recommande.','Très satisfait de l\'inspection.','Rapide et courtois.','Bon suivi du dossier.','Service impeccable sur le chantier.',''];
+  var seed=[]; var base=new Date('2026-04-01').getTime(); var day=86400000;
+  for(var i=0;i<14;i++){
+    var d=new Date(base + Math.floor((i*8+i*i)%115)*day);
+    var rating=[5,5,5,4,5,4,3,5,5,4,5,5,2,5][i];
+    seed.push({ id:uid(), date:d.toISOString().slice(0,10), rating:rating,
+      author:authors[i%authors.length], employee: rating>=3?emps[i%emps.length]:'', text:texts[i%texts.length], source:'exemple' });
+  }
+  state.reviews = seed; save(); render();
+}
+function clearAll(){ if(confirm('Effacer tous les avis ?')){ state.reviews=[]; save(); render(); } }
+
+/* ============ INIT ============ */
+function init(){
+  load();
+  document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('periodFrom').value = state.period.from||'';
+  document.getElementById('periodTo').value = state.period.to||'';
+  bindRules(); bindStars();
+
+  document.getElementById('addBtn').addEventListener('click', addReview);
+  document.getElementById('sampleBtn').addEventListener('click', loadSample);
+  document.getElementById('clearBtn').addEventListener('click', clearAll);
+  document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+
+  document.getElementById('periodFrom').addEventListener('change', function(e){ state.period.from=e.target.value; save(); render(); });
+  document.getElementById('periodTo').addEventListener('change', function(e){ state.period.to=e.target.value; save(); render(); });
+  document.getElementById('periodReset').addEventListener('click', function(){ state.period={from:'',to:''}; document.getElementById('periodFrom').value=''; document.getElementById('periodTo').value=''; save(); render(); });
+
+  document.getElementById('tableWrap').addEventListener('click', function(e){ var b=e.target.closest('.t-del'); if(b) delReview(b.getAttribute('data-id')); });
+
+  var fi=document.getElementById('fileInput'), dz=document.getElementById('dropZone');
+  fi.addEventListener('change', function(e){ var f=e.target.files[0]; if(f){ var rd=new FileReader(); rd.onload=function(){ importCSV(rd.result); }; rd.readAsText(f); } fi.value=''; });
+  ['dragover','dragenter'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.add('over'); }); });
+  ['dragleave','drop'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.remove('over'); }); });
+  dz.addEventListener('drop', function(e){ var f=e.dataTransfer.files[0]; if(f){ var rd=new FileReader(); rd.onload=function(){ importCSV(rd.result); }; rd.readAsText(f); } });
+
+  render();
+}
+init();
+</script>
+</body>
+</html>
