@@ -19,20 +19,13 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-03-31,Tim Hortons #104393 St-Hubert,Timbits réunion équipe (cmd 335),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-04-07,Tim Hortons #104393 St-Hubert,Timbits réunion équipe (cmd 128),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-04-20,Benny BBQ St-Hubert,Repas réunion employé,Repas d'affaires (50%),5900,8523,18.95,0.0,0.0,21.92,50,10.96
-2026-03-02,Anthropic (ZDU65LI5-0001),Claude Pro Mar-Avr 2026,AI/API,5490,8810,28.0,0.0,0.0,28.0,100,28.0
-2026-04-02,Anthropic (ZDU65LI5-0007),Claude Pro Avr-Mai 2026,AI/API,5490,8810,28.0,1.4,2.79,32.19,100,28.0
-2026-04-16,Anthropic (ZDU65LI5-0008),Prepaid extra usage,AI/API,5490,8810,63.0,3.15,6.28,72.43,100,63.0
 2026-03-03,OpenAI (GCY3IDMR-0003),ChatGPT Plus Mar-Avr 2026 (USD),AI/API,5490,8810,27.42,1.37,2.73,31.52,100,27.42
 2026-04-27,Petro-Canada Notre-Dame O,Essence ordinaire 13.095L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
 2026-04-29,Petro-Canada Notre-Dame O,Essence ordinaire 13.027L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
 2026-04-30,Esso Charles Mirabel,Essence ordinaire 12.762L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
 2026-05-01,Esso Couche-Tard l'Eglise,Essence ordinaire 16.677L,Essence/carburant,5010,9281,32.0,1.39,2.78,32.0,80,25.6
 2026-05-12,Postes Canada,XP/Xpresspost envoi d'affaires,Livraison/courrier,5010,9270,16.87,0.83,1.66,19.36,100,16.87
-2026-05-20,Anthropic PBC (ZDU65LI5-0032),Prepaid extra usage Mai 2026,AI/API,5490,8810,30.0,1.50,2.99,34.49,100,30.0
-2026-05-21,Anthropic PBC (ZDU65LI5-0033),Prepaid extra usage Mai 2026,AI/API,5490,8810,30.0,1.50,2.99,34.49,100,30.0
-2026-05-25,Anthropic PBC (ZDU65LI5-0034),Prepaid extra usage Mai 2026,AI/API,5490,8810,20.0,1.00,2.00,23.00,100,20.0
 2026-03-17,Tim Hortons,Timbits réunion équipe (cmd 9655),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
-2026-05-26,Anthropic PBC (ZDU65LI5-0035),Prepaid extra usage Mai 2026,AI/API,5490,8810,25.0,1.25,2.49,28.74,100,25.0
 2026-04-14,Tim Hortons,Timbits réunion équipe (Tim Bisson 3),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-04-21,Tim Hortons,Timbits réunion équipe,Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-05-05,Tim Hortons,Timbits réunion équipe,Repas d'affaires (50%),5900,8523,3.29,0.0,0.0,3.29,50,1.65
@@ -43,23 +36,7 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-05-25,Esso Couche-Tard l'Eglise,Essence ordinaire 15.472L,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
 2026-05-27,Tim Hortons #5858 Montréal,Timbits réunion équipe (cmd 280),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-05-27,Petroles Belisle - Saint-Janvier,Essence sans-plomb 15.88 litres,Essence/carburant,5010,9281,30.0,1.30,2.61,30.0,80,24.0
-2026-05-29,Anthropic PBC (ZDU65LI5-0039),Prepaid extra usage,AI/API,5490,8810,30.0,1.50,2.99,34.49,100,30.0
-2026-05-29,Anthropic PBC (ZDU65LI5-0040),Prepaid extra usage,AI/API,5490,8810,20.0,1.00,2.00,23.00,100,20.0
-2026-06-07,Anthropic PBC (ZDU65LI5-0056),Prepaid extra usage,AI/API,5490,8810,63.0,3.15,6.28,72.43,100,63.0
 2026-06-23,Tim Hortons,50 Assorted Timbits - Tim Hortons,Repas d'affaires (50%),8523,8523,9.99,0.5,1,11.49,50,5
-2026-07-01,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-07-09,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8811 - Frais de bureau,8811 - Fournitures,30,1.5,2.99,34.49,100,30
-2026-07-16,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,40,2,3.99,45.99,100,40
-2026-07-16,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-07-16,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-07-20,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,35,1.75,3.49,40.24,100,35
-2026-07-24,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,45,2.25,4.49,51.74,100,45
-2026-07-24,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-07-24,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,20,1,2,23,100,20
-2026-07-27,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,35,1.75,3.49,40.24,100,35
-2026-07-27,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-07-27,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,40,2,3.99,45.99,100,40
-2026-07-27,"Anthropic, PBC","Abonnement Claude Max plan - 5x (Jul 27 - Aug 27, 2026)",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,0,0,0,0,100,0
 2026-05-19,Petro-Canada Notre-Dame O,Essence ordinaire 12.221L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
 2026-05-25,Petro-Canada Notre-Dame O,Essence ordinaire 12.976L,Essence/carburant,5010,9281,25.0,1.09,2.17,25.0,80,20.0
 2026-05-29,Esso Charles Mirabel,Essence ordinaire 16.875L,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
@@ -67,8 +44,43 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-06-07,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,40.0,1.74,3.47,40.0,80,32.0
 2026-06-09,Tim Hortons,Timbits réunion équipe (cmd 9795),Repas d'affaires (50%),5900,8523,5.29,0.22,0.43,5.94,50,2.65
 2026-06-10,Esso Charles Mirabel,Essence ordinaire 16.583L,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
-2026-06-12,Anthropic PBC (2683-7616-8661),Prepaid extra usage,AI/API,5490,8810,63.0,3.15,6.28,72.43,100,63.0
 2026-06-12,Mohawk Gas Kahnawake,Essence régulière 19.787L,Essence/carburant,5010,9281,35.0,1.52,3.04,35.0,80,28.0
 2026-06-17,Petroles Belisle - Saint-Janvier,Essence sans-plomb 17.87 litres,Essence/carburant,5010,9281,30.0,1.30,2.61,30.0,80,24.0
 2026-06-18,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
 2026-06-23,Mohawk Gas Kahnawake,Essence régulière,Essence/carburant,5010,9281,30.0,1.30,2.60,30.0,80,24.0
+2026-03-02,Anthropic PBC (2756-5808-7696),Claude Pro,AI/API,5490,8810,28.00,0.00,0.00,28.00,100,28.00
+2026-04-02,Anthropic PBC (2527-0252-0189),Claude Pro Apr2-May2,AI/API,5490,8810,28.00,1.40,2.79,32.19,100,28.00
+2026-04-16,Anthropic PBC (2119-3882-6850),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-05-02,Anthropic PBC (2123-9232-3384),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-05-02,Anthropic PBC (2207-2737-2829),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-05-02,Anthropic PBC (2251-5663-7862),Claude Pro,AI/API,5490,8810,28.00,1.40,2.79,32.19,100,28.00
+2026-05-06,Anthropic PBC (2501-4616-4776),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-05-07,Anthropic PBC (2687-4742-0657),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
+2026-05-08,Anthropic PBC (2308-1660-3887),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-05-11,Anthropic PBC (2245-2240-4836),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-05-13,Anthropic PBC (2056-3740-5488),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-05-20,Anthropic PBC (2954-3545-9806),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-05-21,Anthropic PBC (2976-8815-5759),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-05-25,Anthropic PBC (2943-3134-5205),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-05-26,Anthropic PBC (2844-2838-9027),Prepaid extra usage,AI/API,5490,8810,25.00,1.25,2.49,28.74,100,25.00
+2026-05-27,Anthropic PBC (2602-1283-1719),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-05-29,Anthropic PBC (2060-1127-2072),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-05-29,Anthropic PBC (2704-0056-2893),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-06-07,Anthropic PBC (2860-9661-2270),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-07-01,Anthropic PBC (2875-6528-6420),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-07-01,Anthropic PBC (2895-1480-1303),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-07-02,Anthropic PBC (2174-1447-4121),Claude Pro,AI/API,5490,8810,28.00,1.40,2.79,32.19,100,28.00
+2026-07-08,Anthropic PBC (2142-1279-9068),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
+2026-07-08,Anthropic PBC (2321-7859-0054),Prepaid extra usage,AI/API,5490,8810,25.00,1.25,2.49,28.74,100,25.00
+2026-07-09,Anthropic PBC (2154-0839-2391),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-07-14,Anthropic PBC (2273-7477-7268),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-07-16,Anthropic PBC (2172-5323-8410),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-07-16,Anthropic PBC (2677-9751-2446),Prepaid extra usage,AI/API,5490,8810,40.00,2.00,3.99,45.99,100,40.00
+2026-07-20,Anthropic PBC (2274-8732-9724),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
+2026-07-24,Anthropic PBC (2577-2114-7775),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-07-24,Anthropic PBC (2710-0203-9465),Prepaid extra usage,AI/API,5490,8810,45.00,2.25,4.49,51.74,100,45.00
+2026-07-24,Anthropic PBC (2795-2243-6861),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-07-27,Anthropic PBC (2134-5460-9683),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
+2026-07-27,Anthropic PBC (2430-4931-0308),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-07-27,Anthropic PBC (2466-3730-4183),Prepaid extra usage,AI/API,5490,8810,40.00,2.00,3.99,45.99,100,40.00
+2026-07-27,Anthropic PBC (2794-8459-6680),Max plan 5x,AI/API,5490,8810,134.59,6.73,13.42,154.74,100,134.59

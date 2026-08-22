@@ -5,38 +5,52 @@ date,fournisseur,description,categorie,ligne_tp80,ligne_t2125,montant_avant_taxe
 2026-04-24,Couche-Tard #1268 Newman,Essence ordinaire 11.056L,Essence/carburant,5010,9281,20.0,0.87,1.74,20.0,80,16.0
 2026-04-22,Tim Hortons #103086 Mirabel,Chocolat chaud — réunion président (cmd 158),Repas d'affaires (50%),5900,8523,5.3,0.27,0.53,6.1,50,3.05
 2026-04-22,Tim Hortons #103086 Mirabel,Café — réunion président (cmd 106),Repas d'affaires (50%),5900,8523,6.9,0.35,0.69,7.94,50,3.97
-2026-03-27,Anthropic (ZDU65LI5-0002),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
-2026-03-27,Anthropic (ZDU65LI5-0003),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
-2026-03-27,Anthropic (ZDU65LI5-0004),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
-2026-03-27,Anthropic (ZDU65LI5-0005),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
-2026-03-27,Anthropic (ZDU65LI5-0006),Prepaid extra usage,AI/API,5490,8810,5.0,0.25,0.5,5.75,100,5.0
-2026-04-22,Anthropic (B6M8BUF4-0001),One-time credit purchase (USD),AI/API,5490,8810,27.8,0.0,0.0,27.8,100,27.8
-2026-04-24,Anthropic (ZDU65LI5-0009),Prepaid extra usage,AI/API,5490,8810,20.0,1.0,2.0,23.0,100,20.0
-2026-04-24,Anthropic (ZDU65LI5-0010),Prepaid extra usage,AI/API,5490,8810,20.0,1.0,2.0,23.0,100,20.0
 2026-02-04,OpenAI (GCY3IDMR-0002),ChatGPT Plus Fév-Mar 2026 (USD),AI/API,5490,8810,27.42,1.37,2.73,31.52,100,27.42
 2026-04-03,OpenAI (GCY3IDMR-0004),ChatGPT Plus Avr-Mai 2026 (USD),AI/API,5490,8810,27.7,1.39,2.78,31.87,100,27.7
-2026-05-27,Anthropic, PBC,AI/API,30,30
-2026-05-27,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-06-07,"Anthropic, PBC","Abonnement Anthropic Claude - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-07,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-07,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-06,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,Ligne 8760 - Autres dépenses,Ligne 8760 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-05,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-05,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-05,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-05,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-19,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-06-17,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,20,1,2,23,100,20
-2026-06-17,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,20,1,2,23,100,20
-2026-06-15,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-15,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-15,"Anthropic, PBC","Abonnement Claude AI - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-11,"Anthropic, PBC","Abonnement Anthropic Claude - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
-2026-06-10,"Anthropic, PBC","Abonnement Claude Pro - Prepaid extra usage, Individual plan",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,63,3.15,6.28,72.43,100,63
 2026-06-10,Tim Hortons,20 Assorted Timbits,Repas d'affaires (50%),8523,8523,5.29,0.26,0.53,6.08,50,2.65
-2026-07-01,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-07-01,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,30,1.5,2.99,34.49,100,30
-2026-07-03,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,35,1.75,3.49,40.24,100,35
-2026-07-03,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Frais de bureau,8811 - Frais de bureau,40,2,3.99,45.99,100,40
-2026-07-03,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,20,1,2,23,100,20
-2026-07-06,"Anthropic, PBC","Prepaid extra usage, Individual plan - Abonnement Claude AI",AI/API,8760 - Autres dépenses,9270 - Autres dépenses,35,1.75,3.49,40.24,100,35
+2026-03-27,Anthropic PBC (2062-0141-9297),Prepaid extra usage,AI/API,5490,8810,5.00,0.25,0.50,5.75,100,5.00
+2026-03-27,Anthropic PBC (2309-7057-6548),Prepaid extra usage,AI/API,5490,8810,5.00,0.25,0.50,5.75,100,5.00
+2026-03-27,Anthropic PBC (2315-5607-8189),Prepaid extra usage,AI/API,5490,8810,5.00,0.25,0.50,5.75,100,5.00
+2026-03-27,Anthropic PBC (2433-8568-7102),Prepaid extra usage,AI/API,5490,8810,5.00,0.25,0.50,5.75,100,5.00
+2026-03-27,Anthropic PBC (2645-9773-0304),Prepaid extra usage,AI/API,5490,8810,5.00,0.25,0.50,5.75,100,5.00
+2026-04-22,Anthropic PBC (2202-5865-9735),One-time credit purchase,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-04-24,Anthropic PBC (2010-6986-0504),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-04-24,Anthropic PBC (2551-6391-8652),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-04-29,Anthropic PBC (2637-8206-0311),Prepaid extra usage,AI/API,5490,8810,25.00,1.25,2.49,28.74,100,25.00
+2026-04-30,Anthropic PBC (2016-7938-1125),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-04-30,Anthropic PBC (2136-7033-9331),Prepaid extra usage,AI/API,5490,8810,25.00,1.25,2.49,28.74,100,25.00
+2026-04-30,Anthropic PBC (2186-1568-5590),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-04-30,Anthropic PBC (2284-5449-6705),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-04-30,Anthropic PBC (2316-0629-9427),Auto recharge extra usage,AI/API,5490,8810,21.72,1.09,2.16,24.97,100,21.72
+2026-04-30,Anthropic PBC (2388-1571-2405),Prepaid extra usage,AI/API,5490,8810,25.00,1.25,2.49,28.74,100,25.00
+2026-05-27,Anthropic PBC (2083-1387-3943),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-06-02,Anthropic PBC (2405-5979-4681),Prepaid extra usage,AI/API,5490,8810,40.00,2.00,3.99,45.99,100,40.00
+2026-06-02,Anthropic PBC (2608-1113-7795),Claude Pro,AI/API,5490,8810,28.00,1.40,2.79,32.19,100,28.00
+2026-06-02,Anthropic PBC (2781-5156-7608),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-06-02,Anthropic PBC (2896-5572-3930),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-06-02,Anthropic PBC (2996-3406-2481),Prepaid extra usage,AI/API,5490,8810,40.00,2.00,3.99,45.99,100,40.00
+2026-06-03,Anthropic PBC (2052-8210-1187),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-03,Anthropic PBC (2196-1434-6605),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-05,Anthropic PBC (2132-6961-7843),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-05,Anthropic PBC (2408-2391-2610),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-05,Anthropic PBC (2580-8959-5167),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-05,Anthropic PBC (2607-8827-0097),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-06,Anthropic PBC (2482-2549-5223),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-07,Anthropic PBC (2525-0447-4275),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-07,Anthropic PBC (2734-9830-8121),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-07,Anthropic PBC (2983-4250-6512),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-10,Anthropic PBC (2428-6285-3638),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-11,Anthropic PBC (2683-7616-8661),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-15,Anthropic PBC (2058-2859-1737),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-15,Anthropic PBC (2244-1000-1871),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-15,Anthropic PBC (2549-2059-0921),Prepaid extra usage,AI/API,5490,8810,63.00,3.15,6.28,72.43,100,63.00
+2026-06-17,Anthropic PBC (2335-4513-1493),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-06-17,Anthropic PBC (2482-4254-1839),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-06-17,Anthropic PBC (2899-2894-9606),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-06-19,Anthropic PBC (2339-8752-5338),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-06-26,Anthropic PBC (2387-8846-7022),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
+2026-07-01,Anthropic PBC (2724-8379-8128),Prepaid extra usage,AI/API,5490,8810,30.00,1.50,2.99,34.49,100,30.00
+2026-07-03,Anthropic PBC (2324-9276-4619),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
+2026-07-03,Anthropic PBC (2766-5207-3456),Prepaid extra usage,AI/API,5490,8810,40.00,2.00,3.99,45.99,100,40.00
+2026-07-03,Anthropic PBC (2932-9289-8214),Prepaid extra usage,AI/API,5490,8810,20.00,1.00,2.00,23.00,100,20.00
+2026-07-06,Anthropic PBC (2225-5175-9399),Prepaid extra usage,AI/API,5490,8810,35.00,1.75,3.49,40.24,100,35.00
