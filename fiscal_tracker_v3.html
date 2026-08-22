@@ -191,7 +191,7 @@ tbody tr:hover td{background:var(--bg)}
     </div>
   </div>
   <div class="topbar-right">
-    <div class="gh-status" id="ghStatus">
+    <div class="gh-status" id="ghStatus" onclick="openSetup()" style="cursor:pointer" title="Cliquer pour mettre à jour le token GitHub / la clé API">
       <div class="gh-dot" id="ghDot"></div>
       <span id="ghLabel">Connexion...</span>
     </div>
@@ -1060,9 +1060,9 @@ function exportCSV() {
   const inc = ledger.filter(r => r._docType==='income');
   const exp = ledger.filter(r => r._docType==='expense');
   let csv = 'FACTURES ÉMISES\nDate,Client GitHub,Client,Description,N°,Montant net,TPS,TVQ,Total,Réserve,Net poches\n';
-  csv += inc.map(r => [r.date,r._client,r.client,r.description,r.noFacture,r.montantNet,r.tps,r.tvq,r.totalFacture,r.totalReserve,r.netPoches].join(',')).join('\n');
+  csv += inc.map(r => [r.date,r._client,r.client,r.description,r.noFacture,r.montantNet,r.tps,r.tvq,r.totalFacture,r.totalReserve,r.netPoches].map(csvEscape).join(',')).join('\n');
   csv += '\n\nDÉPENSES\nDate,Client GitHub,Fournisseur,Description,Catégorie,TP-80,T2125,Avant taxes,TPS,TVQ,Déductibilité%,Déductible\n';
-  csv += exp.map(r => [r.date,r._client,r.fournisseur,r.description,r.categorie,r.ligneTP80,r.ligneT2125,r.montantAvantTaxes,r.tpsPaye,r.tvqPaye,r.tauxDeductibilite,r.montantDeductible].join(',')).join('\n');
+  csv += exp.map(r => [r.date,r._client,r.fournisseur,r.description,r.categorie,r.ligneTP80,r.ligneT2125,r.montantAvantTaxes,r.tpsPaye,r.tvqPaye,r.tauxDeductibilite,r.montantDeductible].map(csvEscape).join(',')).join('\n');
   const blob = new Blob(['\ufeff'+csv], { type:'text/csv;charset=utf-8;' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `fiscal_2026_${new Date().toISOString().split('T')[0]}.csv`; a.click();
@@ -1146,11 +1146,22 @@ function toast(msg, icon='✅', type='green') {
 </div>
 
 <script>
+function openSetup() {
+  // Pré-remplir avec les valeurs déjà enregistrées pour éviter de tout retaper
+  document.getElementById('setupApiKey').value = localStorage.getItem('fiscal_api_key') || '';
+  document.getElementById('setupGhToken').value = localStorage.getItem('fiscal_gh_token') || '';
+  document.getElementById('setupModal').style.display = 'flex';
+}
+
 function saveSetup() {
   const ak = document.getElementById('setupApiKey').value.trim();
   const gh = document.getElementById('setupGhToken').value.trim();
-  if (!ak.startsWith('sk-ant') || !gh.startsWith('ghp_')) {
-    alert('Clés invalides — vérifies le format'); return;
+  // GitHub accepte les tokens classic (ghp_) ET fine-grained (github_pat_)
+  if (!ak.startsWith('sk-ant')) {
+    alert('Clé API Anthropic invalide — elle doit commencer par « sk-ant ».'); return;
+  }
+  if (!gh.startsWith('ghp_') && !gh.startsWith('github_pat_')) {
+    alert('Token GitHub invalide — il doit commencer par « ghp_ » (classic) ou « github_pat_ » (fine-grained).'); return;
   }
   localStorage.setItem('fiscal_api_key', ak);
   localStorage.setItem('fiscal_gh_token', gh);
